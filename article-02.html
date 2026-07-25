@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Article · Hermes Notes</title>
+<title>Value meets quant: a personal approach</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
     --bg: #faf8f2;
     --bg-1: #fff4e0;
@@ -20,9 +19,7 @@
     --accent: #b45837;
     --accent-hover: #9c4a2c;
   }
-
   html { scroll-behavior: smooth; }
-
   body {
     font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
                  'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
@@ -35,179 +32,88 @@
     background-attachment: fixed;
     font-size: 17px;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
-
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--surface);
-    backdrop-filter: blur(16px) saturate(150%);
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-inner {
-    display: flex; align-items: center; justify-content: space-between;
-    height: 56px; max-width: 1000px; margin: 0 auto; padding: 0 24px;
-  }
-  .nav-brand {
-    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
-    font-size: 22px; font-weight: 500;
-    color: var(--text); text-decoration: none; letter-spacing: -0.01em;
-  }
+  nav { position: sticky; top: 0; z-index: 100; background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between;
+    height: 56px; max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  .nav-brand { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; font-style: italic;
+    color: var(--text); text-decoration: none; }
   .nav-links { display: flex; gap: 28px; list-style: none; }
   .nav-links a { font-size: 14px; color: var(--text); text-decoration: none; opacity: 0.7; }
   .nav-links a:hover { opacity: 1; color: var(--accent); }
-
   .article { max-width: 680px; margin: 0 auto; padding: 80px 24px 80px; }
-  .back-link {
-    display: inline-block; font-size: 14px; color: var(--text-muted);
-    text-decoration: none; margin-bottom: 32px; transition: color 0.2s;
-  }
+  .back-link { display: inline-block; font-size: 14px; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 32px; }
   .back-link::before { content: "← "; }
-  .back-link:hover { color: var(--accent); }
-
-  .article-tag {
-    font-size: 12px; font-weight: 500; text-transform: uppercase;
-    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px;
-  }
-  .article h1 {
-    font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
-    font-size: 48px; font-weight: 400; line-height: 1.08;
-    letter-spacing: -0.02em; color: var(--text); margin-bottom: 20px;
-  }
-  .article-meta {
-    font-size: 14px; color: var(--text-dim);
-    margin-bottom: 32px; display: flex; gap: 16px; align-items: center;
-  }
-  .article-cover {
-    width: 100%; aspect-ratio: 16/9; object-fit: cover;
+  .article-tag { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px; }
+  .article h1 { font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 44px; font-weight: 400; line-height: 1.08;
+    letter-spacing: -0.02em; color: var(--text); margin-bottom: 20px; }
+  .article-meta { font-size: 14px; color: var(--text-dim); margin-bottom: 32px; }
+  .article-cover { width: 100%; aspect-ratio: 16/9; object-fit: cover;
     border-radius: 14px; margin-bottom: 36px;
-    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08);
-  }
-
-  .audio-block {
-    background: var(--surface);
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .audio-block { background: var(--surface);
     backdrop-filter: blur(16px) saturate(150%);
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px 24px;
-    margin: 36px 0;
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin: 36px 0;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
-                0 8px 32px rgba(180, 88, 55, 0.06);
-  }
-  .audio-block .label {
-    font-size: 12px; font-weight: 500; text-transform: uppercase;
-    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px;
-  }
+                0 8px 32px rgba(180, 88, 55, 0.06); }
+  .audio-block .label { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
   .audio-block audio { width: 100%; height: 36px; }
-
   .content { font-size: 18px; line-height: 1.7; color: var(--text); }
-  .content h2 {
-    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+  .content h2 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
     font-size: 28px; font-weight: 500; line-height: 1.2;
-    margin: 56px 0 16px; letter-spacing: -0.01em;
-  }
-  .content h3 {
+    margin: 48px 0 16px; letter-spacing: -0.01em; }
+  .content h3 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; margin: 36px 0 10px; letter-spacing: -0.01em; }
+  .content p { margin-bottom: 18px; }
+  .content blockquote { border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px; margin: 32px 0; color: var(--text-muted);
     font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
-    font-size: 22px; font-weight: 500;
-    margin: 40px 0 10px; letter-spacing: -0.01em;
-  }
-  .content p { margin-bottom: 22px; }
-  .content blockquote {
-    border-left: 2px solid var(--accent);
-    padding: 4px 0 4px 20px;
-    margin: 32px 0;
-    color: var(--text-muted);
-    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
-    font-style: italic; font-size: 19px;
-  }
+    font-style: italic; font-size: 19px; }
   .content ul, .content ol { margin: 0 0 22px 24px; }
   .content li { margin-bottom: 8px; }
-  .content table {
-    width: 100%; border-collapse: collapse;
-    margin: 28px 0; font-size: 15px;
-  }
-  .content th, .content td {
-    padding: 12px 14px; text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-  .content th {
-    font-weight: 600; color: var(--text); background: var(--surface);
-  }
-  .content code {
-    background: var(--surface);
-    padding: 2px 6px; border-radius: 4px;
-    font-size: 0.9em; font-family: 'SF Mono', Monaco, Consolas, monospace;
-  }
-  .content pre {
-    background: var(--surface);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 22px; overflow-x: auto;
-    margin: 24px 0; font-size: 14px; line-height: 1.6;
-  }
-  .content pre code { background: none; padding: 0; }
-  .content strong { font-weight: 600; color: var(--text); }
+  .content table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 15px; }
+  .content th, .content td { padding: 12px 14px; text-align: left;
+    border-bottom: 1px solid var(--border); }
+  .content th { font-weight: 600; background: var(--surface); }
+  .content pre { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 22px; overflow-x: auto;
+    margin: 24px 0; font-size: 14px; line-height: 1.6; }
+  .content code { background: var(--surface); padding: 2px 6px;
+    border-radius: 4px; font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; }
   .content em { font-style: italic; color: var(--accent); }
-
-  footer {
-    padding: 32px 0; text-align: center;
-    font-size: 13px; color: var(--text-dim);
-  }
-  footer em {
-    font-family: 'PP Editorial New', Georgia, serif;
-    font-style: italic; color: var(--accent);
-  }
+  .content strong { font-weight: 600; color: var(--text); }
+  footer { padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-dim); }
+  footer em { font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic; color: var(--accent); }
 </style>
 </head>
 <body>
 
 <nav>
   <div class="nav-inner">
-    <a href="index.html" class="nav-brand">Hermes Notes</a>
+    <a href="index.html" class="nav-brand">a few quiet things</a>
     <ul class="nav-links">
-      <li><a href="index.html">Articles</a></li>
+      <li><a href="index.html#essays">Essays</a></li>
       <li><a href="index.html#about">About</a></li>
     </ul>
   </div>
 </nav>
 
-<article class="article" id="article">
-  <a href="index.html" class="back-link">Back to essays</a>
-  <div class="article-tag" id="tag">Loading...</div>
-  <h1 id="title">Loading...</h1>
-  <div class="article-meta" id="meta">2026-07-24 · 5 min read</div>
-  <img class="article-cover" id="cover" src="" alt="" />
-
-  <div class="audio-block">
-    <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
-    <audio id="audio" controls preload="metadata">
-      Your browser does not support the audio element.
-    </audio>
-  </div>
-
-  <div class="content" id="content">
-    <p>Loading essay...</p>
-  </div>
-</article>
-
-<footer>
-  <p>© 2026 Hermes Notes · <em>deployed on Cloudflare Pages</em></p>
-</footer>
-
-
-<article class="article" id="article">
+<article class="article">
   <a href="index.html" class="back-link">Back to essays</a>
   <div class="article-tag">Investing · Method</div>
   <h1>Value meets quant: a personal approach</h1>
-  <div class="article-meta">
-    <span>2026-07-24 · 6 min read · audio 1:42</span>
-  </div>
-  <img class="article-cover" src="images/02-value.jpg" alt="Value meets quant: a personal approach" />
+  <div class="article-meta">2026-07-24 · 6 min read · audio 1:42</div>
+  <img class="article-cover" src="images/02-value.jpg" alt="Value meets quant" />
 
   <div class="audio-block">
     <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
@@ -218,612 +124,71 @@
   </div>
 
   <div class="content">
-    <h2>一、价值投资：核心理念</h2>
-<p><strong>价值投资（Value Investing）</strong> 由本杰明·格雷厄姆在 1934 年提出，巴菲特把它发扬光大。</p>
-<blockquote>用低于"内在价值"的价格买入优质资产，然后等市场认识到这个价值。</blockquote>
+    <h2>Value investing: the core idea</h2>
+    <p>Value investing was proposed by Benjamin Graham in 1934 and refined by Warren Buffett. Buy an asset at a price materially below its intrinsic value, then wait for the market to recognise that value.</p>
 
-<h3>4 大核心原则</h3>
-<ol>
-<li><strong>股票 = 公司的一部分</strong>—— 买股票 = 买公司</li>
-<li><strong>安全边际（Margin of Safety）</strong>—— 只在价格远低于价值时买</li>
-<li><strong>市场先生（Mr. Market）</strong>—— 市场是情绪化的报价服务</li>
-<li><strong>长期持有</strong>—— 好生意 + 时间 = 朋友</li>
-</ol>
+    <h3>Four core principles</h3>
+    <ol>
+      <li><strong>Stock = part of a business</strong> — buying a stock means buying a stake in a real company</li>
+      <li><strong>Margin of safety</strong> — only buy when price is materially below intrinsic value</li>
+      <li><strong>Mr. Market</strong> — view the market as an emotional quoting service, not as truth</li>
+      <li><strong>Long-term holding</strong> — a quality business is the friend of time</li>
+    </ol>
 
-<h3>经典选股 5 步法（格雷厄姆 + 巴菲特）</h3>
-<ol>
-<li>ROE &gt; 15%（长期平均）</li>
-<li>毛利率 &gt; 40%</li>
-<li>负债率 &lt; 50%</li>
-<li>自由现金流为正且增长</li>
-<li>管理层靠谱（回购 / 分红 / 不乱花钱）</li>
-</ol>
+    <h3>The classic five-step stock screen (Graham + Buffett)</h3>
+    <ol>
+      <li>ROE above 15% (long-term average)</li>
+      <li>Gross margin above 40%</li>
+      <li>Debt ratio below 50%</li>
+      <li>Free cash flow positive and growing</li>
+      <li>Competent management (buybacks, dividends, capital discipline)</li>
+    </ol>
 
-<h2>二、量化投资：和价值投资完全相反吗？</h2>
-<p><strong>量化投资（Quantitative Investing）</strong> 看起来是另一套，但底层逻辑和价值投资并不冲突。</p>
-<blockquote>用数学 + 数据 + 算法，从历史规律中发现可重复的统计优势。</blockquote>
+    <h2>Quantitative investing: not the opposite of value</h2>
+    <p>Quantitative investing looks like a different method, but its underlying logic does not actually conflict with value investing. Use mathematics, data, and algorithms to surface repeatable statistical edges from historical patterns.</p>
 
-<h3>量化投资 ≠ 高频交易</h3>
-<table>
-<thead><tr><th>流派</th><th>时间周期</th><th>适合个人</th></tr></thead>
-<tbody>
-<tr><td>高频交易（HFT）</td><td>微秒级</td><td>❌ 不适合个人（需要机房）</td></tr>
-<tr><td>统计套利</td><td>秒-分钟</td><td>❌ 难（账户小无竞争力）</td></tr>
-<tr><td>多因子选股</td><td>周-月</td><td>✅ 最佳个人方案</td></tr>
-<tr><td>CTA / 趋势</td><td>日-周</td><td>✅ 可访问</td></tr>
-</tbody>
-</table>
+    <h3>Four schools of quant</h3>
+    <table>
+      <thead><tr><th>School</th><th>Timeframe</th><th>Suitable for individuals</th></tr></thead>
+      <tbody>
+        <tr><td>High-frequency trading (HFT)</td><td>Microseconds</td><td>Not suitable (datacenter + co-location required)</td></tr>
+        <tr><td>Statistical arbitrage</td><td>Seconds to minutes</td><td>Hard (small accounts uncompetitive)</td></tr>
+        <tr><td>Multi-factor stock selection</td><td>Weeks to months</td><td>Best fit for individuals</td></tr>
+        <tr><td>CTA / trend following</td><td>Days to weeks</td><td>Accessible</td></tr>
+      </tbody>
+    </table>
 
-<h3>多因子模型（个人友好）</h3>
-<pre>Score = 0.3 × 价值 + 0.3 × 质量 + 0.2 × 动量 + 0.2 × 低风险
+    <h2>Value × Quant: a combined framework for individuals</h2>
+    <p>The two seemingly opposite systems can be combined in a complementary way. Value investing = stock selection logic (what to buy). Quantitative investing = execution discipline (how and when to buy).</p>
 
-价值：   PE / PB / 股息率（便宜）
-质量：   ROE / 毛利率（盈利强）
-动量：  过去 6-12 个月涨幅（趋势）
-低风险：  波动率 / 贝塔（稳）</pre>
+    <h3>Four-step combined process</h3>
+    <ol>
+      <li><strong>Step 1:</strong> Value screen (filter out the bad on fundamentals)</li>
+      <li><strong>Step 2:</strong> Quantitative ranking (factor-score the rest)</li>
+      <li><strong>Step 3:</strong> Portfolio construction (diversification + position sizing)</li>
+      <li><strong>Step 4:</strong> Periodic rebalance (quarterly or semi-annually)</li>
+    </ol>
 
-<h2>三、价值投资 × 量化投资 · 个人最佳组合</h2>
-<p>两个看似对立的体系，用 <strong>互补</strong> 的方式结合。</p>
+    <h2>Tools recommended for individuals</h2>
+    <ul>
+      <li><strong>Stock screeners</strong>: LiXinger, Xueqiu, Turtle Quant</li>
+      <li><strong>Backtesting</strong>: JoinQuant, RiceQuant, Guorn</li>
+      <li><strong>Valuation</strong>: DCF, DDM, relative multiples (most practical)</li>
+      <li><strong>Data</strong>: annual reports, Tonghuashun, Xueqiu deep articles</li>
+    </ul>
 
-<h3>核心理念</h3>
-<blockquote>价值投资 = 选股逻辑（<strong>选什么</strong>）<br>量化投资 = 执行纪律（<strong>怎么选 + 什么时候选</strong>）</blockquote>
-
-<h3>4 步组合法（个人可直接用）</h3>
-<ol>
-<li><strong>Step 1</strong>：价值筛股（用基本面排除差的）</li>
-<li><strong>Step 2</strong>：量化排序（用因子打分排顺序）</li>
-<li><strong>Step 3</strong>：组合配置（分散 + 仓位管理）</li>
-<li><strong>Step 4</strong>：定期再平衡（季度 / 半年）</li>
-</ol>
-
-<h2>四、个人实操 · 4 大工具推荐</h2>
-
-<h3>选股工具</h3>
-<ul>
-<li><strong>理杏仁</strong> — 财务筛选 + 因子</li>
-<li><strong>雪球组合</strong> — 跟踪 + 复盘</li>
-<li><strong>乌龟量化</strong> — 价值 + 量化因子</li>
-</ul>
-
-<h3>量化回测</h3>
-<ul>
-<li><strong>聚宽</strong> — 中等难度 · 免费 + 付费</li>
-<li><strong>米筐 RiceQuant</strong> — 中等难度</li>
-<li><strong>优矿 Uqer</strong> — 高难度 · 免费</li>
-<li><strong>果仁网</strong> — 中等难度 · 从 ¥99/年</li>
-</ul>
-
-<h3>估值模型</h3>
-<ul>
-<li><strong>DCF</strong>（现金流折现）— 经典但复杂</li>
-<li><strong>DDM</strong>（股利折现）— 适合稳定分红股</li>
-<li><strong>相对估值</strong>（PE / PB / PEG）— <strong>个人最实用</strong></li>
-</ul>
-
-<h3>数据 + 新闻</h3>
-<ul>
-<li><strong>年报 + 季报</strong>（最权威）</li>
-<li><strong>同花顺 / 东方财富</strong>（数据）</li>
-<li><strong>雪球深度文</strong>（框架）</li>
-</ul>
-
-<h2>五、3 个常见误区</h2>
-<table>
-<thead><tr><th>误区</th><th>真相</th></tr></thead>
-<tbody>
-<tr><td>"价值投资就是永远持有"</td><td>持有是结果不是策略，前提是买得便宜</td></tr>
-<tr><td>"量化 = 高频 = 危险"</td><td>多因子选股风险可控，个人也能用</td></tr>
-<tr><td>"选一边就行"</td><td>组合起来，价值筛选 + 量化执行 = 1+1 &gt; 2</td></tr>
-</tbody>
-</table>
-
-<h2>六、5 个月上手计划</h2>
-<table>
-<thead><tr><th>月份</th><th>任务</th></tr></thead>
-<tbody>
-<tr><td>第 1 月</td><td>读 3 本书，建立基础</td></tr>
-<tr><td>第 2 月</td><td>用价值法筛 30 只股</td></tr>
-<tr><td>第 3 月</td><td>回测一个量化模型</td></tr>
-<tr><td>第 4 月</td><td>模拟仓 5-10% 仓位</td></tr>
-<tr><td>第 5 月</td><td>跟踪 1 季度，对比基准</td></tr>
-</tbody>
-</table>
-
-<h2>七、3 个真实案例</h2>
-
-<h3>案例 1：@唐朝（雪球）</h3>
-<ul>
-<li>方法：价值投资 + 简单量化（PE / ROE）</li>
-<li>年化：15-20%（2015-2024）</li>
-</ul>
-
-<h3>案例 2：@持有封基（雪球）</h3>
-<ul>
-<li>方法：低估值价值 + ETF 轮动</li>
-<li>年化：12-18%（稳健型）</li>
-</ul>
-
-<h3>案例 3：@Lagom 投资（公众号）</h3>
-<ul>
-<li>方法：多因子 ETF + 再平衡</li>
-<li>年化：10-15%（ETF 量化版）</li>
-</ul>
-
-<blockquote>共同点：纪律 + 长期 + 低换手</blockquote>
-
-<h2>总结 · 3 个 takeaway</h2>
-<ul>
-<li><strong>价值投资 × 量化投资 = 互补</strong> —— 价值"选什么"，量化"怎么选"</li>
-<li><strong>个人不需要懂代码</strong>—— 用现成工具（雪球 + 聚宽 + 果仁）就能起步</li>
-<li><strong>核心是纪律</strong>—— 不要预测，只跟随因子 + 再平衡</li>
-</ul>
-
-<h2>推荐阅读</h2>
-<ul>
-<li>《聪明的投资者》—— 本杰明·格雷厄姆</li>
-<li>《巴菲特致股东信》—— 沃伦·巴菲特</li>
-<li>《打开量化投资的黑箱》—— Rishi Narang</li>
-<li>《漫步华尔街》—— 伯顿·马尔基尔</li>
-</ul>
+    <h2>Three takeaways</h2>
+    <ul>
+      <li>Value investing × quantitative investing = complementary — one picks the "what", the other picks the "how".</li>
+      <li>Individuals do not need to code. Off-the-shelf tools are enough to start.</li>
+      <li>Discipline is the edge. Do not predict, only follow factors + rebalance.</li>
+    </ul>
   </div>
 </article>
 
 <footer>
-  <p>© 2026 Hermes Notes · <em>deployed on Cloudflare Pages</em></p>
+  <p>© 2026 <em>a few quiet things</em> · deployed on the edge, somehow</p>
 </footer>
-
-<script>
-// 3 篇文章数据 - 同步预渲染，**不 fetch**
-const articles = {
-  '01': {
-    tag: 'AI · RAG',
-    title: 'RAG vs AutoRAG: principles, trade-offs, scenarios',
-    meta: '2026-07-24 · 5 min read · audio 1:35',
-    cover: 'images/01-rag.jpg',
-    audio: 'audio/01-rag-summary.mp3',
-    content: `
-<h2>什么是 RAG？</h2>
-<p><strong>RAG（Retrieval-Augmented Generation）</strong> 是 2023 年开始爆火的大模型应用范式。核心思路很简单：</p>
-<p>用户问题 → 检索相关文档 → 把文档塞进 LLM 上下文 → LLM 生成回答</p>
-<p>典型代表：ChatPDF、NotebookLM、各类"企业知识库问答"产品。</p>
-
-<h3>RAG 的标准流程</h3>
-<ol>
-<li>文档预处理（PDF / Word / 网页 → 文本切片）</li>
-<li>Embedding（每段文本变成向量）</li>
-<li>存入向量数据库（如 Milvus / Pinecone / Qdrant）</li>
-<li>用户提问 → 也转成向量 → 检索 Top-K 相似段落</li>
-<li>把段落拼成 prompt → 喂给 LLM → 输出答案</li>
-</ol>
-
-<h2>传统 RAG 的 5 大痛点</h2>
-<table>
-<thead><tr><th>痛点</th><th>说明</th></tr></thead>
-<tbody>
-<tr><td><strong>切片丢失上下文</strong></td><td>PDF 合同被切碎后，跨页条款断章</td></tr>
-<tr><td><strong>检索不准</strong></td><td>问"Q3 营收"返回所有季度</td></tr>
-<tr><td><strong>幻觉无法抑制</strong></td><td>文档没说的，模型瞎编</td></tr>
-<tr><td><strong>多跳推理失败</strong></td><td>"Acme 的母公司董事长是谁"答不上</td></tr>
-<tr><td><strong>静态索引</strong></td><td>文档变了，索引要几小时重跑</td></tr>
-</tbody>
-</table>
-
-<blockquote>核心洞察：传统 RAG 是"检索 + 拼 prompt"——不是真正的"理解"</blockquote>
-
-<h2>AutoRAG 是什么？</h2>
-<p><strong>AutoRAG</strong> = <strong>自动化的 RAG</strong>——把传统 RAG 的"手动调参"变成"自动决策"</p>
-<p>2024 年开始出现，2025-2026 年成为新趋势。代表项目：</p>
-<ul>
-<li><strong>AutoRAG（Marker-Inc）</strong> —— 自动评估 + 自动调优</li>
-<li><strong>LangChain RAG Evaluator</strong> —— 自动化评测</li>
-<li><strong>LlamaIndex Agentic RAG</strong> —— 多智能体协同</li>
-<li><strong>Self-RAG</strong>（论文）—— 模型自检是否需要检索</li>
-<li><strong>CRAG / Adaptive-RAG</strong>（论文）—— 检索质量自适应</li>
-</ul>
-
-<h3>AutoRAG 的核心创新</h3>
-<blockquote>传统 RAG：检索 → 拼 prompt → 输出（一次性）<br>AutoRAG：问题理解 → 检索决策 → 多路检索 → 评估排序 → 反思重检 → 输出（多次循环）</blockquote>
-<p>关键区别：AutoRAG 会 <strong>自我评估 + 主动重检</strong>——像人类查资料一样思考</p>
-
-<h2>RAG vs AutoRAG · 5 维对比</h2>
-<table>
-<thead><tr><th>维度</th><th>传统 RAG</th><th>AutoRAG</th></tr></thead>
-<tbody>
-<tr><td><strong>流程</strong></td><td>单次检索 + 拼接</td><td>循环检索 + 评估</td></tr>
-<tr><td><strong>检索方式</strong></td><td>固定（向量）</td><td>自适应（向量 + 关键词 + 重排）</td></tr>
-<tr><td><strong>质量控制</strong></td><td>无</td><td>每步评分</td></tr>
-<tr><td><strong>失败恢复</strong></td><td>无</td><td>自动重查</td></tr>
-<tr><td><strong>多跳问题</strong></td><td>弱</td><td>Agent 协同</td></tr>
-<tr><td><strong>调优成本</strong></td><td>高（手动）</td><td>自动</td></tr>
-<tr><td><strong>延迟</strong></td><td>1-3 秒</td><td>5-15 秒</td></tr>
-<tr><td><strong>适合</strong></td><td>简单 FAQ</td><td>复杂企业知识</td></tr>
-</tbody>
-</table>
-
-<h2>3 个真实场景对比</h2>
-
-<h3>场景 1：企业内部知识库</h3>
-<p><em>问题："2024 Q3 华东区销售冠军是谁？"</em></p>
-<table>
-<thead><tr><th>传统 RAG</th><th>AutoRAG</th></tr></thead>
-<tbody>
-<tr><td>返回"自信的错误名字"</td><td>返回正确名字 + 引用</td></tr>
-</tbody>
-</table>
-
-<h3>场景 2：客服机器人</h3>
-<p><em>问题："我的快递没到，怎么办？"</em></p>
-<table>
-<thead><tr><th>传统 RAG</th><th>AutoRAG</th></tr></thead>
-<tbody>
-<tr><td>返回通用退货政策</td><td>要订单号 → 拉账户 → 给具体方案</td></tr>
-<tr><td>解决率 30%</td><td>解决率 80%+</td></tr>
-</tbody>
-</table>
-
-<h3>场景 3：法律 / 金融文档</h3>
-<p><em>问题："违约金的条款具体怎么规定？"</em></p>
-<table>
-<thead><tr><th>传统 RAG</th><th>AutoRAG</th></tr></thead>
-<tbody>
-<tr><td>返回 1-2 段片段</td><td>返回完整条款 + 触发条件 + 风险标记</td></tr>
-</tbody>
-</table>
-
-<h2>AutoRAG 的 4 大挑战</h2>
-<table>
-<thead><tr><th>挑战</th><th>说明</th></tr></thead>
-<tbody>
-<tr><td><strong>延迟</strong></td><td>5-15 秒，比传统慢 3-5 倍</td></tr>
-<tr><td><strong>成本</strong></td><td>多次调用，3-10 倍开销</td></tr>
-<tr><td><strong>调试</strong></td><td>每步都可能失败，遥测必加</td></tr>
-<tr><td><strong>模型依赖</strong></td><td>弱模型放大弱，循环是乘数不是替代</td></tr>
-</tbody>
-</table>
-
-<blockquote>AutoRAG 是模型的乘数器。弱模型会放大弱，强模型才能放大强。</blockquote>
-
-<h2>怎么选？</h2>
-<table>
-<thead><tr><th>场景</th><th>推荐</th></tr></thead>
-<tbody>
-<tr><td>200 页 FAQ</td><td>传统 RAG（快、便宜、够用）</td></tr>
-<tr><td>客服机器人</td><td>AutoRAG（消歧）</td></tr>
-<tr><td>1000+ 企业文档</td><td>AutoRAG（大规模必需）</td></tr>
-<tr><td>多跳法律问题</td><td>AutoRAG</td></tr>
-<tr><td>周末原型</td><td>传统 RAG</td></tr>
-</tbody>
-</table>
-
-<h2>总结 · 3 个 takeaway</h2>
-<ul>
-<li><strong>传统 RAG 在企业问答中准确率普遍 &lt; 30%</strong>——AutoRAG 是真实生产环境的标配</li>
-<li><strong>AutoRAG 不是"更好"的 RAG</strong>——而是"会思考的 RAG"——自我评估 + 主动重检</li>
-<li><strong>未来 1-2 年</strong>——AutoRAG 会成为企业 RAG 的默认配置</li>
-</ul>
-
-<h2>相关资源</h2>
-<ul>
-<li>AutoRAG 开源：https://github.com/marker-inc/AutoRAG</li>
-<li>Self-RAG 论文（2023）：检索增强 + 自反思</li>
-<li>LangChain RAG 评估器：自动化评测</li>
-<li>LlamaIndex Agentic RAG</li>
-</ul>
-`
-  },
-  '02': {
-    tag: 'Investing · Method',
-    title: 'Value meets quant: a personal approach',
-    meta: '2026-07-24 · 6 min read · audio 1:42',
-    cover: 'images/02-value.jpg',
-    audio: 'audio/02-value-quant-summary.mp3',
-    content: `
-<h2>一、价值投资：核心理念</h2>
-<p><strong>价值投资（Value Investing）</strong> 由本杰明·格雷厄姆在 1934 年提出，巴菲特把它发扬光大。</p>
-<blockquote>用低于"内在价值"的价格买入优质资产，然后等市场认识到这个价值。</blockquote>
-
-<h3>4 大核心原则</h3>
-<ol>
-<li><strong>股票 = 公司的一部分</strong>—— 买股票 = 买公司</li>
-<li><strong>安全边际（Margin of Safety）</strong>—— 只在价格远低于价值时买</li>
-<li><strong>市场先生（Mr. Market）</strong>—— 市场是情绪化的报价服务</li>
-<li><strong>长期持有</strong>—— 好生意 + 时间 = 朋友</li>
-</ol>
-
-<h3>经典选股 5 步法（格雷厄姆 + 巴菲特）</h3>
-<ol>
-<li>ROE &gt; 15%（长期平均）</li>
-<li>毛利率 &gt; 40%</li>
-<li>负债率 &lt; 50%</li>
-<li>自由现金流为正且增长</li>
-<li>管理层靠谱（回购 / 分红 / 不乱花钱）</li>
-</ol>
-
-<h2>二、量化投资：和价值投资完全相反吗？</h2>
-<p><strong>量化投资（Quantitative Investing）</strong> 看起来是另一套，但底层逻辑和价值投资并不冲突。</p>
-<blockquote>用数学 + 数据 + 算法，从历史规律中发现可重复的统计优势。</blockquote>
-
-<h3>量化投资 ≠ 高频交易</h3>
-<table>
-<thead><tr><th>流派</th><th>时间周期</th><th>适合个人</th></tr></thead>
-<tbody>
-<tr><td>高频交易（HFT）</td><td>微秒级</td><td>❌ 不适合个人（需要机房）</td></tr>
-<tr><td>统计套利</td><td>秒-分钟</td><td>❌ 难（账户小无竞争力）</td></tr>
-<tr><td>多因子选股</td><td>周-月</td><td>✅ 最佳个人方案</td></tr>
-<tr><td>CTA / 趋势</td><td>日-周</td><td>✅ 可访问</td></tr>
-</tbody>
-</table>
-
-<h3>多因子模型（个人友好）</h3>
-<pre>Score = 0.3 × 价值 + 0.3 × 质量 + 0.2 × 动量 + 0.2 × 低风险
-
-价值：   PE / PB / 股息率（便宜）
-质量：   ROE / 毛利率（盈利强）
-动量：  过去 6-12 个月涨幅（趋势）
-低风险：  波动率 / 贝塔（稳）</pre>
-
-<h2>三、价值投资 × 量化投资 · 个人最佳组合</h2>
-<p>两个看似对立的体系，用 <strong>互补</strong> 的方式结合。</p>
-
-<h3>核心理念</h3>
-<blockquote>价值投资 = 选股逻辑（<strong>选什么</strong>）<br>量化投资 = 执行纪律（<strong>怎么选 + 什么时候选</strong>）</blockquote>
-
-<h3>4 步组合法（个人可直接用）</h3>
-<ol>
-<li><strong>Step 1</strong>：价值筛股（用基本面排除差的）</li>
-<li><strong>Step 2</strong>：量化排序（用因子打分排顺序）</li>
-<li><strong>Step 3</strong>：组合配置（分散 + 仓位管理）</li>
-<li><strong>Step 4</strong>：定期再平衡（季度 / 半年）</li>
-</ol>
-
-<h2>四、个人实操 · 4 大工具推荐</h2>
-
-<h3>选股工具</h3>
-<ul>
-<li><strong>理杏仁</strong> — 财务筛选 + 因子</li>
-<li><strong>雪球组合</strong> — 跟踪 + 复盘</li>
-<li><strong>乌龟量化</strong> — 价值 + 量化因子</li>
-</ul>
-
-<h3>量化回测</h3>
-<ul>
-<li><strong>聚宽</strong> — 中等难度 · 免费 + 付费</li>
-<li><strong>米筐 RiceQuant</strong> — 中等难度</li>
-<li><strong>优矿 Uqer</strong> — 高难度 · 免费</li>
-<li><strong>果仁网</strong> — 中等难度 · 从 ¥99/年</li>
-</ul>
-
-<h3>估值模型</h3>
-<ul>
-<li><strong>DCF</strong>（现金流折现）— 经典但复杂</li>
-<li><strong>DDM</strong>（股利折现）— 适合稳定分红股</li>
-<li><strong>相对估值</strong>（PE / PB / PEG）— <strong>个人最实用</strong></li>
-</ul>
-
-<h3>数据 + 新闻</h3>
-<ul>
-<li><strong>年报 + 季报</strong>（最权威）</li>
-<li><strong>同花顺 / 东方财富</strong>（数据）</li>
-<li><strong>雪球深度文</strong>（框架）</li>
-</ul>
-
-<h2>五、3 个常见误区</h2>
-<table>
-<thead><tr><th>误区</th><th>真相</th></tr></thead>
-<tbody>
-<tr><td>"价值投资就是永远持有"</td><td>持有是结果不是策略，前提是买得便宜</td></tr>
-<tr><td>"量化 = 高频 = 危险"</td><td>多因子选股风险可控，个人也能用</td></tr>
-<tr><td>"选一边就行"</td><td>组合起来，价值筛选 + 量化执行 = 1+1 &gt; 2</td></tr>
-</tbody>
-</table>
-
-<h2>六、5 个月上手计划</h2>
-<table>
-<thead><tr><th>月份</th><th>任务</th></tr></thead>
-<tbody>
-<tr><td>第 1 月</td><td>读 3 本书，建立基础</td></tr>
-<tr><td>第 2 月</td><td>用价值法筛 30 只股</td></tr>
-<tr><td>第 3 月</td><td>回测一个量化模型</td></tr>
-<tr><td>第 4 月</td><td>模拟仓 5-10% 仓位</td></tr>
-<tr><td>第 5 月</td><td>跟踪 1 季度，对比基准</td></tr>
-</tbody>
-</table>
-
-<h2>七、3 个真实案例</h2>
-
-<h3>案例 1：@唐朝（雪球）</h3>
-<ul>
-<li>方法：价值投资 + 简单量化（PE / ROE）</li>
-<li>年化：15-20%（2015-2024）</li>
-</ul>
-
-<h3>案例 2：@持有封基（雪球）</h3>
-<ul>
-<li>方法：低估值价值 + ETF 轮动</li>
-<li>年化：12-18%（稳健型）</li>
-</ul>
-
-<h3>案例 3：@Lagom 投资（公众号）</h3>
-<ul>
-<li>方法：多因子 ETF + 再平衡</li>
-<li>年化：10-15%（ETF 量化版）</li>
-</ul>
-
-<blockquote>共同点：纪律 + 长期 + 低换手</blockquote>
-
-<h2>总结 · 3 个 takeaway</h2>
-<ul>
-<li><strong>价值投资 × 量化投资 = 互补</strong> —— 价值"选什么"，量化"怎么选"</li>
-<li><strong>个人不需要懂代码</strong>—— 用现成工具（雪球 + 聚宽 + 果仁）就能起步</li>
-<li><strong>核心是纪律</strong>—— 不要预测，只跟随因子 + 再平衡</li>
-</ul>
-
-<h2>推荐阅读</h2>
-<ul>
-<li>《聪明的投资者》—— 本杰明·格雷厄姆</li>
-<li>《巴菲特致股东信》—— 沃伦·巴菲特</li>
-<li>《打开量化投资的黑箱》—— Rishi Narang</li>
-<li>《漫步华尔街》—— 伯顿·马尔基尔</li>
-</ul>
-`
-  },
-  '03': {
-    tag: 'Storage · Cycle',
-    title: 'Is the memory cycle peaking? Six core signals',
-    meta: '2026-07-24 · 5 min read · audio 1:54',
-    cover: 'images/03-memory-cycle.svg',
-    audio: 'audio/03-memory-cycle-summary.mp3',
-    content: `
-<h2>一、价格涨幅本身，已经说明了问题</h2>
-<p>先看几个数字（数据来自 TrendForce，2026 Q2 合约价）：</p>
-<ul>
-<li><strong>DRAM 合约价</strong>：环比上涨 58-63%</li>
-<li><strong>NAND Flash 合约价</strong>：环比上涨 70-75%</li>
-<li><strong>HBM 供需缺口</strong>：约 5.1%（2011 年以来最高）</li>
-<li><strong>DRAM 供需缺口</strong>：约 4.9%（2011 年以来最高）</li>
-</ul>
-<p>注意一个细节：<strong>HBM 涨得比 DRAM 快，DRAM 涨得比 NAND 快</strong>。</p>
-<p>这不是平均涨幅，这是一个从产业链最上游往下游传导的涨价序列。</p>
-<p>HBM 是给 AI 算力卡用的，需求最刚性；DRAM 是给服务器用的，需求次刚性；NAND 是给 SSD 用的，需求弹性最大。<strong>越是上游越是紧缺，越是下游越是先涨</strong>。</p>
-<blockquote>结论：这一轮是结构性紧缺，不是普遍性紧缺。</blockquote>
-
-<h2>二、为什么是"超级周期"而不是普通周期？</h2>
-<p>传统存储周期是 3-4 年一轮，价格大涨大跌。这一轮不一样：</p>
-<table>
-<thead><tr><th>特征</th><th>传统周期</th><th>这一轮</th></tr></thead>
-<tbody>
-<tr><td>核心驱动</td><td>PC / 手机 / 服务器</td><td>AI 算力</td></tr>
-<tr><td>需求弹性</td><td>高（涨价抑制需求）</td><td>低（AI 必须买）</td></tr>
-<tr><td>供给响应</td><td>12-18 个月扩产</td><td>24-36 个月（技术瓶颈）</td></tr>
-<tr><td>持续时间</td><td>3-4 年</td><td>5+ 年（业内判断）</td></tr>
-</tbody>
-</table>
-<p>业内共识：本轮周期至少持续到 2026 年底——不是"涨完了就跌"</p>
-<blockquote>消费端涨价会自然调节市场——不是崩盘——是温和回落。</blockquote>
-
-<h2>三、6 个核心判断信号</h2>
-
-<h3>信号 1：价格上涨幅度 ✅ 还在涨</h3>
-<ul>
-<li>DRAM：环比 58-63% 上涨</li>
-<li>NAND：环比 70-75% 上涨</li>
-<li>趋势：还未见顶</li>
-</ul>
-
-<h3>信号 2：供给缺口 ✅ 还在扩大</h3>
-<ul>
-<li>DRAM 缺口 4.9%</li>
-<li>NAND 缺口 4.2%</li>
-<li>HBM 缺口 5.1%</li>
-</ul>
-
-<h3>信号 3：三巨头扩产意愿 ✅ 故意不扩产</h3>
-<ul>
-<li>三星 / 海力士 / 美光扩产态度暧昧</li>
-<li>HBM 产能已被 AI 客户提前锁定</li>
-<li>美光 2025 年 12 月退出消费级市场</li>
-</ul>
-
-<h3>信号 4：国内厂商业绩 ✅ 全面爆发</h3>
-<ul>
-<li><strong>兆易创新</strong>：2026 Q1 归母净利润同比 +522.79% 到 14.61 亿</li>
-<li><strong>德明利</strong>：Q1 营收同比 +502%，归母净利润同比 +4943%</li>
-<li><strong>江波龙</strong>：存货同比 +130%（在囤货）</li>
-<li><strong>佰维存储</strong>：存货同比 +217%（在囤货）</li>
-</ul>
-
-<h3>信号 5：国产替代 ✅ 加速</h3>
-<ul>
-<li><strong>长鑫科技</strong>：2026 年 1 月申报科创板 IPO，估值 1500 亿</li>
-<li><strong>长江存储</strong>：Q1 营收超 200 亿，NAND 全球份额超 10%</li>
-<li><strong>兆易创新</strong>：持有长鑫 1.80% 股权</li>
-</ul>
-
-<h3>信号 6：股价位置 ⚠️ 部分透支</h3>
-<ul>
-<li>美光 2026 至今 +249%</li>
-<li>SK 海力士 +218%</li>
-<li>三星 +175%</li>
-</ul>
-<p>6 个信号中：5 个绿灯，1 个黄灯</p>
-
-<h2>四、那到底现在该不该买？</h2>
-
-<h3>类别 1：已持有美股存储股（美光 / 海力士 / 三星）</h3>
-<ul>
-<li>业绩兑现期——继续持有至少 6 个月——等 Q3 兑现</li>
-<li>2026 年底前——开始逐步减仓</li>
-<li>黄灯信号：美光 +249% 已部分透支</li>
-</ul>
-
-<h3>类别 2：想配置 A 股存储链</h3>
-<table>
-<thead><tr><th>公司</th><th>主营</th><th>业绩弹性</th><th>估值风险</th></tr></thead>
-<tbody>
-<tr><td>兆易创新</td><td>NOR Flash + 长鑫股东</td><td>+522%</td><td>部分透支</td></tr>
-<tr><td>江波龙</td><td>存储模组</td><td>+130% 存货</td><td>中等</td></tr>
-<tr><td>德明利</td><td>存储模组</td><td>+4943%</td><td>高（基数低）</td></tr>
-<tr><td>佰维存储</td><td>嵌入式存储</td><td>+217% 存货</td><td>高</td></tr>
-</tbody>
-</table>
-
-<h3>类别 3：想提前布局下一代存储（HBM / 长江存储 IPO）</h3>
-<ul>
-<li>HBM：海力士占 58%，三星 / 美光各 21%</li>
-<li>长江存储：估值可达 1 万亿</li>
-<li>长鑫科技：估值 1500 亿</li>
-<li>风险：IPO 估值已部分反映</li>
-</ul>
-
-<h2>五、三个不能忽视的风险</h2>
-<table>
-<thead><tr><th>风险</th><th>详情</th></tr></thead>
-<tbody>
-<tr><td>消费端涨价抑制</td><td>联想 / 戴尔已开始提价，需求会自然回落</td></tr>
-<tr><td>国产替代进度</td><td>长鑫 / 长江产能良率爬坡有不确定性</td></tr>
-<tr><td>AI 需求节奏</td><td>如果 GPU 出货放缓，HBM 需求也会放缓</td></tr>
-</tbody>
-</table>
-
-<h2>六、最终判断：在周期的什么阶段？</h2>
-<table>
-<thead><tr><th>维度</th><th>状态</th></tr></thead>
-<tbody>
-<tr><td>价格涨幅</td><td>高位（但还在涨）</td></tr>
-<tr><td>供给缺口</td><td>2011 年以来最高</td></tr>
-<tr><td>三巨头扩产</td><td>故意不扩产</td></tr>
-<tr><td>业绩兑现</td><td>全面爆发</td></tr>
-<tr><td>国产替代</td><td>加速</td></tr>
-<tr><td>股价位置</td><td>部分透支</td></tr>
-</tbody>
-</table>
-<blockquote>结论：这一轮超级周期，我们仍在中后段——不是顶部，但已不是底部</blockquote>
-
-<h2>七、给"还想上车"的朋友一句话</h2>
-<blockquote>存储这一轮不是"涨完了就崩"，是"涨完了会稳"，最后"温和回落"。投资者不需要猜顶——跟着业绩走，跟着扩产走，跟着 AI 算力走。2026 年下半年，会是这一轮周期最明确的阶段。</blockquote>
-
-<h2>数据来源</h2>
-<p>TrendForce / Counterpoint Research / IDC / 公司公告 / 21世纪经济报道 / 上海证券报 / 澎湃新闻</p>
-`
-  }
-};
-
-// 同步渲染 - 不用 fetch
-const url = new URL(window.location.href);
-const id = url.searchParams.get('id') || '01';
-const article = articles[id];
-
-if (article) {
-  document.getElementById('tag').textContent = article.tag;
-  document.getElementById('title').textContent = article.title;
-  document.getElementById('meta').innerHTML = article.meta.split(' · ').map(s => `<span>${s}</span>`).join('');
-  document.getElementById('cover').src = article.cover;
-  document.getElementById('cover').alt = article.title;
-  document.getElementById('audio').src = article.audio;
-  document.getElementById('content').innerHTML = article.content;
-  document.title = article.title + ' · Hermes Notes';
-}
-</script>
 
 </body>
 </html>
