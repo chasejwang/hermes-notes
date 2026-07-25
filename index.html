@@ -3,16 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hermes Notes · 投资 · AI · 思考</title>
+<title>A few quiet things</title>
 <style>
-  /* ============================================
-     Indie Granola Style (taste-skill)
-     - 暖米色 + 陶土 accent
-     - PP Editorial New 衬线 (大字) + Söhne (正文)
-     - 毛玻璃表面 + 软阴影
-     - 径向暖渐变背景
-     ============================================ */
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -20,7 +12,6 @@
     --bg-1: #fff4e0;
     --bg-2: #f4e4d4;
     --surface: rgba(255, 251, 244, 0.7);
-    --surface-2: rgba(255, 251, 244, 0.5);
     --text: #1a1814;
     --text-muted: #6a5f52;
     --text-dim: #9a8e7e;
@@ -28,7 +19,6 @@
     --border-strong: rgba(26, 24, 20, 0.16);
     --accent: #b45837;
     --accent-hover: #9c4a2c;
-    --accent-soft: #e4b894;
   }
 
   html { scroll-behavior: smooth; }
@@ -47,15 +37,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-weight: 400;
-  }
-
-  /* Editorial serif for display */
-  .serif {
-    font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader',
-                 'Source Serif Pro', 'Georgia', serif;
-    font-weight: 400;
-    letter-spacing: -0.01em;
   }
 
   .container {
@@ -64,7 +45,6 @@
     padding: 0 24px;
   }
 
-  /* ===== Navigation ===== */
   nav {
     position: sticky;
     top: 0;
@@ -87,6 +67,7 @@
     color: var(--text);
     letter-spacing: -0.01em;
     text-decoration: none;
+    font-style: italic;
   }
   .nav-links {
     display: flex;
@@ -103,7 +84,6 @@
   }
   .nav-links a:hover { opacity: 1; color: var(--accent); }
 
-  /* ===== Hero ===== */
   .hero {
     padding: 100px 0 80px;
     text-align: center;
@@ -136,6 +116,7 @@
     color: var(--text-muted);
     max-width: 640px;
     margin: 0 auto 40px;
+    font-style: italic;
   }
   .hero .links {
     display: flex;
@@ -171,7 +152,6 @@
     border-color: var(--border-strong);
   }
 
-  /* ===== Sections ===== */
   section {
     padding: 60px 0;
   }
@@ -198,9 +178,9 @@
     line-height: 1.5;
     margin-bottom: 36px;
     max-width: 640px;
+    font-style: italic;
   }
 
-  /* ===== Article Grid ===== */
   .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -290,23 +270,29 @@
     background: var(--accent);
   }
 
-  /* ===== About ===== */
   .about {
-    max-width: 640px;
+    max-width: 680px;
     margin: 0 auto;
   }
   .about p {
-    font-size: 17px;
-    line-height: 1.6;
-    color: var(--text-muted);
-    margin-bottom: 16px;
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 18px;
   }
-  .about em {
+  .about p em {
     font-style: italic;
     color: var(--accent);
   }
+  .about .signature {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-top: 32px;
+    text-align: right;
+    font-size: 16px;
+  }
 
-  /* ===== Footer ===== */
   footer {
     padding: 48px 0 32px;
     text-align: center;
@@ -330,9 +316,9 @@
 
 <nav>
   <div class="container nav-inner">
-    <a href="index.html" class="nav-brand">Hermes Notes</a>
+    <a href="index.html" class="nav-brand">a few quiet things</a>
     <ul class="nav-links">
-      <li><a href="#articles">Articles</a></li>
+      <li><a href="#essays">Essays</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="https://github.com">GitHub</a></li>
     </ul>
@@ -342,22 +328,22 @@
 <!-- ===== Hero ===== -->
 <section class="hero">
   <div class="container">
-    <div class="hero-eyebrow">A field note on markets, machines &amp; meaning</div>
-    <h1>Where <em>market wisdom</em><br>meets patient capital.</h1>
-    <p class="sub">每周一篇深度分析。从市场周期到机器智能，从量化策略到职业发展 —— 一个独立观点。</p>
+    <div class="hero-eyebrow">Notes from a mediocre idealist</div>
+    <h1>A few quiet things<br>on <em>memory</em>, <em>money</em> &amp; <em>machines</em>.</h1>
+    <p class="sub">I do not know what I am doing. I am doing it anyway. The work is small and it is mine.</p>
     <div class="links">
-      <a href="#articles" class="btn btn-primary">Read the essays</a>
-      <a href="#about" class="btn btn-secondary">About me</a>
+      <a href="#essays" class="btn btn-primary">Read the essays</a>
+      <a href="#about" class="btn btn-secondary">About the writer</a>
     </div>
   </div>
 </section>
 
-<!-- ===== Articles ===== -->
-<section id="articles">
+<!-- ===== Essays ===== -->
+<section id="essays">
   <div class="container">
-    <div class="section-label">Field Notes</div>
-    <h2 class="section-title">Latest essays</h2>
-    <p class="section-desc">每一篇都附带音频版本——通勤路上、午后小憩、睡前片刻。</p>
+    <div class="section-label">A small library</div>
+    <h2 class="section-title">What I have written, slowly</h2>
+    <p class="section-desc">Each one comes with a voice, made by a quiet machine, for the people who listen while they walk.</p>
 
     <div class="grid">
 
@@ -410,24 +396,23 @@
 <!-- ===== About ===== -->
 <section id="about">
   <div class="container about">
-    <div class="section-label" style="text-align:center;">Colophon</div>
-    <h2 class="section-title" style="text-align:center; margin-bottom:32px;">About</h2>
-    <p>
-      This site is a personal writing practice. Each week, one essay — paired with an audio version rendered by <em>MiniMax TTS</em> in calm, considered male voice.
-    </p>
-    <p>
-      The aesthetic borrows from <em>Indie Granola</em> — warm cream surfaces, frosted glass, editorial serif for display, light weights throughout. No cold blues, no heavy shadows, no emoji.
-    </p>
-    <p>
-      Reading is first-class. Every essay has a print-friendly layout, a typographic scale tuned for long-form attention, and a quiet room to think.
-    </p>
+    <div class="section-label" style="text-align:center;">A small confession</div>
+    <h2 class="section-title" style="text-align:center; margin-bottom:32px;">About the writer</h2>
+    <p>I am not particularly good at anything. I read more than I understand. I write more than I should.</p>
+    <p>I keep notes on things that probably do not matter — storage cycles, the rhythm of language models, the shape of value investing, the quiet algebra behind a good night of sleep. This place is where those notes land.</p>
+    <p>There is no mission. There is no growth funnel. There is no audience, except maybe you, on a slow afternoon, scrolling past without much expectation.</p>
+    <p>I write because I am the kind of person who needs to. It is a small and ordinary thing. I am proud of it and a little embarrassed by it at the same time. That feels about right.</p>
+    <p>Some of the pieces here come with a voice — a quiet, careful voice that I had a machine read aloud to me while I was making tea. You can press play if you want, or you can read silently. Either way is fine. Either way is real.</p>
+    <p>Everything is free. Nothing is optimized. The cover images were made by a small artificial mind that does not know what it is doing. The articles were written by a person who also does not know what he is doing. We made a reasonable team.</p>
+    <p>If something here is true, it was an accident. If something here is wrong, it was probably the coffee.</p>
+    <div class="signature">— Chase<br><span style="font-size:14px;">Shanghai, occasionally.</span></div>
   </div>
 </section>
 
 <footer>
   <div class="container">
     <div class="divider"></div>
-    <p>© 2026 Hermes Notes · <em>deployed on Cloudflare Pages</em></p>
+    <p>© 2026 <em>made by a mediocre idealist</em> · deployed on the edge, somehow</p>
   </div>
 </footer>
 
