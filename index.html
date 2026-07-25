@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Notes · 投资 · AI · 思考</title>
+<style>
+  /* ============================================
+     Indie Granola Style (taste-skill)
+     - 暖米色 + 陶土 accent
+     - PP Editorial New 衬线 (大字) + Söhne (正文)
+     - 毛玻璃表面 + 软阴影
+     - 径向暖渐变背景
+     ============================================ */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --surface-2: rgba(255, 251, 244, 0.5);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+    --accent-soft: #e4b894;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.5;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
+    background-attachment: fixed;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-weight: 400;
+  }
+
+  /* Editorial serif for display */
+  .serif {
+    font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader',
+                 'Source Serif Pro', 'Georgia', serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ===== Navigation ===== */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .nav-brand {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 14px;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 400;
+    opacity: 0.7;
+    transition: opacity 0.2s, color 0.2s;
+  }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+
+  /* ===== Hero ===== */
+  .hero {
+    padding: 100px 0 80px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 64px;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero .sub {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-muted);
+    max-width: 640px;
+    margin: 0 auto 40px;
+  }
+  .hero .links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+  .btn {
+    display: inline-block;
+    font-size: 15px;
+    line-height: 1.3;
+    font-weight: 500;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #faf8f2;
+  }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .btn-secondary:hover {
+    border-color: var(--border-strong);
+  }
+
+  /* ===== Sections ===== */
+  section {
+    padding: 60px 0;
+  }
+  .section-label {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--text);
+    letter-spacing: -0.015em;
+    margin-bottom: 12px;
+  }
+  .section-desc {
+    font-size: 17px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 36px;
+    max-width: 640px;
+  }
+
+  /* ===== Article Grid ===== */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 8px 32px rgba(180, 88, 55, 0.08);
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 12px 40px rgba(180, 88, 55, 0.12);
+    border-color: var(--border-strong);
+  }
+  .card-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    background: var(--bg);
+  }
+  .card-body {
+    padding: 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-tag {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+  }
+  .card-desc {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    flex: 1;
+  }
+  .card-meta {
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .card-meta .duration {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-meta .duration::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* ===== About ===== */
+  .about {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .about p {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .about em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  /* ===== Footer ===== */
+  footer {
+    padding: 48px 0 32px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  footer em {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic;
+    color: var(--accent);
+  }
+  footer .divider {
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+    margin: 0 auto 24px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-brand">Hermes Notes</a>
+    <ul class="nav-links">
+      <li><a href="#articles">Articles</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="https://github.com">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">A field note on markets, machines &amp; meaning</div>
+    <h1>Where <em>market wisdom</em><br>meets patient capital.</h1>
+    <p class="sub">每周一篇深度分析。从市场周期到机器智能，从量化策略到职业发展 —— 一个独立观点。</p>
+    <div class="links">
+      <a href="#articles" class="btn btn-primary">Read the essays</a>
+      <a href="#about" class="btn btn-secondary">About me</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Articles ===== -->
+<section id="articles">
+  <div class="container">
+    <div class="section-label">Field Notes</div>
+    <h2 class="section-title">Latest essays</h2>
+    <p class="section-desc">每一篇都附带音频版本——通勤路上、午后小憩、睡前片刻。</p>
+
+    <div class="grid">
+
+      <!-- Card 1: Memory Cycle -->
+      <a href="article.html?id=03" class="card">
+        <img class="card-img" src="images/03-memory-cycle.svg" alt="Memory Cycle" />
+        <div class="card-body">
+          <div class="card-tag">Storage · Cycle</div>
+          <h3 class="card-title">Is the memory cycle peaking? Six core signals.</h3>
+          <p class="card-desc">DRAM up 60%, NAND up 70% — this is structural scarcity, not a normal cycle. Six data dimensions tell you where we are.</p>
+          <div class="card-meta">
+            <span>2026-07-24</span>
+            <span class="duration">Audio 1:54</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 2: Value + Quant -->
+      <a href="article.html?id=02" class="card">
+        <img class="card-img" src="images/02-value.jpg" alt="Value &amp; Quant" />
+        <div class="card-body">
+          <div class="card-tag">Investing · Method</div>
+          <h3 class="card-title">Value meets quant: a personal approach.</h3>
+          <p class="card-desc">Many retail investors see value and quant as opposing methods. They're not. Combined, they form a "selectable + executable" framework.</p>
+          <div class="card-meta">
+            <span>2026-07-24</span>
+            <span class="duration">Audio 1:42</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 3: RAG -->
+      <a href="article.html?id=01" class="card">
+        <img class="card-img" src="images/01-rag.jpg" alt="RAG vs AutoRAG" />
+        <div class="card-body">
+          <div class="card-tag">AI · RAG</div>
+          <h3 class="card-title">RAG vs AutoRAG: principles, trade-offs, scenarios.</h3>
+          <p class="card-desc">Enterprise RAG accuracy below 30%? Not a model problem — a flow problem. How AutoRAG closes the 5% to 78% gap.</p>
+          <div class="card-meta">
+            <span>2026-07-24</span>
+            <span class="duration">Audio 1:35</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== About ===== -->
+<section id="about">
+  <div class="container about">
+    <div class="section-label" style="text-align:center;">Colophon</div>
+    <h2 class="section-title" style="text-align:center; margin-bottom:32px;">About</h2>
+    <p>
+      This site is a personal writing practice. Each week, one essay — paired with an audio version rendered by <em>MiniMax TTS</em> in calm, considered male voice.
+    </p>
+    <p>
+      The aesthetic borrows from <em>Indie Granola</em> — warm cream surfaces, frosted glass, editorial serif for display, light weights throughout. No cold blues, no heavy shadows, no emoji.
+    </p>
+    <p>
+      Reading is first-class. Every essay has a print-friendly layout, a typographic scale tuned for long-form attention, and a quiet room to think.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="divider"></div>
+    <p>© 2026 Hermes Notes · <em>deployed on Cloudflare Pages</em></p>
+  </div>
+</footer>
+
+</body>
+</html>

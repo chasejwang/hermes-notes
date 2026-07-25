@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>风格选择 · Hermes Notes</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                 "PingFang SC", sans-serif;
+    background: #f5f5f7;
+    color: #1d1d1f;
+    padding: 40px 20px;
+    line-height: 1.5;
+  }
+  .header {
+    max-width: 1100px;
+    margin: 0 auto 36px;
+    text-align: center;
+  }
+  h1 {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.003em;
+    margin-bottom: 8px;
+  }
+  .sub {
+    font-size: 17px;
+    color: #6e6e73;
+  }
+  .grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: white;
+    border-radius: 18px;
+    border: 1px solid #d2d2d7;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
+  .preview {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    border-bottom: 1px solid #d2d2d7;
+  }
+  .info {
+    padding: 18px 20px;
+  }
+  .info h3 {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .info p {
+    font-size: 13px;
+    color: #6e6e73;
+    line-height: 1.45;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #f5f5f7;
+    color: #6e6e73;
+    margin-top: 8px;
+    margin-right: 4px;
+  }
+  /* Apple 简约 */
+  .style-apple .preview {
+    background: #ffffff;
+    color: #1d1d1f;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .style-apple h4 { font-size: 28px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.003em; }
+  .style-apple p { font-size: 14px; color: #6e6e73; }
+  .style-apple .pill { display: inline-block; padding: 4px 12px; border-radius: 980px; background: #0066cc; color: white; font-size: 11px; margin-top: 8px; }
+
+  /* Vercel Editorial 灰阶 */
+  .style-vercel .preview {
+    background: #ffffff;
+    color: #000000;
+    padding: 24px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .style-vercel .top { font-family: 'SF Mono', monospace; font-size: 9px; letter-spacing: 0.15em; color: #8f8f8f; text-transform: uppercase; }
+  .style-vercel h4 { font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 600; line-height: 1.1; color: #000; margin: 8px 0; }
+  .style-vercel .meta { font-family: 'SF Mono', monospace; font-size: 9px; color: #666; }
+  .style-vercel .btn { display: inline-block; padding: 6px 12px; background: #000; color: white; font-size: 10px; font-weight: 500; }
+
+  /* Warm Claude */
+  .style-warm .preview {
+    background: #f4f3ee;
+    color: #191817;
+    padding: 24px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .style-warm .label { font-family: 'SF Mono', monospace; font-size: 9px; letter-spacing: 0.18em; color: #c96442; text-transform: uppercase; font-weight: 600; }
+  .style-warm h4 { font-family: 'Lyon Text', 'Newsreader', 'Georgia', serif; font-size: 24px; font-weight: 400; line-height: 1.15; color: #191817; margin: 8px 0; letter-spacing: -0.01em; }
+  .style-warm .meta { font-size: 11px; color: #5a554e; }
+  .style-warm .btn { display: inline-block; padding: 6px 14px; background: #c96442; color: white; font-size: 10px; border-radius: 980px; margin-top: 4px; }
+
+  /* Data-Dense Datadog */
+  .style-data .preview {
+    background: #ffffff;
+    color: #110617;
+    padding: 0;
+    display: flex; flex-direction: column;
+  }
+  .style-data .nav {
+    background: #110617;
+    color: white;
+    padding: 8px 14px;
+    font-family: 'SF Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .style-data .content {
+    padding: 14px;
+    flex: 1;
+  }
+  .style-data .stat {
+    display: flex; justify-content: space-between;
+    border: 1px solid #e3e0e8;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+  }
+  .style-data .l { font-family: 'SF Mono', monospace; font-size: 8px; color: #51495d; text-transform: uppercase; }
+  .style-data .n { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; color: #632ca6; }
+  .style-data .bar { height: 4px; background: #632ca6; margin-top: 4px; }
+  .style-data .empty { background: #e3e0e8; }
+
+  /* Indie Granola */
+  .style-indie .preview {
+    background: linear-gradient(135deg, #fff4e0 0%, #f4e4d4 100%);
+    color: #1a1814;
+    padding: 24px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .style-indie .label { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif; font-style: italic; font-size: 11px; color: #b45837; }
+  .style-indie h4 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif; font-size: 22px; font-weight: 400; line-height: 1.2; color: #1a1814; margin: 6px 0; letter-spacing: -0.005em; }
+  .style-indie .meta { font-size: 11px; color: #6a5f52; }
+  .style-indie .btn { display: inline-block; padding: 5px 12px; background: #1a1814; color: #faf8f2; font-size: 10px; border-radius: 980px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>5 种风格预览</h1>
+  <p class="sub">选 1 个，作为你的公众号文章站设计</p>
+</div>
+
+<div class="grid">
+
+  <!-- 1. Apple 简约（当前） -->
+  <div class="card">
+    <div class="preview style-apple">
+      <h4>Hermes Notes</h4>
+      <p>投资 · AI · 思考</p>
+      <span class="pill">阅读</span>
+    </div>
+    <div class="info">
+      <h3>1. Apple 简约 ⭐ 当前</h3>
+      <p>纯白 + SF Pro + 大留白 + Apple Blue。极简现代。</p>
+      <span class="badge">白色</span>
+      <span class="badge">大留白</span>
+      <span class="badge">Apple Blue</span>
+    </div>
+  </div>
+
+  <!-- 2. Vercel Editorial -->
+  <div class="card">
+    <div class="preview style-vercel">
+      <div class="top">2026-07-24 · STORAGE</div>
+      <h4>Memory Cycle Analysis</h4>
+      <div class="meta">DRAM · NAND · HBM</div>
+      <div class="btn">Read</div>
+    </div>
+    <div class="info">
+      <h3>2. Vercel Editorial ⭐⭐</h3>
+      <p>纯灰阶 + 几何 grotesque + hairline 边线。极致极简。</p>
+      <span class="badge">纯灰</span>
+      <span class="badge">无强调色</span>
+      <span class="badge">杂志感</span>
+    </div>
+  </div>
+
+  <!-- 3. Warm Claude -->
+  <div class="card">
+    <div class="preview style-warm">
+      <div class="label">Hermes Notes</div>
+      <h4>Where Market <br>Wisdom Meets <br>Patient Capital</h4>
+      <div class="meta">7 min read · with audio</div>
+      <span class="btn">Read Now</span>
+    </div>
+    <div class="info">
+      <h3>3. Warm Claude ⭐⭐⭐</h3>
+      <p>奶油米色 + 赤陶 accent + 衬线大标。温暖编辑感。</p>
+      <span class="badge">米色</span>
+      <span class="badge">赤陶</span>
+      <span class="badge">衬线</span>
+    </div>
+  </div>
+
+  <!-- 4. Data-Dense Datadog -->
+  <div class="card">
+    <div class="preview style-data">
+      <div class="nav">HERMES · 2026-07-24</div>
+      <div class="content">
+        <div class="stat"><span class="l">DRAM QoQ</span><span class="n">+58%</span></div>
+        <div class="stat"><span class="l">NAND QoQ</span><span class="n">+72%</span></div>
+        <div class="stat"><span class="l">HBM Gap</span><span class="n">5.1%</span></div>
+        <div class="stat"><span class="l">Gap</span><span style="display:flex;align-items:center;gap:3px;flex:1;margin-left:8px;"><span class="bar" style="width:60%"></span><span class="bar empty" style="width:40%"></span></span></div>
+      </div>
+    </div>
+    <div class="info">
+      <h3>4. Data-Dense Datadog ⭐⭐</h3>
+      <p>深紫 + 数据仪表盘 + 表格密集。适合投资 / 数据主题。</p>
+      <span class="badge">数据感</span>
+      <span class="badge">深紫</span>
+      <span class="badge">表格密</span>
+    </div>
+  </div>
+
+  <!-- 5. Indie Granola -->
+  <div class="card">
+    <div class="preview style-indie">
+      <div>
+        <div class="label">A field note</div>
+        <h4>Why Your RAG Doesn't Work</h4>
+      </div>
+      <div class="meta">Hermes Notes · 2026</div>
+      <span class="btn">Read Essay</span>
+    </div>
+    <div class="info">
+      <h3>5. Indie Granola ⭐⭐</h3>
+      <p>暖米色 + 陶土色 + PP Editorial New 衬线。独立写作感。</p>
+      <span class="badge">米色</span>
+      <span class="badge">陶土</span>
+      <span class="badge">衬线</span>
+    </div>
+  </div>
+
+  <!-- 6. Hybrid: Apple + Data -->
+  <div class="card">
+    <div class="preview" style="background: linear-gradient(135deg, #ffffff 50%, #f7f6f9 50%); color: #1d1d1f; padding: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <h4 style="font-size: 24px; font-weight: 700; margin-bottom: 6px;">Hermes Notes</h4>
+      <p style="font-size: 12px; color: #6e6e73;">Apple 简约 + 数据点缀</p>
+      <div style="display: flex; gap: 4px; margin-top: 10px;">
+        <span style="background: #f5f5f7; padding: 3px 8px; border-radius: 4px; font-size: 9px; font-family: monospace; color: #632ca6;">+58%</span>
+        <span style="background: #f5f5f7; padding: 3px 8px; border-radius: 4px; font-size: 9px; font-family: monospace; color: #1f883d;">+72%</span>
+      </div>
+    </div>
+    <div class="info">
+      <h3>6. Apple + Data 混合 ⭐⭐⭐</h3>
+      <p>Apple 简约底色 + 数据高亮点缀。投资文章主题友好。</p>
+      <span class="badge">Apple</span>
+      <span class="badge">数据点</span>
+      <span class="badge">混合</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
