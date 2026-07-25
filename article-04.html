@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wall Street's latest positioning: Berkshire and Bridgewater in Q1 2026</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.5;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
+    background-attachment: fixed;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  nav { position: sticky; top: 0; z-index: 100; background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between;
+    height: 56px; max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  .nav-brand { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; font-style: italic;
+    color: var(--text); text-decoration: none; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 14px; color: var(--text); text-decoration: none; opacity: 0.7; }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+  .article { max-width: 680px; margin: 0 auto; padding: 80px 24px 80px; }
+  .back-link { display: inline-block; font-size: 14px; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 32px; }
+  .back-link::before { content: "← "; }
+  .article-tag { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px; }
+  .article h1 { font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 44px; font-weight: 400; line-height: 1.08;
+    letter-spacing: -0.02em; color: var(--text); margin-bottom: 20px; }
+  .article-meta { font-size: 14px; color: var(--text-dim); margin-bottom: 32px; }
+  .article-cover { width: 100%; aspect-ratio: 16/9; object-fit: cover;
+    border-radius: 14px; margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .audio-block { background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin: 36px 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 8px 32px rgba(180, 88, 55, 0.06); }
+  .audio-block .label { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
+  .audio-block audio { width: 100%; height: 36px; }
+  .content { font-size: 18px; line-height: 1.7; color: var(--text); }
+  .content h2 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 28px; font-weight: 500; line-height: 1.2;
+    margin: 48px 0 16px; letter-spacing: -0.01em; }
+  .content h3 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; margin: 36px 0 10px; letter-spacing: -0.01em; }
+  .content p { margin-bottom: 18px; }
+  .content blockquote { border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px; margin: 32px 0; color: var(--text-muted);
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic; font-size: 19px; }
+  .content ul, .content ol { margin: 0 0 22px 24px; }
+  .content li { margin-bottom: 8px; }
+  .content table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 15px; }
+  .content th, .content td { padding: 12px 14px; text-align: left;
+    border-bottom: 1px solid var(--border); }
+  .content th { font-weight: 600; background: var(--surface); }
+  .content pre { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 22px; overflow-x: auto;
+    margin: 24px 0; font-size: 14px; line-height: 1.6; }
+  .content code { background: var(--surface); padding: 2px 6px;
+    border-radius: 4px; font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; }
+  .content em { font-style: italic; color: var(--accent); }
+  .content strong { font-weight: 600; color: var(--text); }
+  footer { padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-dim); }
+  footer em { font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="index.html#essays">Essays</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article">
+  <a href="index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">Markets · 13F</div>
+  <h1>Wall Street's latest positioning: Berkshire and Bridgewater in Q1 2026</h1>
+  <div class="article-meta">2026-07-25 · 7 min read · audio 2:14</div>
+  <img class="article-cover" src="images/04-wall-street.svg" alt="Wall Street portfolios" />
+
+  <div class="audio-block">
+    <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
+    <audio controls preload="metadata">
+      <source src="audio/04-wall-street-summary.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
+  <div class="content">
+    <h2>Why 13F filings matter</h2>
+    <p>13F is the quarterly disclosure required of any US fund managing more than $100 million in equities. It is filed within 45 days of quarter-end, so Q1 2026 filings are now public. The filings show you what the big funds actually own, not what they say they own on TV. The interesting question is not the static list. It is the change between quarters: what they added, what they cut, and what it implies about their view of the next six to twelve months.</p>
+
+    <h2>Berkshire Hathaway — Warren Buffett</h2>
+
+    <h3>Top 5 holdings (Q1 2026)</h3>
+    <table>
+      <thead><tr><th>Company</th><th>Weight</th><th>Change</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Apple (AAPL)</strong></td><td>22.6%</td><td>Trimmed (still largest)</td></tr>
+        <tr><td><strong>American Express (AXP)</strong></td><td>17.4%</td><td>Flat</td></tr>
+        <tr><td><strong>Coca-Cola (KO)</strong></td><td>11.6%</td><td>Flat</td></tr>
+        <tr><td><strong>Bank of America (BAC)</strong></td><td>9.5%</td><td>Flat</td></tr>
+        <tr><td><strong>Chevron (CVX)</strong></td><td>6.6%</td><td>Flat</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Three things that stand out</h3>
+    <ul>
+      <li>Total equity book: <strong>$263 billion</strong></li>
+      <li>Cash hoard: <strong>$348 billion</strong> — a record</li>
+      <li>Top 10 concentration: <strong>90.7%</strong> — a very concentrated book</li>
+    </ul>
+
+    <h3>What Buffett is doing</h3>
+    <p>Three things. He keeps trimming Apple (down to around 300 million shares from a 2024 peak, mostly for valuation and tax reasons, not because the business is broken). He is accumulating cash at a record pace. And he is waiting. The cash is not pessimism. It is a call option on something large going wrong, and on the chance that he finally finds something wonderful at a fair price.</p>
+    <blockquote>Buffett's framing this year: "We are sitting on a lot of cash. We are waiting for something big."</blockquote>
+
+    <h2>Bridgewater Associates — Ray Dalio</h2>
+
+    <h3>Top 10 holdings (Q1 2026)</h3>
+    <table>
+      <thead><tr><th>Company</th><th>Weight</th><th>Change</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SPY (S&P 500 ETF)</strong></td><td>12.7%</td><td>Flat</td></tr>
+        <tr><td><strong>IVV (iShares S&P 500)</strong></td><td>7.8%</td><td>Down 36%</td></tr>
+        <tr><td><strong>Amazon (AMZN)</strong></td><td>4.1%</td><td>Up 2.4%</td></tr>
+        <tr><td><strong>Nvidia (NVDA)</strong></td><td>3.7%</td><td>Up 21%</td></tr>
+        <tr><td><strong>Alphabet (GOOGL)</strong></td><td>2.6%</td><td>Up 26%</td></tr>
+        <tr><td><strong>Broadcom (AVGO)</strong></td><td>2.5%</td><td>Up 57%</td></tr>
+        <tr><td><strong>Micron (MU)</strong></td><td>2.2%</td><td>Up 66%</td></tr>
+        <tr><td><strong>Microsoft (MSFT)</strong></td><td>1.8%</td><td>Flat</td></tr>
+        <tr><td><strong>TSMC (TSM)</strong></td><td>1.6%</td><td>New position</td></tr>
+        <tr><td><strong>GE Vernova (GEV)</strong></td><td>1.7%</td><td>Down 35%</td></tr>
+      </tbody>
+    </table>
+
+    <h3>What Dalio is doing</h3>
+    <p>One action plus one story. The action: a large, broad rotation into the AI hardware supply chain. Nvidia up 21%. Taiwan Semiconductor as a new position. Broadcom up 57%. Micron up 66%. Smaller names in the same cluster, like Credo, up more than 200%. The story: a quiet rotation out of the broad index funds and legacy software names. iShares S&P 500 down 36%. Salesforce and Adobe both trimmed.</p>
+    <p>The cleanest read: Dalio is moving from "AI the software story" to "AI the hardware story". Nvidia, Broadcom, TSMC, and Micron are the picks-and-shovels layer of the build-out. Salesforce and Adobe are the application layer. The picks-and-shovels layer has clearer pricing power, clearer demand, and a tighter supply.</p>
+
+    <h2>Three reads on the data</h2>
+
+    <h3>Read 1: The AI theme is moving from software to hardware</h3>
+    <p>Salesforce and Adobe are getting trimmed. Nvidia, Broadcom, TSMC, and Micron are getting added. The market is saying that the durable value in AI sits lower in the stack, with the chip designers, the foundry, and the memory suppliers, not with the SaaS application layer. This is consistent with the storage super-cycle we wrote about earlier.</p>
+
+    <h3>Read 2: Geographic diversification and supply-chain hedging</h3>
+    <p>Bridgewater added Taiwan Semiconductor (Arizona fab under construction), Micron (HBM in a price-up cycle), and EWY (South Korea). The supply-chain decoupling story is being underwritten in real time. Dalio is also implicitly hedging tail risks around Taiwan and the Korean peninsula by building positions in the regional supply chain.</p>
+
+    <h3>Read 3: A $348 billion cash position is a cautious signal</h3>
+    <p>The historical record: every time Berkshire's cash hoard got this large, the S&P 500 returned about 6% over the next twelve months on average. In 1999, before the dot-com bust, $75 billion. In 2008, before the financial crisis, $44 billion. In April 2021, $145 billion — the index went on to gain 25% over the next year. Cash at this scale is a "the price is not right" signal, not a "the world is ending" signal. Buffett is waiting for a drawdown. He is not waiting for a crash.</p>
+
+    <h2>Two views side by side</h2>
+    <table>
+      <thead><tr><th>Dimension</th><th>Buffett</th><th>Dalio</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Style</strong></td><td>Value, concentrated</td><td>Macro, diversified</td></tr>
+        <tr><td><strong>Cash</strong></td><td>$348 billion (record)</td><td>Low (fully invested)</td></tr>
+        <tr><td><strong>AI exposure</strong></td><td>Indirect (Apple, semis via legacy)</td><td>Direct (Nvidia, TSMC, AVGO, MU)</td></tr>
+        <tr><td><strong>Recent action</strong></td><td>Trimming Apple, piling cash</td><td>Adding AI hardware</td></tr>
+        <tr><td><strong>Market view</strong></td><td>"Nothing worth buying"</td><td>"AI is still early"</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Three takeaways</h2>
+    <ul>
+      <li>The AI theme is moving from software to hardware. Watch Nvidia, Broadcom, TSMC, Micron, and the memory complex.</li>
+      <li>Buffett's $348 billion cash is a "the price is not right" signal, not a "the world is ending" signal. Expect lower forward returns, not necessarily a crash.</li>
+      <li>The market consensus is consistent: AI is not going away, valuations are stretched, and concentration in real assets beats concentration in software narratives.</li>
+    </ul>
+
+    <h2>What to do with this</h2>
+    <p>Three actions, depending on who you are.</p>
+
+    <h3>If you invest in US equities</h3>
+    <ul>
+      <li>Do not over-concentrate in any single AI name. The top of the AI stack is increasingly crowded.</li>
+      <li>Watch the AI hardware chain (Nvidia, Broadcom, TSMC, Micron) more than the SaaS layer.</li>
+      <li>Do not chase. Even Buffett is waiting.</li>
+    </ul>
+
+    <h3>If you invest in A-shares (China)</h3>
+    <table>
+      <thead><tr><th>Wall Street pick</th><th>A-share parallel</th></tr></thead>
+      <tbody>
+        <tr><td>Apple, American Express</td><td>Moutai, Ping An (consumption + finance)</td></tr>
+        <tr><td>Nvidia, Broadcom</td><td>Innolight, Eoptolink (optical modules)</td></tr>
+        <tr><td>TSMC</td><td>SMIC (domestic foundry)</td></tr>
+        <tr><td>Micron, HBM</td><td>GigaDevice, CXMT (memory super-cycle)</td></tr>
+      </tbody>
+    </table>
+    <p>The A-share "AI hardware" thesis is the same as the US one, just with different names. The memory cycle we wrote about earlier is exactly this Dalio trade translated to the China tape.</p>
+
+    <h2>Sources</h2>
+    <p>WhaleWisdom 13F database · Q1 2026 13F filings · HedgeFollow.com · Berkshire Hathaway 2026 Annual Letter · Bridgewater Q1 2026 Update</p>
+  </div>
+</article>
+
+<footer>
+  <p>© 2026 <em>a few quiet things</em> · deployed on the edge, somehow</p>
+</footer>
+
+</body>
+</html>

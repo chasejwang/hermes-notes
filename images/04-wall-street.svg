@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1814"/>
+      <stop offset="100%" stop-color="#2a2520"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)"/>
+  <!-- Trading chart background (subtle) -->
+  <g opacity="0.15" stroke="#b45837" fill="none" stroke-width="1">
+    <polyline points="0,300 100,280 200,290 300,250 400,260 500,200 600,220 700,180 800,150"/>
+  </g>
+  <g opacity="0.1" stroke="#c5c9cf" fill="none" stroke-width="1">
+    <line x1="0" y1="225" x2="800" y2="225"/>
+    <line x1="0" y1="180" x2="800" y2="180"/>
+    <line x1="0" y1="270" x2="800" y2="270"/>
+  </g>
+  <!-- Title block -->
+  <text x="60" y="120" font-family="-apple-system, SF Pro Display" font-size="14" font-weight="500" fill="#b45837" letter-spacing="2">13F · Q1 2026</text>
+  <text x="60" y="180" font-family="-apple-system, SF Pro Display" font-size="40" font-weight="700" fill="#faf8f2">Wall Street</text>
+  <text x="60" y="225" font-family="-apple-system, SF Pro Display" font-size="40" font-weight="700" fill="#faf8f2">positioning</text>
+  <text x="60" y="290" font-family="-apple-system, SF Pro Display" font-size="18" font-weight="400" fill="#c5c9cf" font-style="italic">Berkshire and Bridgewater, side by side</text>
+  <text x="60" y="370" font-family="-apple-system, SF Mono" font-size="11" font-weight="500" fill="#7a808a" letter-spacing="1.5">AAPL · NVDA · TSMC · MU · $348B CASH</text>
+</svg>
