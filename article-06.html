@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NLP + GenAI: a six-month path from data scientist to GenAI data scientist</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.5;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
+    background-attachment: fixed;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  nav { position: sticky; top: 0; z-index: 100; background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between;
+    height: 56px; max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  .nav-brand { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; font-style: italic;
+    color: var(--text); text-decoration: none; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 14px; color: var(--text); text-decoration: none; opacity: 0.7; }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+  .article { max-width: 680px; margin: 0 auto; padding: 80px 24px 80px; }
+  .back-link { display: inline-block; font-size: 14px; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 32px; }
+  .back-link::before { content: "← "; }
+  .article-tag { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px; }
+  .article h1 { font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 44px; font-weight: 400; line-height: 1.08;
+    letter-spacing: -0.02em; color: var(--text); margin-bottom: 20px; }
+  .article-meta { font-size: 14px; color: var(--text-dim); margin-bottom: 32px; }
+  .article-cover { width: 100%; aspect-ratio: 16/9; object-fit: cover;
+    border-radius: 14px; margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .audio-block { background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin: 36px 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 8px 32px rgba(180, 88, 55, 0.06); }
+  .audio-block .label { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
+  .audio-block audio { width: 100%; height: 36px; }
+  .content { font-size: 18px; line-height: 1.7; color: var(--text); }
+  .content h2 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 28px; font-weight: 500; line-height: 1.2;
+    margin: 48px 0 16px; letter-spacing: -0.01em; }
+  .content h3 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; margin: 36px 0 10px; letter-spacing: -0.01em; }
+  .content p { margin-bottom: 18px; }
+  .content blockquote { border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px; margin: 32px 0; color: var(--text-muted);
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic; font-size: 19px; }
+  .content ul, .content ol { margin: 0 0 22px 24px; }
+  .content li { margin-bottom: 8px; }
+  .content table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 15px; }
+  .content th, .content td { padding: 12px 14px; text-align: left;
+    border-bottom: 1px solid var(--border); }
+  .content th { font-weight: 600; background: var(--surface); }
+  .content pre { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 22px; overflow-x: auto;
+    margin: 24px 0; font-size: 14px; line-height: 1.6; }
+  .content code { background: var(--surface); padding: 2px 6px;
+    border-radius: 4px; font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; }
+  .content em { font-style: italic; color: var(--accent); }
+  .content strong { font-weight: 600; color: var(--text); }
+  footer { padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-dim); }
+  footer em { font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="index.html#essays">Essays</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article">
+  <a href="index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">Career · GenAI · NLP</div>
+  <h1>NLP + GenAI: a six-month path from data scientist to GenAI data scientist</h1>
+  <div class="article-meta">2026-07-26 · 9 min read · audio 2:28</div>
+  <img class="article-cover" src="images/06-nlp.svg" alt="NLP + GenAI" />
+
+  <div class="audio-block">
+    <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
+    <audio controls preload="metadata">
+      <source src="audio/06-nlp-summary.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
+  <div class="content">
+    <h2>Why GenAI</h2>
+    <p>GenAI is the most active hiring direction in 2026, across every industry. Compensation runs roughly twenty percent above classical data science for equivalent seniority. Mid-level GenAI data scientists in Shanghai cluster between seventy and one hundred K per month. People who can combine finance and AI are rare, and that is the leverage you have. With six-plus years in data, BI, and pricing, plus a freshly acquired NLP skill set, you are exactly the candidate the market is short on.</p>
+
+    <h2>The six-month arc at a glance</h2>
+    <table>
+      <thead><tr><th>Month</th><th>Focus</th><th>Primary output</th><th>Weeks</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>NLP fundamentals</td><td>Financial sentiment model</td><td>4</td></tr>
+        <tr><td>2</td><td>Transformer + LLM</td><td>Hand-written mini GPT</td><td>6</td></tr>
+        <tr><td>3</td><td>RAG + vector databases</td><td>Enterprise RAG for finance</td><td>4</td></tr>
+        <tr><td>4</td><td>Agent + multi-modal</td><td>Multi-agent analyst</td><td>4</td></tr>
+        <tr><td>5</td><td>Capstone projects</td><td>Three portfolio repos</td><td>4</td></tr>
+        <tr><td>6</td><td>Search and interview</td><td>Offer in hand</td><td>4</td></tr>
+      </tbody>
+    </table>
+    <p>Budget ten to fifteen focused hours per week. Less than that and the projects slip; more than that and you burn out before the interview stretch.</p>
+
+    <h2>Month 1 — NLP fundamentals</h2>
+    <p>Two artifacts. A BERT sentiment classifier on a public dataset, and a Chinese-language earnings-call sentiment model built with <code>uer/roberta-base-finance-dianping-chinese</code>. The second one is what goes on the resume — it speaks finance, it speaks Chinese, and it is short enough to finish in a week.</p>
+    <p>Week one is environmental setup plus the two non-negotiable videos: 3Blue1Brown on attention and Karpathy on "Let's build GPT". These two videos, watched in full, will save you weeks later. Everything else flows from the mental model they install.</p>
+    <p>Weeks two and three are tokenization, embedding, and Hugging Face. You should be able to load a pretrained model, tokenize a batch of Chinese financial text, fine-tune on a small labeled set, and save the resulting checkpoint by the end of week three. Week four is the Chinese earnings-call project, plus a short retrospective that updates your progress tracker in Obsidian.</p>
+
+    <h2>Month 2 — Transformer + LLM</h2>
+    <p>This is the spine of the entire curriculum. If you skip Month 2, Month 3 and Month 4 will collapse. Spend the time here.</p>
+    <p>The reading list is short but non-negotiable:</p>
+    <ul>
+      <li>"Attention is All You Need" — the original Transformer paper. Read the abstract and figures even if you skim the math.</li>
+      <li>Andrej Karpathy's "Let's build GPT" — four hours, live-coded in Python. Worth every minute.</li>
+      <li>"Intro to LLMs" — same author, one hour, sets up the rest of the curriculum.</li>
+    </ul>
+    <p>The capstone is a hand-written mini GPT. About a hundred lines of PyTorch. Trains on Tiny Shakespeare in a few minutes on a single GPU. The point is not the model — the point is that you can stand at a whiteboard and rebuild the architecture from memory. Interviewers will ask you to.</p>
+    <p>By the end of Month 2 you should also be fluent in the five prompt patterns: zero-shot, few-shot, chain-of-thought, ReAct, and function calling. The latter is especially important because it is the bridge to Month 4's agents.</p>
+
+    <h2>Month 3 — RAG + vector databases</h2>
+    <p>RAG is the default enterprise GenAI pattern, and RAGAS-style evaluation is the language of quality in this stack. You have a complete five-note research set already in your Obsidian vault — use it.</p>
+    <p>The capstone project is a finance RAG system over ten annual reports, with LangChain as the orchestration layer, Chroma as the vector store, Cohere for re-ranking, and RAGAS producing the four core metrics. A passing build scores above 0.9 on faithfulness. Wire the evaluation into a GitHub Action so every pull request is checked.</p>
+    <h3>The pipeline, in code</h3>
+    <pre>from langchain.document_loaders import DirectoryLoader, PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+from langchain.chat_models import init_chat_model
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+
+loader = DirectoryLoader("./data/annual_reports",
+    glob="*.pdf", loader_cls=PyPDFLoader)
+documents = loader.load()
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000, chunk_overlap=200,
+    separators=["\n\n", "\n", "。", " ", ""])
+chunks = splitter.split_documents(documents)
+
+embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+vectorstore = Chroma.from_documents(
+    chunks, embeddings, persist_directory="./chroma_db")
+
+retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
+
+template = """Answer based only on context. Context: {context}
+Question: {question}
+Answer:"""
+prompt = ChatPromptTemplate.from_template(template)
+
+llm = init_chat_model("gpt-4o", model_provider="openai")
+
+chain = ({"context": retriever, "question": RunnablePassthrough()}
+         | prompt | llm | StrOutputParser())
+
+print(chain.invoke("What is Moutai's 2024 net profit?"))</pre>
+
+    <h3>The four RAGAS metrics you must know</h3>
+    <table>
+      <thead><tr><th>Metric</th><th>What it measures</th></tr></thead>
+      <tbody>
+        <tr><td>Faithfulness</td><td>Does the answer stay inside the retrieved context?</td></tr>
+        <tr><td>Answer relevancy</td><td>Is the answer actually responsive to the question?</td></tr>
+        <tr><td>Context precision</td><td>Is the retrieved context the right slice?</td></tr>
+        <tr><td>Context recall</td><td>Did we retrieve everything the answer needed?</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Month 4 — Agents + multi-modal</h2>
+    <p>LangGraph 1.0 is the standard. The capstone is a four-agent financial analyst built on it: a SQL agent that translates questions into queries, an executor that runs them, an analyzer that interprets the rows, and a chart agent that renders a matplotlib figure. The graph wires them in sequence, with a MemorySaver checkpoint so multi-turn analysis works.</p>
+    <p>The two LangGraph features you must demonstrate are persistence (multi-turn conversation) and human-in-the-loop (the agent pauses before destructive operations like writing to a database). Both show up in production systems and both are easy interview questions.</p>
+
+    <h2>Month 5 — Capstone projects</h2>
+    <p>Three repositories. Each one is its own repo, each has a polished README, each one runs end-to-end. They are the three things on your resume.</p>
+    <ol>
+      <li><strong>finance-rag-system</strong> — the Month 3 project, hardened, with a Streamlit UI and a passing RAGAS report.</li>
+      <li><strong>finance-multi-agent</strong> — the Month 4 project, with real data, real charts, and a deployed demo.</li>
+      <li><strong>finance-llm-finetune</strong> — a LoRA fine-tune of Qwen-7B on financial reports, demonstrating a measurable lift over the base model.</li>
+    </ol>
+    <p>Each README should lead with what the system does in one sentence, then the architecture diagram, then how to run it, then the evaluation result. No one reads more than the first paragraph before deciding whether to look further.</p>
+
+    <h2>Month 6 — Search and interview</h2>
+    <p>Five coding problems you can write from memory:</p>
+    <ol>
+      <li>Self-attention in PyTorch</li>
+      <li>Multi-head attention in PyTorch</li>
+      <li>A Transformer encoder block</li>
+      <li>An RAG pipeline, end to end</li>
+      <li>LoRA fine-tuning: what is frozen, what is trained, why it works</li>
+    </ol>
+    <p>Three project walkthroughs, each five minutes long, with one number per project that you can defend (RAG faithfulness score, agent latency, fine-tune accuracy lift).</p>
+    <p>Send fifty applications over ten working days. Mix the categories: ten to fintech firms (your best fit), ten to AI-native startups (most hiring), five to large internet companies (long shot, worth one attempt), five to multinationals (English interview), and twenty to mid-size firms where the role title is closest to GenAI data scientist.</p>
+
+    <h2>The eight standards hiring managers actually check</h2>
+    <table>
+      <thead><tr><th>Standard</th><th>Status going in</th><th>After this curriculum</th></tr></thead>
+      <tbody>
+        <tr><td>Python + SQL</td><td>Have it</td><td>Have it</td></tr>
+        <tr><td>Classical ML</td><td>Have it</td><td>Have it</td></tr>
+        <tr><td>PyTorch depth</td><td>Patch it</td><td>Have it</td></tr>
+        <tr><td>Transformer architecture</td><td>Don't have it</td><td>Have it</td></tr>
+        <tr><td>LLM APIs and prompt engineering</td><td>Don't have it</td><td>Have it</td></tr>
+        <tr><td>RAG + vector databases</td><td>Don't have it</td><td>Have it</td></tr>
+        <tr><td>LangChain / LlamaIndex</td><td>Don't have it</td><td>Have it</td></tr>
+        <tr><td>Agent + LangGraph</td><td>Don't have it</td><td>Have it</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Why this is the shortcut</h2>
+    <p>A GenAI data scientist is the intersection of three things: classical data science, LLM application engineering, and business fluency. You already have two of the three. The six months ahead are just closing the third. Once you do, your six-plus years of finance and BI experience stops being a side note on your resume and becomes the reason you get the offer.</p>
+
+    <h2>Three takeaways</h2>
+    <ul>
+      <li>Do not skip Month 2. The Transformer understanding is load-bearing for everything that follows.</li>
+      <li>RAG plus evaluation, not RAG alone. If you cannot defend a faithfulness score you do not really understand RAG.</li>
+      <li>Three solid repositories on GitHub beat ten certifications. Hiring managers open the link.</li>
+    </ul>
+
+    <h2>Sources</h2>
+    <p>Hugging Face NLP Course. Andrej Karpathy, "Let's build GPT", YouTube. 3Blue1Brown, "Attention is Transformers", YouTube. LangChain 1.0 and LangGraph 1.0 documentation. DeepLearning.AI short courses on LangChain and LangGraph. Anthropic prompt engineering documentation. The RAG research set already in the Obsidian vault under <em>Finance / _AI-Strategy / RAG-框架</em>.</p>
+  </div>
+</article>
+
+<footer>
+  <p>© 2026 <em>a few quiet things</em> · deployed on the edge, somehow</p>
+</footer>
+
+</body>
+</html>
