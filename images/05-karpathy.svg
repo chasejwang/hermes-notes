@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1814"/>
+      <stop offset="100%" stop-color="#2a2520"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)"/>
+  <!-- Network graph background -->
+  <g opacity="0.2" stroke="#b45837" fill="none" stroke-width="1">
+    <circle cx="200" cy="150" r="4" fill="#b45837"/>
+    <circle cx="400" cy="220" r="4" fill="#b45837"/>
+    <circle cx="600" cy="150" r="4" fill="#b45837"/>
+    <circle cx="300" cy="320" r="4" fill="#b45837"/>
+    <circle cx="500" cy="320" r="4" fill="#b45837"/>
+    <line x1="200" y1="150" x2="400" y2="220"/>
+    <line x1="400" y1="220" x2="600" y2="150"/>
+    <line x1="400" y1="220" x2="300" y2="320"/>
+    <line x1="400" y1="220" x2="500" y2="320"/>
+    <line x1="300" y1="320" x2="500" y2="320"/>
+  </g>
+  <!-- Title block -->
+  <text x="60" y="120" font-family="-apple-system, SF Pro Display" font-size="14" font-weight="500" fill="#b45837" letter-spacing="2">KARPATHY · APRIL 2026</text>
+  <text x="60" y="180" font-family="-apple-system, SF Pro Display" font-size="40" font-weight="700" fill="#faf8f2">LLM Wiki</text>
+  <text x="60" y="225" font-family="-apple-system, SF Pro Display" font-size="40" font-weight="700" fill="#faf8f2">compounds.</text>
+  <text x="60" y="290" font-family="-apple-system, SF Pro Display" font-size="18" font-weight="400" fill="#c5c9cf" font-style="italic">Stop re-deriving. Start compiling.</text>
+  <text x="60" y="370" font-family="-apple-system, SF Mono" font-size="11" font-weight="500" fill="#7a808a" letter-spacing="1.5">5K STARS · OBSIDIAN · CLAUDE CODE · 30 MIN</text>
+</svg>

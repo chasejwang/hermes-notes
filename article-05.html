@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Karpathy's LLM Wiki: an idea that quietly changes how we manage knowledge</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.5;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
+    background-attachment: fixed;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  nav { position: sticky; top: 0; z-index: 100; background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between;
+    height: 56px; max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  .nav-brand { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; font-style: italic;
+    color: var(--text); text-decoration: none; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 14px; color: var(--text); text-decoration: none; opacity: 0.7; }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+  .article { max-width: 680px; margin: 0 auto; padding: 80px 24px 80px; }
+  .back-link { display: inline-block; font-size: 14px; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 32px; }
+  .back-link::before { content: "← "; }
+  .article-tag { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px; }
+  .article h1 { font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 44px; font-weight: 400; line-height: 1.08;
+    letter-spacing: -0.02em; color: var(--text); margin-bottom: 20px; }
+  .article-meta { font-size: 14px; color: var(--text-dim); margin-bottom: 32px; }
+  .article-cover { width: 100%; aspect-ratio: 16/9; object-fit: cover;
+    border-radius: 14px; margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .audio-block { background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin: 36px 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 8px 32px rgba(180, 88, 55, 0.06); }
+  .audio-block .label { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
+  .audio-block audio { width: 100%; height: 36px; }
+  .content { font-size: 18px; line-height: 1.7; color: var(--text); }
+  .content h2 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 28px; font-weight: 500; line-height: 1.2;
+    margin: 48px 0 16px; letter-spacing: -0.01em; }
+  .content h3 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; margin: 36px 0 10px; letter-spacing: -0.01em; }
+  .content p { margin-bottom: 18px; }
+  .content blockquote { border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px; margin: 32px 0; color: var(--text-muted);
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic; font-size: 19px; }
+  .content ul, .content ol { margin: 0 0 22px 24px; }
+  .content li { margin-bottom: 8px; }
+  .content table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 15px; }
+  .content th, .content td { padding: 12px 14px; text-align: left;
+    border-bottom: 1px solid var(--border); }
+  .content th { font-weight: 600; background: var(--surface); }
+  .content pre { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 22px; overflow-x: auto;
+    margin: 24px 0; font-size: 14px; line-height: 1.6; }
+  .content code { background: var(--surface); padding: 2px 6px;
+    border-radius: 4px; font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; }
+  .content em { font-style: italic; color: var(--accent); }
+  .content strong { font-weight: 600; color: var(--text); }
+  footer { padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-dim); }
+  footer em { font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="index.html#essays">Essays</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article">
+  <a href="index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">Methodology · Knowledge</div>
+  <h1>Karpathy's LLM Wiki: an idea that quietly changes how we manage knowledge</h1>
+  <div class="article-meta">2026-07-26 · 8 min read · audio 2:43</div>
+  <img class="article-cover" src="images/05-karpathy.svg" alt="Karpathy LLM Wiki" />
+
+  <div class="audio-block">
+    <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
+    <audio controls preload="metadata">
+      <source src="audio/05-karpathy-summary.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
+  <div class="content">
+    <h2>Who is Andrej Karpathy</h2>
+    <p>Before we get into the idea, a quick orientation on who Karpathy is.</p>
+    <ul>
+      <li>Stanford PhD. Founding member of OpenAI.</li>
+      <li>Tesla AI Director from 2017 to 2024, leading FSD, Optimus, and Dojo.</li>
+      <li>Now founder of Eureka Labs, an AI education company.</li>
+      <li>Runs the YouTube series "Neural Networks: Zero to Hero", with around 7 million subscribers.</li>
+    </ul>
+    <p>On April 4, 2026, he posted a short Twitter thread and a GitHub gist called <strong>llm-wiki.md</strong>. In three months it crossed 5,000 stars and 5,000 forks. The AI community treats it as the moment the conversation about personal knowledge shifted.</p>
+
+    <h2>The problem with RAG</h2>
+    <p>Karpathy's diagnosis is sharp:</p>
+    <blockquote>Most of what we do with documents today looks like RAG: you upload files, the model retrieves chunks, generates an answer, forgets. Nothing is built up.</blockquote>
+    <p>The picture is familiar. You drop a stack of PDFs into NotebookLM or a ChatGPT project. You ask a question. The model retrieves the most relevant chunks, writes an answer, and the conversation ends. Ask the same question tomorrow and it does the same dance again, with no memory of yesterday.</p>
+    <pre>User: what is X?
+
+RAG system:
+  1. Retrieve top-K chunks
+  2. LLM composes answer
+  3. End — answer vanishes
+
+Next time, same question:
+  1. Retrieve again
+  2. Compose again
+  3. No accumulation</pre>
+    <p>The thing to notice is the last line. <strong>RAG is stateless.</strong> It does not know what you read yesterday. It does not know your knowledge is compounding. Every conversation starts from zero.</p>
+
+    <h2>The LLM Wiki solution</h2>
+    <p>Karpathy's core insight:</p>
+    <blockquote>The wiki is a persistent, compounding artifact. The cross-references are already there. The contradictions have already been flagged. The synthesis already reflects everything you've read.</blockquote>
+    <p>The metaphor he uses is compilation. You do not recompile your source code every time you run a program. You compile it once and run the binary forever. Treat knowledge the same way.</p>
+    <pre>Software:
+  source code → compiler → binary → fast runs
+
+Knowledge:
+  raw sources → LLM compiles → wiki → fast queries</pre>
+    <p>The wiki is a permanent, curated, cross-linked view of everything you have ingested. Every new source does not just sit in a vector index. The LLM reads it, extracts the key information, updates existing entity pages, revises summaries, flags contradictions, and strengthens cross-links. <strong>One source might touch ten to fifteen wiki pages.</strong></p>
+
+    <h2>Three layers</h2>
+    <p>The architecture has three layers, each with a clear role.</p>
+
+    <h3>Layer 1: raw sources</h3>
+    <p>Your PDFs, papers, articles, podcast transcripts, your own notes. These are <strong>immutable</strong>. The LLM reads from them but never writes back. They are your source of truth.</p>
+
+    <h3>Layer 2: the wiki</h3>
+    <p>A directory of LLM-generated markdown files, with a structure like this:</p>
+    <pre>wiki/
+├── index.md                  # catalog of every page
+├── 00 - Overview.md
+├── 01 - Entities/            # people, projects, libraries
+├── 02 - Concepts/            # ideas, methods
+├── 03 - Sources/             # summaries of raw materials
+├── 04 - Comparisons/         # side-by-side tables
+└── 99 - Log.md               # append-only activity log</pre>
+    <p>You rarely (or never) write these files. The LLM creates them, updates them, and maintains the cross-references. You read.</p>
+
+    <h3>Layer 3: the schema</h3>
+    <p>A configuration document that tells the LLM how to behave. In Claude Code, this is <code>CLAUDE.md</code>. In Codex or Pi, it is <code>AGENTS.md</code>. It defines page structure, naming conventions, frontmatter fields, wikilink rules, and the workflows for ingest, query, and lint. <strong>This is the file that turns a generic chatbot into a disciplined wiki maintainer.</strong></p>
+    <p>Karpathy's own framing is the cleanest:</p>
+    <blockquote>Obsidian is the IDE; the LLM is the programmer; the wiki is the codebase.</blockquote>
+
+    <h2>Three core operations</h2>
+
+    <h3>1. Ingest</h3>
+    <p>You drop a new source into the raw collection. The LLM reads it, discusses three to five key takeaways with you, waits for confirmation, then creates or updates wiki pages and appends an entry to the log. One source might touch ten to fifteen wiki pages.</p>
+
+    <h3>2. Query</h3>
+    <p>You ask a question. The LLM reads the index, identifies relevant pages, reads them, and synthesizes an answer with <code>[[wikilink]]</code> citations. <strong>Good answers can be filed back as new wiki pages</strong>, so your own explorations compound into the knowledge base just like ingested sources do.</p>
+    <p>Outputs can be plain markdown, a comparison table, a Marp slide deck, a matplotlib chart, or anything else the schema allows.</p>
+
+    <h3>3. Lint</h3>
+    <p>Periodically ask the LLM to health-check the wiki. Look for contradictions between pages, orphan pages with no inbound links, important concepts mentioned but lacking their own page, missing cross-references, and claims that newer sources have superseded. The LLM is also good at suggesting new questions to investigate and new sources to look for.</p>
+
+    <h2>Four ways to actually build one</h2>
+
+    <h3>Way 1: pure markdown plus Claude Code</h3>
+    <p>The fastest path. Ten minutes to a working wiki.</p>
+    <pre>mkdir ~/my-llm-wiki
+cd ~/my-llm-wiki
+mkdir sources wiki
+# write CLAUDE.md
+# open Obsidian → Open vault
+# run Claude Code: "ingest sources/first-source.pdf"</pre>
+    <p>Good for personal use and small collections.</p>
+
+    <h3>Way 2: wiki-llm (Python package)</h3>
+    <p>By <code>@LeoBR84p</code> on GitHub. An eight-stage pipeline: Loader → Extractor → Planner → Writer → Evaluator → Editor → Lint → Repair. Pydantic contracts between stages, multi-backend LLM via instructor, BM25 chat without a vector store. Production-grade for teams.</p>
+
+    <h3>Way 3: agentmemory / LLM Wiki v2</h3>
+    <p>By <code>rohitg00</code> on GitHub. agentmemory has 20K+ stars and is effectively the canonical implementation of Karpathy's pattern. The v2 gist adds confidence scoring, supersession, forgetting curves, knowledge graphs with typed edges, hybrid search (BM25 + vectors + graph), and event-driven automation.</p>
+
+    <h3>Way 4: roll your own</h3>
+    <p>For engineers who need full control. Combine LangChain or LangGraph with your preferred vector store and a custom lint pipeline.</p>
+
+    <h2>Four deeper insights from Karpathy</h2>
+
+    <h3>1. The compilation analogy is the heart of it</h3>
+    <p>Code is compiled once and run many times. Knowledge should be compiled once and queried many times. The wiki is your knowledge binary.</p>
+
+    <h3>2. Obsidian as IDE is more than a metaphor</h3>
+    <p>The Graph View, the wikilink resolver, the daily note, the Map of Content — these are real tools for navigating a real artifact. The LLM is the co-author. You are the curator.</p>
+
+    <h3>3. The schema is not a prompt, it is a constraint</h3>
+    <p>Without a schema, the LLM is a general chatbot. With a schema, it is a disciplined wiki maintainer. The schema is the small file that does the most work.</p>
+
+    <h3>4. The wiki is an artifact, not a transcript</h3>
+    <p>Chat history evaporates. Wikis compound. This is the philosophical inversion that makes the whole idea work.</p>
+
+    <h2>Where this actually fits</h2>
+    <p>Karpathy listed five application areas in the original gist.</p>
+    <ul>
+      <li><strong>Personal</strong>: goals, health, psychology, self-improvement, journal entries, podcast notes.</li>
+      <li><strong>Research</strong>: going deep on a topic over weeks or months, building an evolving thesis.</li>
+      <li><strong>Reading</strong>: each chapter becomes a wiki pass, building out characters, themes, plot threads. The endpoint looks like Tolkien Gateway, built by one person.</li>
+      <li><strong>Business and team</strong>: internal wikis fed by Slack, meeting transcripts, project documents, customer calls.</li>
+      <li><strong>Anything accumulating</strong>: competitive analysis, due diligence, trip planning, course notes.</li>
+    </ul>
+
+    <h2>Six traps to avoid</h2>
+    <ol>
+      <li><strong>Vague schema</strong>. "Be helpful" is not a schema. Specify word counts, format rules, wikilink conventions.</li>
+      <li><strong>Full autopilot</strong>. Start with zero sources, let the LLM write a hundred pages, ship it. This produces garbage. Work one source at a time.</li>
+      <li><strong>Too many sources</strong>. Curate ruthlessly. Only ingest what you actually want to accumulate.</li>
+      <li><strong>No lint</strong>. Without regular Lint the wiki rots. Schedule it.</li>
+      <li><strong>Too big</strong>. Five thousand pages will not query well. Keep the wiki under five hundred pages.</li>
+      <li><strong>Broken markdown</strong>. LLMs produce plausible-looking but structurally broken markdown. Either constrain the schema tightly or use a tool like markdown-hero to type-check the output.</li>
+    </ul>
+
+    <h2>Why this is a paradigm shift</h2>
+    <p>Traditional RAG answers the question: <em>how do I find the right document?</em></p>
+    <p>LLM Wiki answers a different question: <em>how do I make my knowledge compound?</em></p>
+    <table>
+      <thead><tr><th>Dimension</th><th>RAG</th><th>LLM Wiki</th></tr></thead>
+      <tbody>
+        <tr><td>Problem solved</td><td>Cannot find</td><td>Does not accumulate</td></tr>
+        <tr><td>Retrieval target</td><td>Raw sources</td><td>Compiled wiki</td></tr>
+        <tr><td>Long-term value</td><td>One-shot</td><td>Compounding</td></tr>
+        <tr><td>Human-readable</td><td>No</td><td>Yes</td></tr>
+      </tbody>
+    </table>
+    <p>Today's wiki is more valuable than yesterday's. Next week's is more refined than this week's. Three months in, it is a personal asset. <strong>RAG is a subset. LLM Wiki is the future.</strong></p>
+
+    <h2>Why this matters to me, personally</h2>
+    <p>I already use RAG heavily — the Obsidian vault is the substrate, Hermes is the query layer. But every conversation is a fresh retrieval. Karpathy's framing turned that into a bug I could see clearly. The next move is obvious: stand up a real LLM Wiki on top of the vault, with a CLAUDE.md, and let Claude Code handle the bookkeeping while I handle the questions and the sourcing.</p>
+    <p>If you use Obsidian, you can do the same. If you do not, the cost of entry is about thirty minutes and one source.</p>
+
+    <h2>Three takeaways</h2>
+    <ul>
+      <li>RAG does not accumulate. LLM Wiki does. That is the entire difference.</li>
+      <li>The core analogy is compilation: your raw sources are source code, your wiki is the binary.</li>
+      <li>You can have one in thirty minutes. The earlier you start, the larger the compounding benefit.</li>
+    </ul>
+
+    <h2>Sources</h2>
+    <p>Andrej Karpathy, <em>llm-wiki</em>, GitHub gist, April 4, 2026. Andrej Karpathy, Twitter thread, April 4, 2026. Rohitg00, <em>LLM Wiki v2</em>, GitHub gist. Rohitg00, <em>agentmemory</em>, GitHub repository, 20K+ stars. LeoBR84p, <em>wiki-llm</em>, GitHub repository. Leandro Bernardo, <em>I Built Karpathy's LLM Wiki Twice</em>, Towards AI, May 17, 2026. Urvil Joshi, <em>Andrej Karpathy's LLM Wiki: Create your own knowledge base</em>, Medium, April 20, 2026.</p>
+  </div>
+</article>
+
+<footer>
+  <p>© 2026 <em>a few quiet things</em> · deployed on the edge, somehow</p>
+</footer>
+
+</body>
+</html>
