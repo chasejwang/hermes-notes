@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#faf8f2"/>
+      <stop offset="100%" stop-color="#f4e4d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)"/>
+  <!-- Bauhaus geometric -->
+  <rect x="80" y="100" width="220" height="220" fill="#1a1814"/>
+  <circle cx="450" cy="210" r="120" fill="#b45837"/>
+  <polygon points="600,320 760,320 680,160" fill="#faf8f2" stroke="#1a1814" stroke-width="3"/>
+  <line x1="80" y1="380" x2="720" y2="380" stroke="#1a1814" stroke-width="4"/>
+  <!-- Title -->
+  <text x="80" y="60" font-family="-apple-system, SF Pro Display" font-size="14" font-weight="600" fill="#b45837" letter-spacing="2">CXMT · 688825.SH · 2026-07-27 IPO</text>
+</svg>

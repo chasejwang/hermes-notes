@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CXMT's valuation logic: the new king of A-shares at 3.3 trillion yuan</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.5;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
+    background-attachment: fixed;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  nav { position: sticky; top: 0; z-index: 100; background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between;
+    height: 56px; max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  .nav-brand { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; font-style: italic;
+    color: var(--text); text-decoration: none; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 14px; color: var(--text); text-decoration: none; opacity: 0.7; }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+  .article { max-width: 680px; margin: 0 auto; padding: 80px 24px 80px; }
+  .back-link { display: inline-block; font-size: 14px; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 32px; }
+  .back-link::before { content: "← "; }
+  .article-tag { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px; }
+  .article h1 { font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 44px; font-weight: 400; line-height: 1.08;
+    letter-spacing: -0.02em; color: var(--text); margin-bottom: 20px; }
+  .article-meta { font-size: 14px; color: var(--text-dim); margin-bottom: 32px; }
+  .article-cover { width: 100%; aspect-ratio: 16/9; object-fit: cover;
+    border-radius: 14px; margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .audio-block { background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin: 36px 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 8px 32px rgba(180, 88, 55, 0.06); }
+  .audio-block .label { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
+  .audio-block audio { width: 100%; height: 36px; }
+  .content { font-size: 18px; line-height: 1.7; color: var(--text); }
+  .content h2 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 28px; font-weight: 500; line-height: 1.2;
+    margin: 48px 0 16px; letter-spacing: -0.01em; }
+  .content h3 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; margin: 36px 0 10px; letter-spacing: -0.01em; }
+  .content p { margin-bottom: 18px; }
+  .content blockquote { border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px; margin: 32px 0; color: var(--text-muted);
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic; font-size: 19px; }
+  .content ul, .content ol { margin: 0 0 22px 24px; }
+  .content li { margin-bottom: 8px; }
+  .content table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 15px; }
+  .content th, .content td { padding: 12px 14px; text-align: left;
+    border-bottom: 1px solid var(--border); }
+  .content th { font-weight: 600; background: var(--surface); }
+  .content pre { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 22px; overflow-x: auto;
+    margin: 24px 0; font-size: 14px; line-height: 1.6; }
+  .content code { background: var(--surface); padding: 2px 6px;
+    border-radius: 4px; font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; }
+  .content em { font-style: italic; color: var(--accent); }
+  .content strong { font-weight: 600; color: var(--text); }
+  footer { padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-dim); }
+  footer em { font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="index.html#essays">Essays</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article">
+  <a href="index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">Markets · Storage · China</div>
+  <h1>CXMT's valuation logic: the new king of A-shares at 3.3 trillion yuan</h1>
+  <div class="article-meta">2026-07-27 · 10 min read · audio 2:38</div>
+  <img class="article-cover" src="images/07-changxin-art.jpg" alt="CXMT IPO" />
+
+  <div class="audio-block">
+    <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
+    <audio controls preload="metadata">
+      <source src="audio/07-changxin-summary.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
+  <div class="content">
+    <h2>What just happened</h2>
+    <p>On the morning of July 27, 2026, CXMT (ChangXin Memory Technologies, ticker 688825.SH) listed on the Shanghai STAR Market at 49.5 yuan per share — a 471.59 percent jump from its 8.66 yuan IPO price. Within minutes, market cap touched 3.3 trillion yuan, pushing CXMT past the Industrial and Commercial Bank of China as the largest stock on the mainland A-share market. Trading volume cleared one trillion yuan within half an hour of the open, setting an all-time record.</p>
+    <p>This is the most consequential IPO of 2026, not because of the fundraising total (which is real, but not what matters), but because it represents the moment China finally has a credible domestic supplier of DRAM memory sitting at the global table.</p>
+
+    <h2>What CXMT actually is</h2>
+    <p>CXMT is China's only domestic DRAM manufacturer and the fourth-largest globally, behind Samsung, SK Hynix, and Micron. Until now, every DRAM chip powering Chinese PCs, servers, and smartphones was imported. CXMT broke that monopoly. Its product line spans DDR4 and DDR5 for PCs and servers, LPDDR4 and LPDDR5 for mobile, and HBM2 and HBM3 for AI accelerators. The company has guided that 12-layer HBM3E will reach mass production in 2027, putting it on the same generation as the South Korean leaders.</p>
+
+    <h2>The numbers are extraordinary</h2>
+    <p>From the prospectus: in Q1 2026, CXMT reported revenue of 50.8 billion yuan, up 719 percent year-on-year. Net income came in at 24.76 billion yuan, up 1,688 percent. A year earlier, the company was still loss-making by 1.56 billion yuan. Management's guidance for H1 2026 points to revenue between 110 and 120 billion yuan and net income between 50 and 57 billion yuan. Three things drove the swing: the DRAM super-cycle that lifted contract prices 58 to 63 percent quarter-on-quarter, capacity additions coming online ahead of schedule, and HBM demand from AI infrastructure.</p>
+
+    <h2>How the market got to 3.3 trillion</h2>
+    <p>The arithmetic is straightforward. Annualized 2026 net income of roughly 110 billion yuan times a 30 price-to-earnings multiple equals 3.3 trillion yuan. A 30 PE is rich for a memory company in normal conditions. Three to five years ago, Micron and SK Hynix traded at 12 to 18 times earnings. CXMT gets a premium for three reasons.</p>
+    <p>First, it is the only domestic DRAM supplier. In a market where the United States has restricted advanced memory exports to China, CXMT is a strategic asset, not just a business. Second, the company is exposed to HBM, where the AI build-out is still in its early years and pricing has not yet peaked. Third, the entire domestic electronics supply chain — from Xiaomi and Huawei on the device side to Inspur and Sugon on the server side — benefits if CXMT scales. That ecosystem effect justifies a scarcity premium.</p>
+
+    <h2>Three risks to take seriously</h2>
+    <p>DRAM is a cyclical commodity. Contract prices are already at historical highs, and the historical pattern is that what goes up eventually comes down. If DRAM prices retrace by 30 percent in 2027, CXMT's earnings will fall faster than that and the 30 PE will look expensive. The company has promised an eighteen-month lockup for major shareholders, but that ends in early 2028. Free float is only 6.73 percent of total shares, which explains the first-day pop but also means the technical setup gets worse once those lockups expire. None of this means CXMT is a bad business. It means the price already assumes the best case.</p>
+
+    <h2>Three positioning ideas</h2>
+    <p>For long-horizon allocators, CXMT is a strategic anchor. The thesis is the storage super-cycle plus national substitution plus AI compute demand, and the company has first-mover position in all three. The right move is to size the position, hold through the DRAM cycle, and reassess at the lockup expiry in 2028.</p>
+    <p>For tactical retail traders, the better trade has been the IPO subscription rather than the secondary market. The structural setup favors long-term holders; retail traders without an edge face a thin float and a stock that can move 10 percent in an afternoon.</p>
+    <p>For investors who want exposure to the same thesis with less concentration risk, GigaDevice (603986), which is closely linked to CXMT through long-term supply agreements, offers a different risk profile. So does Montage Technology (688008), which supplies DDR5 interface chips. Both will benefit if the domestic DRAM ecosystem scales.</p>
+
+    <h2>What this changes for the broader sector</h2>
+    <p>CXMT's listing pulls forward two things the market had been waiting for. First, it establishes a market-clearing valuation for domestic memory. YMTC, the NAND flash counterpart, will price off CXMT when it eventually lists. Second, it concentrates the storage complex into a smaller set of tradable names. GigaDevice, Montage, and the AI accelerator supply chain all trade off the same underlying trend. A-shares now have a credible memory champion.</p>
+
+    <h2>Three takeaways</h2>
+    <p>The 3.3 trillion yuan valuation is defensible if DRAM stays tight and AI demand keeps growing. It looks rich if either of those breaks. The story is real; the price assumes the story stays clean. Position-sizing matters more than ever.</p>
+
+    <h2>Sources</h2>
+    <p>CXMT IPO prospectus, Shanghai Stock Exchange. Caixin, 21st Century Business Herald, Eastmoney, Sina Finance, China Securities Journal, iFinD, Wind, Sohu Finance, Beijing Daily. Quotes are from filings, public interviews, and market data as of July 27, 2026.</p>
+  </div>
+</article>
+
+<footer>
+  <p>© 2026 <em>a few quiet things</em> · deployed on the edge, somehow</p>
+</footer>
+
+</body>
+</html>
