@@ -304,6 +304,78 @@
     font-style: italic;
     color: var(--accent);
   }
+
+  /* ===== Floating Public Account QR Code (right corner) ===== */
+  .qr-float {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .qr-float-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    color: var(--text-muted);
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-size: 18px;
+    font-weight: 400;
+    font-style: italic;
+  }
+  .qr-float-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 24px rgba(180, 88, 55, 0.18);
+    color: var(--accent);
+  }
+  .qr-float-card {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 12px 10px 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    width: 168px;
+    text-align: center;
+    animation: qrFadeIn 0.25s ease-out;
+  }
+  @keyframes qrFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .qr-float-card.show { display: flex; }
+  .qr-float-card img {
+    width: 144px;
+    height: 144px;
+    border-radius: 6px;
+    display: block;
+  }
+  .qr-float-card .qr-label {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-size: 11.5px;
+    color: var(--text);
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .qr-float-card .qr-sub {
+    font-size: 9.5px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
   footer .divider {
     width: 40px;
     height: 1px;
@@ -471,6 +543,32 @@
     <p>© 2026 <em>made by a mediocre idealist</em> · deployed on the edge, somehow</p>
   </div>
 </footer>
+
+<!-- ===== Floating Public Account QR Code ===== -->
+<div class="qr-float" id="qrFloat">
+  <div class="qr-float-card" id="qrCard">
+    <img src="images/qrcode-publicaccount.png" alt="公众号二维码" />
+    <div class="qr-label">a few quiet things</div>
+    <div class="qr-sub">扫码关注</div>
+  </div>
+  <div class="qr-float-button" id="qrButton" title="关注公众号">q</div>
+</div>
+
+<script>
+  (function() {
+    var btn = document.getElementById('qrButton');
+    var card = document.getElementById('qrCard');
+    if (!btn || !card) return;
+    btn.addEventListener('click', function() {
+      card.classList.toggle('show');
+    });
+    document.addEventListener('click', function(e) {
+      if (!document.getElementById('qrFloat').contains(e.target)) {
+        card.classList.remove('show');
+      }
+    });
+  })();
+</script>
 
 </body>
 </html>
