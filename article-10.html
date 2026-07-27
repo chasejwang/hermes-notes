@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copilot Studio × Teams / Outlook：让 GenAI 真正落到前线工作流</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
+    background-attachment: fixed;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  nav { position: sticky; top: 0; z-index: 100; background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between;
+    height: 56px; max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  .nav-brand { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; font-style: italic;
+    color: var(--text); text-decoration: none; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 14px; color: var(--text); text-decoration: none; opacity: 0.7; }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+  .article { max-width: 720px; margin: 0 auto; padding: 80px 24px 80px; }
+  .back-link { display: inline-block; font-size: 14px; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 32px; }
+  .back-link::before { content: "← "; }
+  .article-tag { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px; }
+  .article h1 { font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 40px; font-weight: 400; line-height: 1.15;
+    letter-spacing: -0.02em; color: var(--text); margin-bottom: 20px; }
+  .article-meta { font-size: 14px; color: var(--text-dim); margin-bottom: 32px; }
+  .article-cover { width: 100%; aspect-ratio: 3/2; object-fit: cover;
+    border-radius: 14px; margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .audio-block { background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin: 36px 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 8px 32px rgba(180, 88, 55, 0.06); }
+  .audio-block .label { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
+  .audio-block audio { width: 100%; height: 36px; }
+  .content { font-size: 18px; line-height: 1.75; color: var(--text); }
+  .content h2 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 28px; font-weight: 500; line-height: 1.25;
+    margin: 56px 0 18px; letter-spacing: -0.01em; }
+  .content h3 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; margin: 36px 0 12px; letter-spacing: -0.01em; }
+  .content p { margin-bottom: 18px; }
+  .content blockquote { border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px; margin: 32px 0; color: var(--text-muted);
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic; font-size: 19px; }
+  .content ul, .content ol { margin: 0 0 22px 24px; }
+  .content li { margin-bottom: 8px; }
+  .content table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 15px; }
+  .content th, .content td { padding: 12px 14px; text-align: left;
+    border-bottom: 1px solid var(--border); vertical-align: top; }
+  .content th { font-weight: 600; background: var(--surface); }
+  .content pre { background: #1e1e1e; color: #d4d4d4;
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 22px; overflow-x: auto;
+    margin: 24px 0; font-size: 13.5px; line-height: 1.6;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; }
+  .content pre code { background: transparent; padding: 0; color: inherit; }
+  .content code { background: var(--surface); padding: 2px 6px;
+    border-radius: 4px; font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; color: var(--accent); }
+  .content em { font-style: italic; color: var(--accent); }
+  .content strong { font-weight: 600; color: var(--text); }
+  footer { padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-dim); }
+  footer em { font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="index.html#essays">Essays</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article">
+  <a href="index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">GenAI · Copilot Studio · Knowledge Work</div>
+  <h1>Copilot Studio × Teams / Outlook：让 GenAI 真正落到前线工作流</h1>
+  <div class="article-meta">2026-07-27 · 13 min read · 系列文章 #3 of 3 · 完结</div>
+  <img class="article-cover" src="images/10-copilot-art.jpg" alt="Copilot Studio" />
+
+  <div class="content">
+
+    <h2>一、AI 应用的最后一公里</h2>
+
+    <p>过去两年，我们见过了太多 GenAI 的 PPT 和 demo：</p>
+
+    <ul>
+      <li>"<em>AI 自动回答业务问题</em>" → 实际是 ChatGPT 网页版</li>
+      <li>"<em>AI 帮你审批</em>" → 实际是 OpenAI API + 一段 prompt</li>
+      <li>"<em>AI 智能助手</em>" → 实际是个内部 demo 视频</li>
+    </ul>
+
+    <p>这些都活不过 3 个月。<em>真正的 GenAI 落地需要满足三个条件</em>：</p>
+
+    <ol>
+      <li><strong>入口在用户已经会用的地方</strong>（Teams、Outlook、微信）</li>
+      <li><strong>接的是企业真实数据</strong>（不是 ChatGPT 公开知识）</li>
+      <li><strong>能动手不只能说话</strong>（触发后续流程、读写业务系统）</li>
+    </ol>
+
+    <p><strong>Copilot Studio</strong>（2024 年由 Power Virtual Agents 改名而来）就是 Microsoft 给出的官方答案 —— <em>在 Microsoft 365 生态里搭一个真正能干活的企业 AI Agent</em>。</p>
+
+    <p>这篇文章拆解它是怎么落地的。</p>
+
+    <h2>二、什么是 Copilot Studio</h2>
+
+    <p>Copilot Studio 是 Microsoft 的<em>低代码 AI Agent 平台</em>，核心能力：</p>
+
+    <table>
+      <thead><tr><th>能力</th><th>含义</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Knowledge Source</strong></td><td>配置知识库（Power BI 语义模型、SharePoint、Dataverse、HTTP API）</td></tr>
+        <tr><td><strong>Topics</strong></td><td>对话主题和流程（类似 chatbot 的 intent + slot）</td></tr>
+        <tr><td><strong>Generative AI Orchestration</strong></td><td>GPT-4o / 自部署模型做意图理解和对话生成</td></tr>
+        <tr><td><strong>Channels</strong></td><td>部署到 Teams、Outlook、自定义网站、移动 App</td></tr>
+        <tr><td><strong>Actions</strong></td><td>调用 HTTP API、Power Automate Flow、Dataverse 操作</td></tr>
+        <tr><td><strong>Analytics</strong></td><td>每条问答的日志、可观测性</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>一句话</strong>：<em>Copilot Studio = 企业版 GPT + 知识库 + 业务系统连接器 + 多端部署</em>。</p>
+
+    <p>它和"直接调 OpenAI API"的区别：</p>
+
+<pre><code>直接调 OpenAI API：
+  ❌ 没有企业知识库（每次都要传 context）
+  ❌ 没有身份认证（谁都可以用）
+  ❌ 没有审计日志
+  ❌ 没有多端部署（要自己写前端）
+  ❌ 没有配额管理
+
+Copilot Studio：
+  ✅ 接 Power BI 语义模型作为知识源（自动 SQL 生成）
+  ✅ Azure AD 身份认证（自动识别用户权限）
+  ✅ 内置 Application Insights 日志
+  ✅ 一键发布到 Teams / Outlook / 自定义网站
+  ✅ 按 messages / minute 配额管理</code></pre>
+
+    <h2>三、四种典型 Copilot Agent 场景</h2>
+
+    <h3>Agent 1️⃣：PricingCopilot（嵌入 Teams）</h3>
+    <p><strong>服务对象</strong>：前线销售 BP、定价团队</p>
+
+    <p><strong>典型用法</strong>：</p>
+
+<pre><code>前线 BP 在 Teams 输入：
+  @PricingCopilot Q3 上海「产品 A」毛利率多少？对比 Q2？
+
+PricingCopilot 回复：
+  ✅ Q3 上海「产品 A」毛利率 23.4%（↑2.1pp vs Q2）
+
+  📊 详见：[Power BI 报表链接]
+
+  📌 主要驱动：
+     • 客单价 +3.2%（来自 8 月调价）
+     • 销量 -1.5%
+
+  ⚠️ 提醒：9 月有 3 个大客户合同到期，建议关注续约</code></pre>
+
+    <p><strong>实现</strong>：Knowledge Source 接 Power BI 语义模型 <code>PricingDecisionModel</code>，GPT-4o 自动把自然语言翻译成 DAX 查询。</p>
+
+    <h3>Agent 2️⃣：LaunchCopilot（嵌入 Teams）</h3>
+    <p><strong>服务对象</strong>：新产品经理、市场团队</p>
+
+<pre><code>PM 在 Teams 输入：
+  @LaunchCopilot 对标竞品 X，我们 Y 产品的定价区间应该多少？
+
+LaunchCopilot 回复：
+  1. 竞品 X 当前价格区间：¥199-¥299（来自 BigQuery 历史数据）
+  2. 我司 Y 产品 BOM 成本：¥85
+  3. Monte Carlo 模拟（10000 次）建议定价区间：¥179-¥249
+  4. 历史相似产品（Z）上市 90 天后渗透率曲线：[查看图表]
+
+  📋 推荐定价：¥229（兼顾利润和市场份额）
+
+  [一键发起定价评审会]</code></pre>
+
+    <p><strong>实现</strong>：Knowledge Source 接 BigQuery 镜像表 + Monte Carlo 模拟结果表，Action 触发 Power Automate 评审会议流。</p>
+
+    <h3>Agent 3️⃣：DataAlertCopilot（嵌入 Outlook，自动邮件）</h3>
+    <p><strong>服务对象</strong>：管理层</p>
+
+    <p><strong>典型用法</strong>（每周一 08:00 自动发）：</p>
+
+<pre><code>主题：[自动报告] 本周定价关键 KPI 摘要 (2026-07-21 ~ 07-27)
+
+正文：
+  • 整体毛利率 24.1%（↓0.3pp，需关注）
+  • 新产品「Z」上线 7 天，转化率 4.2%（超预期）
+  • 异常：「产品 B」GMV 跌 18%，已自动开 ticket #4521
+  • 推荐操作：本周二定价评审会建议把「产品 B」加入议程
+
+  [查看完整 Dashboard]  [一键发起评审会]</code></pre>
+
+    <p><strong>实现</strong>：用 Power Automate Schedule Trigger 触发，调用 Copilot Studio 的 Generative Answer，输出 HTML 邮件。</p>
+
+    <h3>Agent 4️⃣：SPICopilot（嵌入 Teams）</h3>
+    <p><strong>服务对象</strong>：战略 / M&amp;A / 高层决策</p>
+
+<pre><code>CFO 在 Teams 输入：
+  @SPICopilot 去年评估的 3 个 SPIF 项目，最后落地情况怎么样？
+
+SPICopilot 回复：
+  1. 项目「东南亚仓储」：落地 ✓，ROI 12.3%（超预期）
+  2. 项目「巴西合资」：搁置 ✗，原因：汇率风险 + 政策不确定
+  3. 项目「北美 SaaS 并购」：谈判中 ⏳，当前估值 $45M
+
+  📊 整体 SPIF 投资回报率：14.2%
+
+  [查看完整评估报告]  [发起新 SPIF 评估]</code></pre>
+
+    <p><strong>实现</strong>：Knowledge Source 接 SharePoint 历史决策文档 + OneLake SPIF_Decisions 表。</p>
+
+    <h2>四、技术实现路径（以 PricingCopilot 为例）</h2>
+
+    <h3>4.1 整体架构</h3>
+
+<pre><code>┌──────────────────────────────────────────────────────────────────┐
+│                                                                  │
+│   Teams 用户                                                     │
+│      │  @PricingCopilot 自然语言提问                               │
+│      ▼                                                           │
+│   ┌──────────────────────────────────────┐                       │
+│   │  Copilot Studio Orchestrator         │                       │
+│   │  (GPT-4o 做 intent + slot filling)   │                       │
+│   └──────────────────────────────────────┘                       │
+│      │                                                           │
+│      ├──▶ Topic: /Pricing 命中 ──▶ Knowledge Source 查询         │
+│      │     ├─ Power BI Semantic Model                            │
+│      │     ├─ SharePoint 文档库                                   │
+│      │     └─ Dataverse 客户档案                                  │
+│      │                                                           │
+│      ├──▶ Action: 触发 Power Automate                             │
+│      │     └─ 开 ticket / 发通知 / 改 BigQuery                    │
+│      │                                                           │
+│      └──▶ Fallback: 答不上来 ──▶ 转人工 / 开 ticket               │
+│                                                                  │
+│      ▼                                                           │
+│   Teams 回复（文字 + 卡片 + 链接）                                │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘</code></pre>
+
+    <h3>4.2 Knowledge Source 配置</h3>
+
+    <p>在 Copilot Studio 里配置 3 个知识源：</p>
+
+    <p><strong>知识源 1：Power BI Semantic Model</strong></p>
+
+<pre><code>knowledge_source:
+  type: PowerBI
+  name: PricingDecisionModel
+  workspace: "ws-pricing-decision"
+  dataset: "PricingDecisionModel"
+  authentication: User (impersonation)
+  enable_qna: true
+  fallback_message: "这个问题需要详细分析，我已开 ticket 给数据团队"</code></pre>
+
+    <p>GPT-4o 会自动把"Q3 上海产品 A 毛利率"翻译成 DAX 查询，直接打到语义模型。</p>
+
+    <p><strong>知识源 2：SharePoint 文档库</strong></p>
+
+<pre><code>knowledge_source:
+  type: SharePoint
+  name: PricingPolicyDocs
+  site: "https://company.sharepoint.com/sites/pricing"
+  document_libraries: ["Policy", "Guidelines"]
+  include_file_extensions: [.pdf, .docx, .pptx]
+  chunk_size: 1000
+  embedding_model: text-embedding-3-large</code></pre>
+
+    <h3>4.3 Topic 设计（对话流程）</h3>
+
+<pre><code>topic:
+  name: PricingQuery
+  trigger_phrases:
+    - "毛利率"
+    - "定价"
+    - "调价"
+    - "价格"
+
+  variables:
+    - name: UserQuestion
+      type: string
+    - name: AnswerText
+      type: string
+    - name: ConfidenceScore
+      type: number
+
+  flow:
+    - step: "AI 理解用户意图"
+      action: GenerativeAnswers
+      knowledge_sources: [PricingDecisionModel, PricingPolicyDocs]
+      output_variable: AnswerText
+      confidence_threshold: 0.7
+
+    - step: "检查置信度"
+      condition: ConfidenceScore &lt; 0.7
+      true_branch:
+        - "抱歉，这个问题我需要更多数据支持"
+        - "我帮你开一个 ticket 给数据团队处理？"
+        - condition: 用户确认
+          true_branch:
+            - action: CreateServiceNowTicket
+              params: {urgency: medium, assignment_group: data-platform}
+
+    - step: "返回答案"
+      message: |
+        {AnswerText}
+
+        📊 详细数据：[Power BI 报表]({report_url})
+        ⚠️ 关键提醒：{提醒内容}
+
+        [继续提问] [开 ticket] [联系定价团队]</code></pre>
+
+    <h2>五、关键工程实践</h2>
+
+    <h3>5.1 语义模型 = Agent 的知识底座</h3>
+    <p><strong>这是最重要的一点</strong>：Agent 的回答质量 = 语义模型质量。</p>
+
+<pre><code>差的语义模型：
+  • 字段名：amt_yoy_pct
+  • 关系：20 张表深度嵌套
+  • 度量值：300+ 个，没人维护
+
+  → Agent 答非所问，用户失望
+
+好的语义模型：
+  • 字段名：YoY Growth Rate (%)
+  • 关系：5 张核心表，简单清晰
+  • 度量值：30 个核心 KPI，有 Owner
+  • Display Folder 分组
+  • 有 Description 解释每个度量
+
+  → Agent 准确回答，用户信任</code></pre>
+
+    <p><em>给你的工程建议</em>：建语义模型时把"AI 友好"作为标准之一 —— 字段名要自然语言友好，度量值要写 Description，关系不要太深。</p>
+
+    <h3>5.2 严格的权限控制</h3>
+    <p><strong>Agent 必须按用户权限访问数据</strong>：</p>
+
+<pre><code>security:
+  authentication:
+    type: azure_ad
+    use_user_identity: true  # 用用户身份访问知识源
+
+  row_level_security:
+    semantic_model:
+      role: "Sales_BP"
+      filter: "Region = USER_REGION"
+
+  document_access:
+    sharepoint:
+      inherit_from_user_permissions: true  # 自动继承用户已有权限
+
+  bot_invitation:
+    allowed_groups: ["frontline-bp", "pricing-team", "executive"]
+    blocked_groups: ["external-users"]</code></pre>
+
+    <p><em>永远不要把 Agent 配置成"用 service account 访问所有数据"</em> —— 数据泄露的法律风险会毁掉整个项目。</p>
+
+    <h3>5.3 严格的 Fallback 机制</h3>
+    <p><strong>Agent 答不上来时，必须有兜底</strong>：</p>
+
+<pre><code>三级 Fallback 机制：
+
+Level 1 - 高置信度（&gt; 0.8）
+  → 直接回答 + 报表链接
+
+Level 2 - 中置信度（0.5 - 0.8）
+  → "我不确定，建议联系 @PricingTeam"
+  → 自动开低优 ticket
+
+Level 3 - 低置信度（&lt; 0.5）或系统错误
+  → "抱歉我暂时无法回答，已开 ticket #N 给数据团队"
+  → 自动开高优 ticket
+  → 触发 PagerDuty 告警（如果是 critical 业务问题）</code></pre>
+
+    <h3>5.4 可观测性</h3>
+    <p><strong>必须记录每一条问答</strong>：</p>
+
+<pre><code>logging:
+  destination: Application Insights
+  capture:
+    - user_id
+    - user_question
+    - bot_response
+    - confidence_score
+    - knowledge_source_used
+    - action_triggered
+    - response_time_ms
+    - feedback_thumbs_up_down  # 用户反馈
+    - fallback_triggered
+
+  alerts:
+    - low_confidence_rate &gt; 30% over 1h
+    - response_time_p95 &gt; 5s
+    - fallback_triggered &gt; 50 per hour</code></pre>
+
+    <p><em>运营一段后，你会看到真正的"前线最常问什么"</em> —— 这就是新的产品需求来源。</p>
+
+    <h2>六、常见踩坑</h2>
+
+    <h3>坑 1：LLM 幻觉 —— "GPT-4o 编造数字"</h3>
+    <p><strong>症状</strong>：Agent 给出看似合理但完全不对的 KPI 数字。</p>
+    <p><strong>原因</strong>：语义模型字段命名不清，GPT-4o 翻译成错误 DAX 查询，返回错误结果。</p>
+    <p><strong>解决</strong>：</p>
+    <ol>
+      <li><strong>关键数字必须强制从语义模型取</strong>，不要让 GPT 自己生成</li>
+      <li>语义模型字段加 Display Folder + Description</li>
+      <li>关键 KPI 用 Calculated Table 而不是 Measure，让 GPT 看到的 schema 更稳定</li>
+    </ol>
+
+    <h3>坑 2：Teams 配额撞墙</h3>
+    <p><strong>症状</strong>：前线 BP 同时问问题，Bot 返回"服务繁忙"。</p>
+    <p><strong>原因</strong>：Copilot Studio 默认有 messages/min 配额（Premium 30/min）。</p>
+    <p><strong>解决</strong>：</p>
+    <ol>
+      <li>评估实际并发量，<em>按需购买 Capacity</em></li>
+      <li>给高频问题加缓存（同一用户同一问题 5 分钟内不重复算）</li>
+    </ol>
+
+    <h3>坑 3：Outlook 邮件 Bot 进垃圾邮件箱</h3>
+    <p><strong>症状</strong>：DataAlertCopilot 发的邮件没人看到，因为进了 Junk。</p>
+    <p><strong>原因</strong>：发件域名 SPF/DKIM/DMARC 没配齐。</p>
+    <p><strong>解决</strong>：</p>
+    <ul>
+      <li>SPF: <code>v=spf1 include:spf.protection.outlook.com -all</code></li>
+      <li>DKIM: 在 Microsoft 365 Admin Center 启用</li>
+      <li>DMARC: <code>v=DMARC1; p=quarantine; rua=mailto:dmarc@yourdomain.com</code></li>
+    </ul>
+
+    <h3>坑 4：知识源版本混乱</h3>
+    <p><strong>症状</strong>：Agent 引用了过期的 SharePoint 文档。</p>
+    <p><strong>原因</strong>：SharePoint 文档被更新后，Copilot Studio 的索引没刷新。</p>
+    <p><strong>解决</strong>：配置 Knowledge Source 时开启 <em>Auto-refresh</em>（默认每天刷新），关键文档加 <code>manual refresh</code> API 调用。</p>
+
+    <h2>七、效果衡量</h2>
+
+    <p>上线 3 个月后可以看的指标：</p>
+
+    <table>
+      <thead><tr><th>维度</th><th>指标</th><th>目标值</th></tr></thead>
+      <tbody>
+        <tr><td><strong>使用率</strong></td><td>活跃用户数 / 总目标用户</td><td>&gt; 60%</td></tr>
+        <tr><td><strong>问答量</strong></td><td>日均问答次数</td><td>&gt; 200</td></tr>
+        <tr><td><strong>解决率</strong></td><td>高置信度回答占比</td><td>&gt; 70%</td></tr>
+        <tr><td><strong>用户满意度</strong></td><td>Thumbs-up rate</td><td>&gt; 75%</td></tr>
+        <tr><td><strong>业务影响</strong></td><td>因 Agent 触发的人工跟进减少</td><td>每月 200 小时</td></tr>
+        <tr><td><strong>新需求发现</strong></td><td>从 Agent 日志挖掘的"前线真正问题"</td><td>每周 ≥ 5 个</td></tr>
+      </tbody>
+    </table>
+
+    <h2>八、给 AI 工程师的三条建议</h2>
+
+    <h3>1. 从"决策层 + 自动告警"切入</h3>
+    <p>不要从"前线 BP 用的问答 Bot"开始 —— 用户接受度低、问题域复杂。</p>
+    <p><em>正确的切入路径</em>：</p>
+    <ol>
+      <li>第一步：<strong>DataAlertCopilot</strong>（自动邮件给管理层）—— 风险低、价值直接可见</li>
+      <li>第二步：<strong>PricingCopilot</strong>（嵌入 Teams）—— 决策层用起来，证明价值</li>
+      <li>第三步：<strong>前线 App 集成</strong> —— 价值传播到一线</li>
+    </ol>
+
+    <h3>2. 语义模型质量 &gt; Bot 数量</h3>
+    <p><em>不要堆 Bot</em>。一个语义模型配 4 个 Bot，比 4 个语义模型配 1 个 Bot 价值大 10 倍。</p>
+
+    <h3>3. 永远设计 Fallback</h3>
+    <p><em>GenAI 一定会出错</em>。你的工程价值不在于让 AI 100% 准确，而在于<em>出错时系统怎么兜底</em>。</p>
+
+    <h2>九、总结：GenAI 落地的真正杠杆</h2>
+
+    <p>Copilot Studio 不是银弹，但它给了我们三件关键的事：</p>
+
+    <ol>
+      <li><strong>入口在 Teams / Outlook</strong> —— 触达成本 0</li>
+      <li><strong>接企业真实数据</strong> —— 答案可信任</li>
+      <li><strong>可观测 + 可降级</strong> —— 工程可治理</li>
+    </ol>
+
+    <p>这三件事是 GenAI 从 demo 到生产<em>必经的最后一公里</em>。没有这三件事，AI 永远是 PPT；有了这三件事，AI 才是<strong>业务操作系统的一部分</strong>。</p>
+
+    <hr style="margin: 48px 0; border: none; border-top: 1px solid var(--border);">
+
+    <p style="text-align: center; font-style: italic; color: var(--text-muted);">
+      🌅 <strong>系列完结</strong>。下次如果继续写，可以聊：<em>怎么把 Copilot Studio 扩展到 Azure OpenAI 自部署模型</em>（数据合规要求高的场景）；或者 <em>AI Agent 编排</em>（多个 Bot 协同完成复杂任务）。
+    </p>
+
+  </div>
+</article>
+
+<footer>
+  <p>© 2026 <em>a few quiet things</em> · deployed on the edge, somehow</p>
+</footer>
+
+</body>
+</html>
