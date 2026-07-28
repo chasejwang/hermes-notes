@@ -94,6 +94,13 @@
     font-family: 'SF Mono', Monaco, Consolas, monospace; color: var(--accent); }
   .content em { font-style: italic; color: var(--accent); }
   .content strong { font-weight: 600; color: var(--text); }
+  .article-figure { margin: 36px 0 32px; }
+  .article-figure img { width: 100%; height: auto;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .article-figure .caption { font-size: 13px; color: var(--text-dim);
+    text-align: center; margin-top: 12px; font-style: italic;
+    line-height: 1.5; padding: 0 16px; }
   footer { padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-dim); }
   footer em { font-family: 'PP Editorial New', Georgia, serif;
     font-style: italic; color: var(--accent); }
@@ -129,6 +136,11 @@
   <div class="content">
 
     <blockquote>一个仿 CNN 恐惧与贪婪指数的 A 股定制版本。当前情绪 24.4 分，属极度恐惧区间。按 2018-2026 回测，极恐（&lt;25）后做多 60 日胜率 55.3%，极恐 2（&lt;15）胜率 60.0%。</blockquote>
+
+    <figure class="article-figure">
+      <img src="images/11-timeseries.png" alt="A 股情绪指数 vs 沪深 300 时序图" />
+      <figcaption class="caption">A 股情绪指数（蓝色填充）与沪深 300 累计净值（黑色线）的 8 年对照。红色虚线为极恐/极贪阈值。下方四色曲线为四个类别得分（动量/宽度/资金/波动率）。</figcaption>
+    </figure>
 
     <h2>起因</h2>
 
@@ -230,6 +242,11 @@
 
     <p>当然这个回测没考虑交易成本，也没考虑信号重复触发——真实的策略收益会低 1-3 个百分点。但 alpha 方向是确定的。</p>
 
+    <figure class="article-figure">
+      <img src="images/11-extreme-returns.png" alt="极值后未来 N 日收益分布" />
+      <figcaption class="caption">4 个时间窗口（5/10/20/60 日）× 4 个阈值（极恐2/极恐/极贪/极贪2）= 16 个箱型图。极恐 2（&lt;15）后 60 日的中位收益最为明显地偏向正值。</figcaption>
+    </figure>
+
     <h2>为什么不用更复杂的机器学习</h2>
 
     <p>有人会问：为什么不用 LSTM、Transformer、LightGBM？三个理由：</p>
@@ -265,6 +282,11 @@
     <p>机器学习的诱惑：要不要换成 LSTM / LightGBM 让模型自己学权重？我尝试过，<strong>AUC 比简单加权好 2-3 个百分点，但完全不可解释</strong>——你不知道模型为什么认为今天情绪是 24.4。</p>
 
     <p>我宁可要一个"60% 准确但能解释"的工具，也不要一个"62% 准确但黑盒"的工具。</p>
+
+    <figure class="article-figure">
+      <img src="images/11-hit-rate.png" alt="滚动胜率与策略回测" />
+      <figcaption class="caption">左上：极恐（&lt;25）后 20 日上涨胜率（3 年滚动），2025-2026 跳升至 ~70%。右上：60 日上涨胜率，长期稳定 55-65%。左下：极贪（&gt;75）后 20 日下跌胜率，2024 后约 55-60%。右下：极恐次日买入策略 vs 沪深 300 持有——策略 +48%，基准 +13%。</figcaption>
+    </figure>
 
     <h2>怎么用</h2>
 
