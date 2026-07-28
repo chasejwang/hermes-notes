@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行业版 A 股情绪指数：4 个极度恐惧，2 个中性，1 个恐惧</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
+    background-attachment: fixed;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  nav { position: sticky; top: 0; z-index: 100; background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between;
+    height: 56px; max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  .nav-brand { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; font-style: italic;
+    color: var(--text); text-decoration: none; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 14px; color: var(--text); text-decoration: none; opacity: 0.7; }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+  .article { max-width: 720px; margin: 0 auto; padding: 80px 24px 80px; }
+  .back-link { display: inline-block; font-size: 14px; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 32px; }
+  .back-link::before { content: "← "; }
+  .article-tag { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px; }
+  .article h1 { font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 40px; font-weight: 400; line-height: 1.15;
+    letter-spacing: -0.02em; color: var(--text); margin-bottom: 20px; }
+  .article-meta { font-size: 14px; color: var(--text-dim); margin-bottom: 32px; }
+  .article-cover { width: 100%; aspect-ratio: 3/2; object-fit: cover;
+    border-radius: 14px; margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .audio-block { background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin: 36px 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 8px 32px rgba(180, 88, 55, 0.06); }
+  .audio-block .label { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
+  .audio-block audio { width: 100%; height: 36px; }
+  .content { font-size: 18px; line-height: 1.75; color: var(--text); }
+  .content h2 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 28px; font-weight: 500; line-height: 1.25;
+    margin: 56px 0 18px; letter-spacing: -0.01em; }
+  .content h3 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; margin: 36px 0 12px; letter-spacing: -0.01em; }
+  .content p { margin-bottom: 18px; }
+  .content blockquote { border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px; margin: 32px 0; color: var(--text-muted);
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic; font-size: 19px; }
+  .content ul, .content ol { margin: 0 0 22px 24px; }
+  .content li { margin-bottom: 8px; }
+  .content table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 15px; }
+  .content th, .content td { padding: 12px 14px; text-align: left;
+    border-bottom: 1px solid var(--border); vertical-align: top; }
+  .content th { font-weight: 600; background: var(--surface); }
+  .content pre { background: #1e1e1e; color: #d4d4d4;
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 22px; overflow-x: auto;
+    margin: 24px 0; font-size: 13.5px; line-height: 1.6;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; }
+  .content pre code { background: transparent; padding: 0; color: inherit; }
+  .content code { background: var(--surface); padding: 2px 6px;
+    border-radius: 4px; font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; color: var(--accent); }
+  .content em { font-style: italic; color: var(--accent); }
+  .content strong { font-weight: 600; color: var(--text); }
+  .article-figure { margin: 36px 0 32px; }
+  .article-figure img { width: 100%; height: auto;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .article-figure .caption { font-size: 13px; color: var(--text-dim);
+    text-align: center; margin-top: 12px; font-style: italic;
+    line-height: 1.5; padding: 0 16px; }
+  footer { padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-dim); }
+  footer em { font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="index.html#essays">Essays</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article">
+  <a href="index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">Quant · Sector Sentiment · A-share · Structural Divergence</div>
+    <h1>行业版 A 股情绪指数：4 个极度恐惧，2 个中性，1 个恐惧</h1>
+    <div class="article-meta">2026-07-28 · 11 min read</div>
+    <img class="article-cover" src="images/12-industry-mondrian.jpg" alt="行业版 A 股情绪指数 · Mondrian 几何封面" />
+
+    <div class="audio-block">
+      <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
+      <audio controls preload="metadata">
+        <source src="audio/12-industry-summary.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+
+    <div class="content">
+
+      <blockquote>大盘情绪 24.4（极度恐惧）只告诉你一半真相。真正的故事是结构性分化：科技 / 新能源 / 制造 / 周期 全部极度恐惧；金融 / 消费 还撑在中性。7 行业均值 25.6，标准差 19.1。分歧巨大。</blockquote>
+
+      <h2>起因</h2>
+
+      <p>上周发了 <a href="article-11.html">《A 股情绪指数：当市场恐慌到 24.4 分，我做了件事》</a>，有读者问我：能不能看到底是哪些板块在恐慌？</p>
+
+      <p>这是一个好问题。大盘情绪 24.4 是<strong>加权结果</strong>——金融消费权重高，成长板块（科技 / 新能源）已经极度恐惧，但大盘指数因为防御板块的稳定而显得没那么惨。</p>
+
+      <p><strong>结构性分化才是 A 股的核心现实</strong>：单看大盘 24.4 是"要不要抄底"，拆开看是"在哪些板块抄底"。</p>
+
+      <figure class="article-figure">
+        <img src="images/12-snapshot.png" alt="当前 7 个行业情绪分对比" />
+        <figcaption class="caption">2026-07-27 当前读数。4 个成长 / 周期板块深陷极度恐惧（科技 14.8 / 新能源 8.0 / 制造 16.4 / 周期 5.7），2 个防御板块还撑在中性（金融 52.9 / 消费 47.1），医药 34.6 处于恐惧区间。</figcaption>
+      </figure>
+
+      <h2>为什么做行业版</h2>
+
+      <p>大盘情绪指数是"沪深 300 加权"，但 A 股真正的轮动发生在<strong>板块</strong>层面：</p>
+
+      <ul>
+        <li>2019-Q1：消费白酒 + 半导体新能源起飞，地产银行趴着</li>
+        <li>2021-Q1：所有板块齐涨，但成长板块比价值板块跑赢 30 个百分点</li>
+        <li>2022-Q2：上海封城所有板块齐跌，但医药和消费抗跌</li>
+        <li>2024-2025：金融消费防御性凸显，成长板块已经掉头</li>
+        <li>2026-Q3：今天看到的格局——成长周期深陷恐惧，防御板块撑住</li>
+      </ul>
+
+      <p><strong>如果只盯大盘情绪，你会错过所有这些轮动</strong>。</p>
+
+      <h2>7 个行业 + 对应指数</h2>
+
+      <p>我选了申万一级 7 个代表行业，分别跑同一套情绪指数：</p>
+
+      <table>
+        <thead><tr><th>行业</th><th>申万代码</th><th>指数名称</th></tr></thead>
+        <tbody>
+          <tr><td>科技</td><td>801080</td><td>电子</td></tr>
+          <tr><td>金融</td><td>801780</td><td>银行</td></tr>
+          <tr><td>消费</td><td>801120</td><td>食品饮料</td></tr>
+          <tr><td>医药</td><td>801150</td><td>医药生物</td></tr>
+          <tr><td>新能源</td><td>801730</td><td>电力设备</td></tr>
+          <tr><td>制造</td><td>801880</td><td>汽车</td></tr>
+          <tr><td>周期</td><td>801030</td><td>基础化工</td></tr>
+        </tbody>
+      </table>
+
+      <p>数据源：<code>akshare.index_hist_sw</code>，每个行业 3000-6400 行日度历史。</p>
+
+      <h2>5 个精简成分</h2>
+
+      <p>行业版是 v1 简化版，只用 5 个成分（去掉了资金面和宽度）：</p>
+
+      <table>
+        <thead><tr><th>成分</th><th>公式</th><th>权重</th><th>方向</th></tr></thead>
+        <tbody>
+          <tr><td><code>mom_20</code></td><td>20 日 pct_change</td><td>25%</td><td>+</td></tr>
+          <tr><td><code>ma_dev_60</code></td><td>收盘 / 60 日均线 - 1</td><td>15%</td><td>+</td></tr>
+          <tr><td><code>rv_20</code></td><td>20 日已实现波动率 × √252 × 100</td><td>25%</td><td>-</td></tr>
+          <tr><td><code>channel_20</code></td><td>(close - 20low) / (20high - 20low)</td><td>10%</td><td>+</td></tr>
+          <tr><td><code>mom_60</code></td><td>60 日 pct_change</td><td>25%</td><td>+</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>为什么去掉资金面</strong>：融资余额无法按行业切分（AKShare 没有这个接口）。北向资金按行业有数据但工作量更大，v2 再补。</p>
+
+      <p><strong>为什么去掉宽度</strong>：个股新高新低按行业切片需要每日拉全 A 股 5000+ 只股票再 group，工作量大。v2 用东方财富行业成分股接口可以做到。</p>
+
+      <p><strong>为什么用 60 日而不是 250 日均线</strong>：A 股行业轮动快（成长板块几周就能完成一次风格切换），长周期均线反应迟钝。</p>
+
+      <h2>当前读数</h2>
+
+      <table>
+        <thead><tr><th>行业</th><th>当前</th><th>20日均</th><th>60日均</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td><strong>科技</strong></td><td>14.8</td><td>44.2</td><td>64.0</td><td>🔴 极度恐惧</td></tr>
+          <tr><td><strong>金融</strong></td><td>52.9</td><td>24.7</td><td>37.8</td><td>⚪ 中性</td></tr>
+          <tr><td><strong>消费</strong></td><td>47.1</td><td>30.8</td><td>29.3</td><td>⚪ 中性</td></tr>
+          <tr><td><strong>医药</strong></td><td>34.6</td><td>42.6</td><td>37.5</td><td>🟠 恐惧</td></tr>
+          <tr><td><strong>新能源</strong></td><td>8.0</td><td>14.0</td><td>35.6</td><td>🔴 极度恐惧</td></tr>
+          <tr><td><strong>制造</strong></td><td>16.4</td><td>15.7</td><td>31.1</td><td>🔴 极度恐惧</td></tr>
+          <tr><td><strong>周期</strong></td><td>5.7</td><td>21.6</td><td>36.7</td><td>🔴 极度恐惧</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>横截面</strong>：7 行业均值 25.6，标准差 19.1。<strong>分歧巨大</strong>。</p>
+
+      <p><strong>20 日均 vs 60 日均</strong>：金融消费<em>快速下行</em>（当前 52.9/47.1，但 20 日均只有 24.7/30.8），说明防御板块过去 20 天才刚开始跌；新能源制造<em>已经在底部徘徊</em>（20 日均 14/16，已经接近 0）。</p>
+
+      <h2>8 年情绪周期</h2>
+
+      <figure class="article-figure">
+        <img src="images/12-timeseries.png" alt="7 个行业情绪指数时序对比" />
+        <figcaption class="caption">2018-2026 期间 7 个申万一级行业情绪分时序对比。红色填充 = 贪婪侧 / 蓝色填充 = 恐惧侧。2018-Q4 / 2021-Q1 是全行业齐涨顶点；2020-Q2 / 2022-Q2 是全行业齐跌谷底；2024-2026 是结构性分化期。</figcaption>
+      </figure>
+
+      <h2>月度热力图</h2>
+
+      <figure class="article-figure">
+        <img src="images/12-heatmap.png" alt="月度行业情绪热力图" />
+        <figcaption class="caption">7 行业月度情绪热力图（红色 = 贪婪 / 绿色 = 恐惧）。可以清楚看到 A 股历史上的几个关键情绪周期。2024-2025 起金融消费结构性抗跌，是大盘情绪指数看不到的。</figcaption>
+      </figure>
+
+      <h2>横截面分歧</h2>
+
+      <p>行业版最值钱的地方不是单个行业的读数，而是<strong>横截面分歧</strong>——什么时候行业之间分化大、什么时候齐涨齐跌。</p>
+
+      <figure class="article-figure">
+        <img src="images/12-dispersion.png" alt="横截面均值 + 离散度" />
+        <figcaption class="caption">上图：7 行业情绪均值时序。下图：60 日滚动横截面标准差。分歧最大日是 2024-02-06（微盘股崩盘前后），当时金融消费还在中性，科技 / 制造 / 周期已经掉到 20 以下。2024-2025 至今分歧持续扩大。</figcaption>
+      </figure>
+
+      <p><strong>分歧大 = 轮动机会多</strong>：当你看到某些板块极度恐惧而某些板块还在中性，资金轮动往往已经开始。</p>
+
+      <p><strong>分歧小 = 齐涨齐跌</strong>：往往是大趋势转折点。比如 2018-Q4 所有板块齐涨的顶点，紧接着就是齐跌。</p>
+
+      <h2>怎么用</h2>
+
+      <p><strong>按行业操作建议</strong>：</p>
+
+      <table>
+        <thead><tr><th>情绪区间</th><th>行业</th><th>操作建议</th></tr></thead>
+        <tbody>
+          <tr><td>极度恐惧（&lt;25）</td><td>新能源（8.0）、周期（5.7）、科技（14.8）、制造（16.4）</td><td>分批建仓 / 加仓</td></tr>
+          <tr><td>恐惧（25-45）</td><td>医药（34.6）</td><td>持有 / 等待催化</td></tr>
+          <tr><td>中性（45-55）</td><td>消费（47.1）、金融（52.9）</td><td>持有 / 不轻易加仓</td></tr>
+          <tr><td>贪婪（55-75）</td><td>—</td><td>分批减仓</td></tr>
+          <tr><td>极度贪婪（&gt;75）</td><td>—</td><td>减仓 / 锁定收益</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>具体思路</strong>：</p>
+
+      <ul>
+        <li><strong>新能源（8.0）</strong>：30 日新低，看 1-2 月能否反弹</li>
+        <li><strong>周期（5.7）</strong>：5 年新低，需要基本面验证（地产链、产能去化）</li>
+        <li><strong>科技（14.8）</strong>：电子板块，看 AI 链（光模块、PCB）能否率先反弹</li>
+        <li><strong>制造（16.4）</strong>：汽车链基本面分化（整车 vs 零部件 vs 智能驾驶），需要选股</li>
+        <li><strong>医药（34.6）</strong>：政策博弈，等待集采落地</li>
+        <li><strong>金融 + 消费</strong>：防御板块结构性抗跌，但 20 日均已经下行，可能补跌</li>
+      </ul>
+
+      <h2>完整的代码</h2>
+
+      <ul>
+        <li>项目目录：<code>~/.hermes/projects/finance-refresh/a-stock-sentiment-industry/</code></li>
+        <li>数据：<code>data/raw_industry.parquet</code> + <code>data/index_industry.parquet</code></li>
+        <li>脚本：<code>fetch_industry.py → compute_industry.py → plot_industry.py</code></li>
+      </ul>
+
+      <p>如果你想自己跑，所有代码都在上面那个目录。<strong>akshare 装上就能用</strong>。</p>
+
+      <h2>v2 计划</h2>
+
+      <ul>
+        <li><strong>加行业资金面</strong>：北向资金按行业切分（AKShare 有 <code>stock_hsgt_holding_statistics_em</code>）</li>
+        <li><strong>加行业宽度</strong>：每日按行业切片统计 60 日新高新低股数</li>
+        <li><strong>横向相关性矩阵</strong>：哪些行业情绪同步、哪些背离</li>
+        <li><strong>行业轮动策略</strong>：用行业情绪 + 行业动量，做 ETF 轮动</li>
+      </ul>
+
+      <h2>三个 Takeaway</h2>
+
+            <ul>
+              <li><strong>大盘情绪 24.4 太粗</strong>。结构性分化才是 A 股核心现实——金融消费撑住大盘，成长周期已经极度恐惧。</li>
+                          <li><strong>7 行业标准差 19.1</strong>是行业版最值钱的地方。大盘指数看不到这种分化——当分歧扩大时，轮动机会已经在路上。</li>
+                          <li><strong>操作上要按行业来</strong>，不能一刀切。新能源 8.0 和金融 52.9 是完全不同的信号。</li>
+            </ul>
+
+        </div>
+</article>
+
+<footer>
+  <p>© 2026 <em>made by a mediocre idealist</em> · deployed on the edge, somehow</p>
+</footer>
+
+</body>
+</html>
