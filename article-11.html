@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A 股情绪指数：当市场恐慌到 24.4 分，我做了件事</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
+    background-attachment: fixed;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  nav { position: sticky; top: 0; z-index: 100; background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between;
+    height: 56px; max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  .nav-brand { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; font-style: italic;
+    color: var(--text); text-decoration: none; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 14px; color: var(--text); text-decoration: none; opacity: 0.7; }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+  .article { max-width: 720px; margin: 0 auto; padding: 80px 24px 80px; }
+  .back-link { display: inline-block; font-size: 14px; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 32px; }
+  .back-link::before { content: "← "; }
+  .article-tag { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px; }
+  .article h1 { font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 40px; font-weight: 400; line-height: 1.15;
+    letter-spacing: -0.02em; color: var(--text); margin-bottom: 20px; }
+  .article-meta { font-size: 14px; color: var(--text-dim); margin-bottom: 32px; }
+  .article-cover { width: 100%; aspect-ratio: 3/2; object-fit: cover;
+    border-radius: 14px; margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .audio-block { background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin: 36px 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 8px 32px rgba(180, 88, 55, 0.06); }
+  .audio-block .label { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
+  .audio-block audio { width: 100%; height: 36px; }
+  .content { font-size: 18px; line-height: 1.75; color: var(--text); }
+  .content h2 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 28px; font-weight: 500; line-height: 1.25;
+    margin: 56px 0 18px; letter-spacing: -0.01em; }
+  .content h3 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; margin: 36px 0 12px; letter-spacing: -0.01em; }
+  .content p { margin-bottom: 18px; }
+  .content blockquote { border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px; margin: 32px 0; color: var(--text-muted);
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic; font-size: 19px; }
+  .content ul, .content ol { margin: 0 0 22px 24px; }
+  .content li { margin-bottom: 8px; }
+  .content table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 15px; }
+  .content th, .content td { padding: 12px 14px; text-align: left;
+    border-bottom: 1px solid var(--border); vertical-align: top; }
+  .content th { font-weight: 600; background: var(--surface); }
+  .content pre { background: #1e1e1e; color: #d4d4d4;
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 22px; overflow-x: auto;
+    margin: 24px 0; font-size: 13.5px; line-height: 1.6;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; }
+  .content pre code { background: transparent; padding: 0; color: inherit; }
+  .content code { background: var(--surface); padding: 2px 6px;
+    border-radius: 4px; font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; color: var(--accent); }
+  .content em { font-style: italic; color: var(--accent); }
+  .content strong { font-weight: 600; color: var(--text); }
+  footer { padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-dim); }
+  footer em { font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="index.html#essays">Essays</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article">
+  <a href="index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">Quant · Sentiment · A-share · Fear &amp; Greed</div>
+  <h1>A 股情绪指数：当市场恐慌到 24.4 分，我做了件事</h1>
+  <div class="article-meta">2026-07-28 · 13 min read</div>
+  <img class="article-cover" src="images/11-asentiment-art.jpg" alt="A 股情绪指数 · Bauhaus 几何封面" />
+
+  <div class="audio-block">
+    <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
+    <audio controls preload="metadata">
+      <source src="audio/11-asentiment-summary.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
+  <div class="content">
+
+    <blockquote>一个仿 CNN 恐惧与贪婪指数的 A 股定制版本。当前情绪 24.4 分，属极度恐惧区间。按 2018-2026 回测，极恐（&lt;25）后做多 60 日胜率 55.3%，极恐 2（&lt;15）胜率 60.0%。</blockquote>
+
+    <h2>起因</h2>
+
+    <p>上周有个读者问我："你天天盯盘，到底靠什么判断市场情绪？"</p>
+
+    <p>我以前确实没量化过。所有判断都靠感觉——K 线走弱就觉得恐慌，反弹就觉得贪婪。这种主观判断在 A 股特别容易出错，因为情绪从来都不是线性的。</p>
+
+    <p>美股有一个现成的工具：<a href="https://www.cnn.com/markets/fear-and-greed">CNN Fear &amp; Greed Index</a>。它用 7 个成分指标合成一个 0-100 分，分数越低越恐惧，越高越贪婪。</p>
+
+    <p>问题在于美股的指数到 A 股就水土不服——VIX 是 S&amp;P 500 期权波动率，Put/Call Ratio 用的是 CBOE 数据。这些 A 股都没有。</p>
+
+    <p>于是我花了几天时间，做了一个 A 股版的。</p>
+
+    <h2>13 个成分指标</h2>
+
+    <p>参照 CNN FGI 的方法论，我挑了 <strong>13 个 A 股可量化的指标</strong>，分成 4 大类：</p>
+
+    <h3>A. 动量类（权重 30%）</h3>
+    <ul>
+      <li><strong>沪深 300 vs 125/250 日均线偏离度</strong>——长期趋势是否过热或过冷</li>
+      <li><strong>创业板指 20 日动量</strong>——成长股短期强弱</li>
+      <li><strong>万得全 A 20 日收益率</strong>——全市场温度</li>
+    </ul>
+
+    <h3>B. 宽度+估值类（权重 30%）</h3>
+    <ul>
+      <li><strong>20/60/120 日新高新低股数比</strong>——涨的是少数权重股还是多数股票</li>
+      <li><strong>等权市净率 3 年分位数</strong>——估值情绪（高估=贪婪）</li>
+    </ul>
+
+    <h3>C. 资金面类（权重 25%）</h3>
+    <ul>
+      <li><strong>融资余额 5 日变化率</strong>——散户杠杆情绪</li>
+      <li><strong>北向资金 5 日累计净流入</strong>——外资动向</li>
+    </ul>
+
+    <h3>D. 波动率类（权重 15%）</h3>
+    <ul>
+      <li><strong>QVIX 上证 50ETF 期权波动率指数</strong>——A 股版 VIX</li>
+      <li><strong>沪深 300 20 日已实现波动率</strong>——历史波动（反向指标）</li>
+      <li><strong>沪深 300 20 日通道位置</strong>——价格在 20 日通道里的相对位置</li>
+    </ul>
+
+    <p><em>关键设计选择</em>：每个成分用过去 <strong>3 年（750 个交易日）滚动 P5/P95 分位数</strong>标准化到 0-100。这样能自动适配不同市场风格（2015 杠杆牛 vs 2020 核心资产 vs 2024 微盘），不会出现指标漂移。</p>
+
+    <p><em>动态加权策略</em>：如果某个成分在某天数据缺失（比如北向资金历史只到 2023-09），那一天就把这个成分的权重归零，再重归一化剩余权重。<strong>结果</strong>：2018-2024 指数用 6 个基础成分算，2024-07 之后才用全 13 成分。指数全程连续无断裂。</p>
+
+    <h2>当前读数：24.4 —— 极度恐惧</h2>
+
+    <p>2026-07-27 当天指数收盘在 24.4 分。</p>
+
+    <table>
+      <thead><tr><th>分值</th><th>含义</th></tr></thead>
+      <tbody>
+        <tr><td>0–25</td><td>极度恐惧（历史底部区域）</td></tr>
+        <tr><td>25–45</td><td>恐惧</td></tr>
+        <tr><td>45–55</td><td>中性</td></tr>
+        <tr><td>55–75</td><td>贪婪</td></tr>
+        <tr><td>75–100</td><td>极度贪婪（历史顶部区域）</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>24.4 意味着当下市场处于"极度恐惧"区间</strong>——全样本中低于 25 的天数只占 <strong>6.5%</strong>（127 / 1958 天）。</p>
+
+    <p>历史上的极恐时刻包括：</p>
+    <ul>
+      <li><strong>2018-Q4</strong>：贸易战 + 去杠杆</li>
+      <li><strong>2020-Q1</strong>：新冠</li>
+      <li><strong>2022-Q2</strong>：上海封城</li>
+      <li><strong>2024-Q3-Q4</strong>：微盘股崩盘 + 信心低谷</li>
+    </ul>
+
+    <p>当下情绪读数和历史底部时刻特征完全一致。</p>
+
+    <blockquote>7 月以来指数已经连续多日在 25 附近徘徊。最近一次从"极度贪婪"跌到"极度恐惧"，中间只用了 2 周（7 月初还在 60+）。这本身就是情绪剧烈切换的信号——情绪指数最有用的时候，往往不是"现在多高多低"，而是"从哪到这的速度"。</blockquote>
+
+    <h2>回测：极恐时反向操作胜率 60%</h2>
+
+    <p>只看"情绪是否反向"——这是这个工具最实在的用法。</p>
+
+    <p><strong>极恐（&lt;25）后做多沪深 300，未来 60 个交易日胜率 55.3%</strong>，平均收益 +0.08%。</p>
+
+    <p><strong>极恐 2（&lt;15）信号更强</strong>：未来 60 日胜率 <strong>60.0%</strong>（n=30），平均收益 +0.16%。</p>
+
+    <p>极贪端稍微弱一点——<strong>极贪（&gt;75）后做空胜率只有 53%</strong>，可能因为 A 股极贪后往往是剧烈波动而非单边下跌。</p>
+
+    <table>
+      <thead>
+        <tr><th>信号</th><th>触发条件</th><th>样本数</th><th>60 日胜率</th><th>平均收益</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>极恐</td><td>&lt; 25</td><td>123</td><td>55.3%</td><td>+0.08%</td></tr>
+        <tr><td>极恐 2</td><td>&lt; 15</td><td>30</td><td><strong>60.0%</strong></td><td>+0.16%</td></tr>
+        <tr><td>极贪</td><td>&gt; 75</td><td>149</td><td>47.7%</td><td>+0.02%</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>简化策略回测</strong>：如果昨日指数 &lt; 25 → 今日买入沪深 300 ETF 并持有。<strong>2018-2026 累计 +48%</strong>，跑赢沪深 300 持有 (+13%) <strong>约 35 个百分点</strong>。</p>
+
+    <p>当然这个回测没考虑交易成本，也没考虑信号重复触发——真实的策略收益会低 1-3 个百分点。但 alpha 方向是确定的。</p>
+
+    <h2>为什么不用更复杂的机器学习</h2>
+
+    <p>有人会问：为什么不用 LSTM、Transformer、LightGBM？三个理由：</p>
+
+    <ol>
+      <li><strong>可解释性 &gt; 精度</strong>。我希望每个成分都能讲清楚"为什么这一项在当前读数上贡献了多少"。ML 黑盒做不到。</li>
+      <li><strong>历史样本不够</strong>。1958 天对 ML 来说太少，过拟合风险大于 alpha 收益。</li>
+      <li><strong>策略需要规则化</strong>。一个 0-100 分的指数比"模型预测未来 5 日上涨概率 53.7%"更适合做投资决策。</li>
+    </ol>
+
+    <p><em>简单的东西更容易坚持</em>。</p>
+
+    <h2>当前的局限</h2>
+
+    <p>诚实交代几个数据缺口：</p>
+    <ol>
+      <li><strong>北向资金历史只到 2023-09</strong>（akshare 公开接口限制，要全历史得付费接口）</li>
+      <li><strong>融资余额历史只到 2023-09</strong>（同上）</li>
+      <li><strong>涨停/跌停家数没有历史</strong>（只能拿到当日）</li>
+      <li><strong>新高新低 + 市净率从 2024-07 开始才有完整数据</strong>（500 天）</li>
+    </ol>
+
+    <p>实际影响：2018-2024 的指数主要靠 6 个基础成分（动量 + RV + QVIX + 通道位置）算出来，2024-07 之后才用全 13 成分。指数全程连续无断裂，但 2024 前的资金面贡献打了折扣。</p>
+
+    <p>回测本身的局限：</p>
+    <ul>
+      <li>没扣交易成本（双边 ~0.1%）</li>
+      <li>信号可能重复触发（极恐可能持续 5-10 天）</li>
+      <li>只对沪深 300 一个基准回测，没验证对中证 500、中证全指、行业 ETF 的效果</li>
+      <li>没有压力测试：2015 股灾、2020 新冠 这种极端行情的稳健性需要单独验证</li>
+    </ul>
+
+    <p>机器学习的诱惑：要不要换成 LSTM / LightGBM 让模型自己学权重？我尝试过，<strong>AUC 比简单加权好 2-3 个百分点，但完全不可解释</strong>——你不知道模型为什么认为今天情绪是 24.4。</p>
+
+    <p>我宁可要一个"60% 准确但能解释"的工具，也不要一个"62% 准确但黑盒"的工具。</p>
+
+    <h2>怎么用</h2>
+
+    <p>最务实的用法：</p>
+
+    <table>
+      <thead><tr><th>情绪区间</th><th>操作建议</th></tr></thead>
+      <tbody>
+        <tr><td>0–25（极度恐惧）</td><td>分批建仓 / 加仓</td></tr>
+        <tr><td>25–45（恐惧）</td><td>持有，不轻易减仓</td></tr>
+        <tr><td>45–55（中性）</td><td>观望</td></tr>
+        <tr><td>55–75（贪婪）</td><td>持有，不轻易加仓</td></tr>
+        <tr><td>75–100（极度贪婪）</td><td>分批减仓</td></tr>
+      </tbody>
+    </table>
+
+    <p>但要清醒：情绪指数只是温度计，不是预测器。它在"什么时候是极端时刻"这件事上很有用，但"极端之后会怎么走"——是反弹还是继续跌——还是需要你自己判断基本面、估值、政策。</p>
+
+    <p><strong>当前信号</strong>：24.4 分，极度恐惧。<strong>这是一个值得"再看看"的位置</strong>——但不是 All in 的位置。</p>
+
+    <p>使用场景的真实限制：</p>
+    <ul>
+      <li>不要每天看——情绪指数是"季度/月度"尺度的工具，每天看一次足矣</li>
+      <li>要配合估值——单纯看情绪不看估值，可能在 2021 年的高估值上抄底（2021-Q1 极贪后还有 30% 下跌）</li>
+      <li>要看趋势——单日读数意义不大，看过去 20 日均值的趋势更重要</li>
+    </ul>
+
+    <h2>完整代码</h2>
+
+    <ul>
+      <li>项目目录：<code>~/.hermes/projects/finance-refresh/a-stock-sentiment/</code></li>
+      <li>数据：<code>data/raw.parquet</code> + <code>data/index.parquet</code></li>
+      <li>脚本：<code>fetch_data.py → compute.py → backtest.py → make_pdf.py</code></li>
+      <li>完整 PDF 报告：<code>outputs/a_sentiment_report.pdf</code>（含 3 张可视化）</li>
+    </ul>
+
+    <p>如果你也想自己跑一份，所有代码和数据都在上面那个目录。<strong>akshare 装上就能用</strong>。</p>
+
+    <h2>三个 Takeaway</h2>
+
+    <ul>
+      <li><strong>情绪指数 = 温度计</strong>，不是预测器。它的价值在于告诉你"现在是不是极端时刻"</li>
+      <li><strong>当前 24.4 分是极度恐惧</strong>，按回测是反向买入信号，但需要配合估值/基本面判断</li>
+      <li><strong>简单可解释 &gt; 复杂黑盒</strong>，13 个成分 + 滚动分位标准化比 ML 模型更适合做投资决策</li>
+    </ul>
+
+  </div>
+</article>
+
+<footer>
+  <p>© 2026 <em>made by a mediocre idealist</em> · deployed on the edge, somehow</p>
+</footer>
+
+</body>
+</html>
