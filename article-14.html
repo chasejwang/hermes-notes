@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>karpathy/autoresearch · 3 文件 + 1 agent = 100 实验/晚</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
+    background-attachment: fixed;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  nav { position: sticky; top: 0; z-index: 100; background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: align-items: center; justify-content: space-between;
+    height: 56px; max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  .nav-brand { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; font-style: italic;
+    color: var(--text); text-decoration: none; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 14px; color: var(--text); text-decoration: none; opacity: 0.7; }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+  .article { max-width: 720px; margin: 0 auto; padding: 80px 24px 80px; }
+  .back-link { display: inline-block; font-size: 14px; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 32px; }
+  .back-link::before { content: "← "; }
+  .article-tag { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px; }
+  .article h1 { font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 40px; font-weight: 400; line-height: 1.15;
+    letter-spacing: -0.02em; color: var(--text); margin-bottom: 20px; }
+  .article h2 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 28px; font-weight: 500; line-height: 1.25;
+    margin: 56px 0 18px; letter-spacing: -0.01em; }
+  .article h3 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px; font-weight: 500; margin: 36px 0 12px; letter-spacing: -0.01em; }
+  .article-meta { font-size: 14px; color: var(--text-dim); margin-bottom: 32px; }
+  .article-cover { width: 100%; aspect-ratio: 3/2; object-fit: cover;
+    border-radius: 14px; margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .audio-block { background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin: 36px 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 8px 32px rgba(180, 88, 55, 0.06); }
+  .audio-block .label { font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
+  .audio-block audio { width: 100%; height: 36px; }
+  .content { font-size: 18px; line-height: 1.75; color: var(--text); }
+  .content p { margin-bottom: 18px; }
+  .content blockquote { border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px; margin: 32px 0; color: var(--text-muted);
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic; font-size: 19px; }
+  .content ul, .content ol { margin: 0 0 22px 24px; }
+  .content li { margin-bottom: 8px; }
+  .content table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 15px; }
+  .content th, .content td { padding: 12px 14px; text-align: left;
+    border-bottom: 1px solid var(--border); vertical-align: top; }
+  .content th { font-weight: 600; background: var(--surface); }
+  .content pre { background: #1e1e1e; color: #d4d4d4;
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 22px; overflow-x: auto;
+    margin: 24px 0; font-size: 13.5px; line-height: 1.6;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; }
+  .content code { background: var(--surface); padding: 2px 6px;
+    border-radius: 4px; font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace; color: var(--accent); }
+  .content em { font-style: italic; color: var(--accent); }
+  .content strong { font-weight: 600; color: var(--text); }
+  .article-figure { margin: 36px 0 32px; }
+  .article-figure img { width: 100%; height: auto;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+  .article-figure .caption { font-size: 13px; color: var(--text-dim);
+    text-align: center; margin-top: 12px; font-style: italic;
+    line-height: 1.5; padding: 0 16px; }
+  footer { padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-dim); }
+  footer em { font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic; color: var(--accent); }
+  .callout { background: linear-gradient(135deg, #fff4e0 0%, #fbe4cf 100%);
+    border: 1px solid #ed8936; border-radius: 14px; padding: 24px 28px; margin: 0 0 36px 0; }
+  .callout-label { font-size: 12px; font-weight: 600; letter-spacing: 0.18em;
+    text-transform: uppercase; color: #b45837; margin-bottom: 10px; }
+  .callout h3 { font-family: 'PP Editorial New', Georgia, serif;
+    font-size: 22px; font-weight: 500; margin: 0 0 10px 0; color: #1a1814; }
+  .callout p { margin: 0 0 12px 0; font-size: 16px; color: #1a1814; }
+  .callout p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="index.html#essays">Essays</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article">
+  <a href="index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">AI Research · Karpathy · Agentic · 2026-03</div>
+  <h1>karpathy/autoresearch：3 文件 + 1 agent = 100 实验/晚</h1>
+  <div class="article-meta">2026-07-29 · 11 min read</div>
+  <img class="article-cover" src="images/14-autoresearch-cover.jpg" alt="AutoResearch · 自主科研封面（金色粒子云）" />
+
+  <div class="audio-block">
+    <div class="label">Audio version · MiniMax TTS · male-qn-jingying · 2:25</div>
+    <audio controls preload="metadata">
+      <source src="audio/14-autoresearch-summary.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
+  <div class="content">
+
+    <div class="callout">
+      <div class="callout-label">★ 范式转变 · 2026-03</div>
+      <h3>"研究现在完全属于跨计算集群的 AI agent swarm 的领域。"</h3>
+      <p>2026 年 3 月，<strong>Andrej Karpathy</strong> 在 GitHub 上开源了 <code>karpathy/autoresearch</code> —— 630 行 Python，3 个文件，让一个 AI coding agent 在单 GPU 上跑一整夜的 ML 实验。</p>
+      <p>我读完整个项目后意识到：<strong>这不只是个工具，这是科研范式的转变</strong>。从此你不再写 train.py，你写 <code>program.md</code>。</p>
+    </div>
+
+    <h2>三个文件 · 一个范式</h2>
+
+    <p>Karpathy 把项目控制在最少文件数。<strong>三个文件，每个角色清晰：</strong></p>
+
+    <figure class="article-figure">
+      <img src="images/14-program-md.png" alt="三个文件 + 一个 agent 的概念图" />
+      <figcaption class="caption">karpathy/autoresearch 的三个文件：<code>prepare.py</code> 冻结、<code>train.py</code> agent 修改、<code>program.md</code> 人类修改。中心是 AI coding agent（Claude Code / OpenAI Codex），围绕 program.md 的指令循环迭代。</figcaption>
+    </figure>
+
+    <table>
+      <thead><tr><th>文件</th><th>内容</th><th>谁改</th></tr></thead>
+      <tbody>
+        <tr><td><code>prepare.py</code></td><td>固定常量、数据准备、BPE tokenizer、dataloader、evaluation</td><td><strong>❌ 冻结</strong>（任何人都不改）</td></tr>
+        <tr><td><code>train.py</code></td><td>完整 GPT 模型本体、Muon + AdamW 优化器、训练循环</td><td><strong>🤖 Agent</strong>（agent 改这一个文件）</td></tr>
+        <tr><td><code>program.md</code></td><td>给 agent 的指令（实验方向、边界、假设、研究组织代码）</td><td><strong>👤 人类</strong>（这就是新的"代码"）</td></tr>
+      </tbody>
+    </table>
+
+    <p>设计原则是<strong>单文件范围</strong> —— agent 只改 <code>train.py</code>。这让 diff 可读、scope 不爆炸、人类 review 友好。</p>
+
+    <blockquote>"You are not programming Python. <strong>You are programming the program.md Markdown files that provide context to the AI agents</strong> and set up your autonomous research org." —— karpathy/autoresearch README</blockquote>
+
+    <h2>5 分钟 · 100 实验 · 一晚</h2>
+
+    <p>循环很简单。Agent 编辑 <code>train.py</code> → 跑 5 分钟（固定时间，wall clock）→ 比较 <strong>val_bpb</strong>（bits per byte，越低越好）→ 更好就保留，否则回滚。</p>
+
+    <figure class="article-figure">
+      <img src="images/14-autoresearch-loop.png" alt="5 分钟实验循环流程图" />
+      <figcaption class="caption">单次实验循环：① Agent 编辑 <code>train.py</code> → ② 跑 5 分钟（单 GPU）→ ③ 对比 val_bpb → ④ keep / discard。中心红框是设计核心：固定 5 分钟。一晚 100 个实验。</figcaption>
+    </figure>
+
+    <p>为什么 5 分钟？为什么不跑到收敛？</p>
+
+    <p>Karpathy 给了两个理由：</p>
+
+    <ul>
+      <li><strong>实验可比</strong> —— 5 分钟时间预算下，所有人的结果可以横向比较。你的 H100 和我的 H100 跑的是同一个时间约束下的最优模型。</li>
+      <li><strong>防止 agent 死磕硬件</strong> —— 没有时间限制，agent 会把模型越改越大、batch 越调越大，最后跟你那台 GPU 死磕到底。5 分钟是边界。</li>
+    </ul>
+
+    <p>数学很简单：<strong>~12 次实验/小时，~100 次/晚</strong>。Agent 不睡觉，你一晚醒来看到 100 行实验日志 + 一个更好的模型。</p>
+
+    <figure class="article-figure">
+      <img src="images/14-experiment-log.png" alt="100 实验模拟时序图" />
+      <figcaption class="caption">一晚 100 个实验的模拟时序：横轴是实验编号（~5 分钟/次），纵轴是 val_bpb。蓝点 = 失败实验（被回滚），红点 = 保留实验（更新当前最佳）。下图是累计保留曲线 —— 100 次后保留 15 次左右（12% 命中率），但每次保留都比上次更好。</figcaption>
+    </figure>
+
+    <h2>三阶段范式转变</h2>
+
+    <p>Karpathy 把这放进了一个更宽的框架：<strong>AI 介入研究的三阶段</strong>。</p>
+
+    <figure class="article-figure">
+      <img src="images/14-paradigm-shift.png" alt="范式转变三阶段" />
+      <figcaption class="caption">Vibe Coding → Agentic Engineering → Independent Research。当前位于第三阶段的开端，autoresearch 是它的种子项目。</figcaption>
+    </figure>
+
+    <table>
+      <thead><tr><th>阶段</th><th>人类角色</th><th>AI 角色</th><th>代表</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Vibe Coding</strong></td><td>写 prompt</td><td>写代码、人类 review</td><td>ChatGPT + copy-paste</td></tr>
+        <tr><td><strong>Agentic Engineering</strong></td><td>编排</td><td>多步执行、实时监督</td><td>Devin、Cursor Composer</td></tr>
+        <tr><td><strong>Independent Research</strong></td><td>定方向</td><td>跑实验、过夜自治</td><td><strong>★ autoresearch ★</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p>关键转变在第三阶段：<strong>人类从"操作工"变成"研究组织的设计者"</strong>。你的产出不再是"我跑了一次实验"，而是"我设计了让 agent 跑 100 次实验的研究组织"。</p>
+
+    <h2>30+ 生态项目</h2>
+
+    <p>autoresearch 不是孤例。<strong>2026-03 之后，整个生态爆炸</strong>：</p>
+
+    <figure class="article-figure">
+      <img src="images/14-ecosystem-treemap.png" alt="AutoResearch 生态 30+ 项目 treemap" />
+      <figcaption class="caption">30+ 个项目按 stars 大小排列。karpathy 92.3k 一骑绝尘。右侧 5 个 next-big 是 End-to-End 完整流水线（AI-Scientist / AutoResearchClaw / AI-Scientist / RD-Agent / AutoResearchClaw）。底部 6 个是其他分类（Deep Research / Code Agents / Skills / Domain / Writing / Awesome）。颜色 = 类别。</figcaption>
+    </figure>
+
+    <table>
+      <thead><tr><th>类别</th><th>代表项目</th><th>做了什么</th></tr></thead>
+      <tbody>
+        <tr><td>End-to-End Systems</td><td>karpathy/autoresearch · SakanaAI/AI-Scientist-v2 · microsoft/RD-Agent · aiming-lab/AutoResearchClaw</td><td>完整研究流水线：想法 → 文献 → 实验 → 论文</td></tr>
+        <tr><td>Deep Research</td><td>kaixindelele/ChatPaper (19.3k) · stanford-oval/storm</td><td>AI 帮你读 paper、写综述</td></tr>
+        <tr><td>Code Agents</td><td>WecoAI/AIDE · bytedance/deer-flow</td><td>实验代码自动生成 + 调试</td></tr>
+        <tr><td>Skills & Plugins</td><td>K-Dense-AI/claude-scientific-skills (15.5k)</td><td>"Skills" 范式（program.md 的进化）</td></tr>
+        <tr><td>Domain-Specific</td><td>snap-stanford/Biomni</td><td>垂直领域：生物医学</td></tr>
+      </tbody>
+    </table>
+
+    <p>其中两个项目最值得对比：</p>
+
+    <ul>
+      <li><strong>karpathy/autoresearch</strong>（92.3k）— 极简，3 文件，单 GPU 训练循环，agent 编辑 <code>train.py</code>。</li>
+      <li><strong>aiming-lab/AutoResearchClaw</strong>（13.9k）— 23 阶段完整论文流水线，HITL 协作，4 层反伪造引用检查。</li>
+    </ul>
+
+    <p>前者的价值是"教范式"，后者的价值是"做产品"。Karpathy 给的是种子，aiming-lab 把它长成了森林。</p>
+
+    <h2>我的"金融版 autoresearch"</h2>
+
+    <p>我之前做的 <a href="article-11.html">A 股情绪指数</a> 项目 —— 13 成分、滚动分位数、5 年回测 —— 实际上就是一个<strong>手工版的 autoresearch</strong>。</p>
+
+    <p>对比一下：</p>
+
+    <table>
+      <thead><tr><th>autoresearch 范式</th><th>A 股情绪指数 v1 → v2 → v2 行业版</th></tr></thead>
+      <tbody>
+        <tr><td>Agent 修改 <code>train.py</code></td><td>我修改 <code>compute.py</code>（v1 → v2 加 7 个成分）</td></tr>
+        <tr><td>5 分钟固定时间预算</td><td>固定 5%/95% 滚动分位数规则</td></tr>
+        <tr><td><code>val_bpb</code> 单一指标</td><td><code>a_sentiment</code> 0-100 分数</td></tr>
+        <tr><td>Self-healing repair</td><td>AutoResearchClaw 的 <code>repair.py</code>（4 层反伪造）</td></tr>
+        <tr><td>100 实验/晚</td><td>3 个手动循环（24.4 → 14.7 → 26.1 行业版）</td></tr>
+        <tr><td>Single iteration loop</td><td>v0.4.0 HITL Co-Pilot</td></tr>
+      </tbody>
+    </table>
+
+    <p>我手动跑了 3 个版本（<a href="article-11.html">大盘版</a> → <a href="article-12.html">行业版 v1</a> → <a href="article-12.html">行业版 v2</a>）。如果用 autoresearch 的范式 + 写一个 <code>program.md</code>，<strong>一晚 100 个版本不是梦</strong>。</p>
+
+    <h2>局限：创造力的天花板</h2>
+
+    <p>autoresearch 自动化<strong>方法论</strong>。但 Karpathy 自己也很清楚：<strong>创造力的天花板还在人那里</strong>。</p>
+
+    <ul>
+      <li><strong>选哪个研究方向</strong>值得追 —— agent 不会替你判断</li>
+      <li><strong>框架化研究问题</strong>足够清晰 —— agent 才能 act on it</li>
+      <li><strong>认识一个负面结果的信号价值</strong> —— 何时"失败"比"成功"更有趣</li>
+      <li><strong>知道 metric 本身错了</strong>，不是超参错了 —— 这种 meta-cognition 极难自动化</li>
+    </ul>
+
+    <blockquote>DataCamp 的原话：<em>"AutoResearch right now automates the <strong>methodical part</strong> of ML research: running and evaluating hundreds of small experiments. The <strong>creative part</strong> — picking the right research direction, framing the question — still needs human intent."</em></blockquote>
+
+    <p>100 实验/晚意味着 <strong>100 次确认你 prior 的机会</strong>，不是 100 个发现。<strong>AutoResearch 是你研究品味的放大器</strong>，不是替代品。</p>
+
+    <h2>5 件立即可做的事</h2>
+
+    <p>如果你看完也想动手：</p>
+
+    <ol>
+      <li><strong>装上 uv</strong>：<code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></li>
+      <li><strong>Clone & 试单次</strong>：<code>git clone https://github.com/karpathy/autoresearch && cd autoresearch && uv sync && uv run prepare.py && uv run train.py</code>（5 分钟）</li>
+      <li><strong>写第一份 <code>program.md</code></strong>：用 Markdown 描述你的实验方向 —— 这就是"研究组织代码"</li>
+      <li><strong>拉 Claude Code 或 OpenAI Codex</strong>：在仓库里启动，prompt 它"读 program.md 然后开始"</li>
+      <li><strong>让它跑一晚</strong>：第二天 review <code>results.tsv</code> + diff 历史</li>
+    </ol>
+
+    <p>完整项目代码：<a href="https://github.com/karpathy/autoresearch" target="_blank">github.com/karpathy/autoresearch</a>（MIT，630 LOC，92.3k stars）。</p>
+
+    <h2>三个 Takeaway</h2>
+
+    <ul>
+      <li><strong><code>program.md</code> 是新代码</strong>。你不再写 Python，你写给 agent 的研究组织指令。3 文件 + 1 agent + 5 分钟 = 100 实验/晚。</li>
+      <li><strong>5 分钟不是限制，是设计</strong>。固定时间预算让实验可比，让 agent 不会死磕硬件，让你的 H100 和别人的 H100 跑出可比较的结果。</li>
+      <li><strong>AutoResearch 自动化方法论，不自动化创造力</strong>。选方向、框架化问题、识别负面结果的信号价值 —— 这些还是人的领域。AutoResearch 是研究品味的放大器，不是替代品。</li>
+    </ul>
+
+    <h2>完整调研（Obsidian 笔记）</h2>
+
+    <p>更长的深度研究版本在 Obsidian vault 里：</p>
+
+    <ul>
+      <li>主笔记：<a href="file:///Users/javis/Documents/Obsidian%20Vault/Finance/_AI-Methodology/AutoResearch-GitHub-Ecosystem/00%20-%20AutoResearch%20%C2%B7%20GitHub%20Ecosystem%20Deep%20Dive.md" target="_blank">AutoResearch · GitHub Ecosystem Deep Dive</a>（32 KB · 9 章节）</li>
+      <li>索引：<a href="file:///Users/javis/Documents/Obsidian%20Vault/Finance/_AI-Methodology/AutoResearch-GitHub-Ecosystem/00%20-%20AutoResearch%20Ecosystem%20%C2%B7%20%E7%B4%A2%E5%BC%95.md" target="_blank">AutoResearch Ecosystem · 索引</a></li>
+      <li>速查表：<a href="file:///Users/javis/Documents/Obsidian%20Vault/Finance/_AI-Methodology/AutoResearch-GitHub-Ecosystem/00%20-%20AutoResearch%20Cheat%20Sheet%20%C2%B7%2030%2B%20%E9%A1%B9%E7%9B%AE%E5%B0%8D%E6%AF%94.md" target="_blank">30+ 项目对比速查表</a></li>
+    </ul>
+
+  </div>
+</article>
+
+<footer>
+  <p>© 2026 <em>made by a mediocre idealist</em> · deployed on the edge, somehow</p>
+</footer>
+
+</body>
+</html>
