@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>量化五大流派 · 实战回测 — A Few Quiet Things</title>
+<meta name="description" content="用 A 股真实数据跑量化交易五大流派的实战回测：趋势、均值回归、因子、ML、风险管理。结果坦诚：5 个策略里 4 个跑输了 buy & hold。">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+    --good: #2c7a3e;
+    --bad: #b44545;
+    --neutral: #6a5f52;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.5;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
+    background-attachment: fixed;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  .container { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+  }
+  nav .container {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  nav .brand {
+    font-weight: 600; font-size: 15px; letter-spacing: -0.01em;
+    color: var(--text); text-decoration: none;
+  }
+  nav .nav-links { display: flex; gap: 24px; }
+  nav .nav-links a {
+    font-size: 14px; color: var(--text-muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    padding: 100px 0 60px;
+    text-align: center;
+  }
+  .hero .tag {
+    display: inline-block;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent);
+    padding: 4px 12px; border: 1px solid var(--accent);
+    border-radius: 980px; margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: 56px; font-weight: 700; line-height: 1.07;
+    letter-spacing: -0.02em; margin-bottom: 20px;
+  }
+  .hero .sub {
+    font-size: 22px; line-height: 1.4; color: var(--text-muted);
+    max-width: 720px; margin: 0 auto 32px;
+  }
+  .hero .meta {
+    display: inline-flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    font-size: 14px; color: var(--text-dim);
+  }
+  .hero .meta span::before { content: "· "; opacity: 0.5; }
+  .hero .meta span:first-child::before { content: ""; }
+
+  /* SECTIONS */
+  section { padding: 60px 0; }
+  section h2 {
+    font-size: 36px; font-weight: 700; line-height: 1.15;
+    letter-spacing: -0.015em; margin-bottom: 16px;
+  }
+  section .lead {
+    font-size: 19px; line-height: 1.5; color: var(--text-muted);
+    max-width: 720px; margin-bottom: 48px;
+  }
+
+  /* CARD */
+  .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  }
+  .card-label {
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 8px; font-weight: 600;
+  }
+  .card h3 {
+    font-size: 24px; font-weight: 600; line-height: 1.2;
+    letter-spacing: -0.01em; margin-bottom: 12px;
+  }
+  .card p {
+    font-size: 16px; line-height: 1.6; color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .card .meta {
+    font-size: 13px; color: var(--text-dim);
+    display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .card .meta span { display: inline-flex; align-items: center; gap: 4px; }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  thead { background: var(--bg-1); }
+  th, td {
+    padding: 12px 16px; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    font-weight: 600; color: var(--text);
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  td { color: var(--text-muted); }
+  tr:last-child td { border-bottom: none; }
+  .pos { color: var(--good); font-weight: 600; }
+  .neg { color: var(--bad); font-weight: 600; }
+  .neu { color: var(--neutral); }
+
+  /* HIGHLIGHT BOX */
+  .highlight {
+    background: linear-gradient(135deg, #fff4e0 0%, #f4e4d4 100%);
+    border: 1px solid var(--border-strong);
+    border-radius: 18px;
+    padding: 32px;
+    margin: 32px 0;
+  }
+  .highlight h4 {
+    font-size: 20px; font-weight: 600; margin-bottom: 12px;
+    color: var(--text);
+  }
+  .highlight p {
+    font-size: 16px; line-height: 1.6; color: var(--text);
+    margin-bottom: 12px;
+  }
+  .highlight .big {
+    font-size: 56px; font-weight: 700; letter-spacing: -0.02em;
+    color: var(--accent); line-height: 1.1; margin: 8px 0;
+  }
+  .highlight .small {
+    font-size: 14px; color: var(--text-muted);
+  }
+
+  /* FINDINGS */
+  .findings {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 40px;
+    margin: 32px 0;
+  }
+  .findings h3 {
+    font-size: 22px; font-weight: 600; margin-bottom: 20px;
+  }
+  .findings ol {
+    list-style: none; counter-reset: finding;
+  }
+  .findings li {
+    counter-increment: finding;
+    padding: 16px 0 16px 48px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    font-size: 16px; line-height: 1.55;
+    color: var(--text);
+  }
+  .findings li:last-child { border-bottom: none; }
+  .findings li::before {
+    content: counter(finding);
+    position: absolute; left: 0; top: 16px;
+    width: 32px; height: 32px;
+    background: var(--bg-1); border: 1px solid var(--accent);
+    color: var(--accent); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 14px;
+  }
+  .findings li b { font-weight: 600; }
+  .findings li em { font-style: normal; color: var(--accent); font-weight: 500; }
+
+  /* CODE BLOCK */
+  pre {
+    background: #1a1814; color: #faf8f2;
+    padding: 20px 24px; border-radius: 12px;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 13px; line-height: 1.55;
+    overflow-x: auto; margin: 16px 0;
+  }
+  code {
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 14px;
+    background: var(--bg-1);
+    padding: 2px 6px; border-radius: 4px;
+  }
+  pre code {
+    background: transparent; padding: 0; color: inherit;
+  }
+
+  /* BUTTON */
+  .btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 980px;
+    font-size: 15px; font-weight: 500;
+    text-decoration: none; transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--accent); color: white;
+  }
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+  }
+  .btn-secondary {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border-strong);
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .cta-row { display: flex; gap: 12px; margin: 32px 0; flex-wrap: wrap; }
+
+  /* FOOTER */
+  footer {
+    padding: 60px 0 40px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+  }
+  footer p {
+    font-size: 13px; color: var(--text-dim);
+    margin: 6px 0;
+  }
+  footer a { color: var(--text-muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 40px; }
+    .hero .sub { font-size: 18px; }
+    section h2 { font-size: 28px; }
+    .card { padding: 24px; }
+    .findings, .highlight { padding: 24px; }
+    .highlight .big { font-size: 40px; }
+    table { font-size: 12px; }
+    th, td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="index.html" class="brand">A Few Quiet Things</a>
+    <div class="nav-links">
+      <a href="index.html">Essays</a>
+      <a href="quant-backtest.html">Quant</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <span class="tag">Research · Quant</span>
+    <h1>量化五大流派<br>实战回测</h1>
+    <p class="sub">用 A 股真实数据跑 7 个核心理论。坦诚地说：5 个策略里 4 个跑输了 buy & hold。</p>
+    <div class="meta">
+      <span>2026-07-30</span>
+      <span>A 股 2010-2026</span>
+      <span>HS300 + CYB + 1,800 只股</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>这是什么样的研究</h2>
+    <p class="lead">把"量化五大流派"知识库里的<strong>核心理论</strong>，用 A 股真实数据 (2010-2026) 跑出可比较的回测结果。两个独立的实战：</p>
+
+    <div class="card">
+      <div class="card-label">Backtest #1 · 单标验证</div>
+      <h3>5 大流派在沪深 300 单标上跑</h3>
+      <p>趋势 (TSMOM) / 均值回归 (z-score 价差) / 因子 (Momentum + Value + Low-Vol) / ML (GBR) / 风险管理 (Kelly + Risk Parity + Vol Targeting)。每个流派 1-2 个代表策略，跑 2010-2026 全部历史。</p>
+      <div class="meta">
+        <span>📊 沪深 300 4024 天</span>
+        <span>🎯 5 个策略</span>
+        <span>📅 2010-01-04 → 2026-07-30</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Backtest #2 · 横截面 ML</div>
+      <h3>1,800 只股横截面 LightGBM 选股</h3>
+      <p>把"金融 ML"做成 A 股头部量化私募的样子：1,800 只股 × 18 个 alpha 因子 × LightGBM walk-forward × 18 月横截面分组回测。</p>
+      <div class="meta">
+        <span>📊 1,799 只股 × 623 个交易日</span>
+        <span>🤖 LightGBM (sklearn GBR fallback)</span>
+        <span>📅 2024-01-02 → 2026-07-30</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Backtest #1 · 5 大流派单标</h2>
+    <p class="lead">把每一派的核心理论用 1-2 个最经典的策略实现出来。基准是 buy & hold 沪深 300。</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>流派</th>
+          <th>策略</th>
+          <th>年化</th>
+          <th>Sharpe</th>
+          <th>MDD</th>
+          <th>结果</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>① 趋势 / CTA</td>
+          <td>TSMOM 12-1</td>
+          <td class="neg">-2.94%</td>
+          <td class="neg">-0.23</td>
+          <td class="neg">-67.63%</td>
+          <td class="neg">❌ 跑输</td>
+        </tr>
+        <tr>
+          <td>② 均值回归</td>
+          <td>HS300/CYB z-score</td>
+          <td class="neg">-8.89%</td>
+          <td class="neg">-1.10</td>
+          <td class="neg">-77.28%</td>
+          <td class="neg">❌ 跑输</td>
+        </tr>
+        <tr>
+          <td>③ 因子投资</td>
+          <td><strong>Value (Low PB)</strong></td>
+          <td class="pos">+2.78%</td>
+          <td class="neu">+0.06</td>
+          <td class="pos">-35.60%</td>
+          <td class="pos">✅ 跑赢</td>
+        </tr>
+        <tr>
+          <td>④ 机器学习</td>
+          <td>GBR on 6 features</td>
+          <td class="neg">-1.57%</td>
+          <td class="neg">-0.34</td>
+          <td class="pos">-32.24%</td>
+          <td class="neg">❌ 跑输</td>
+        </tr>
+        <tr>
+          <td>⑤ 风险管理</td>
+          <td><strong>Vol Target 10%</strong></td>
+          <td class="pos">+2.87%</td>
+          <td class="neu">+0.08</td>
+          <td class="pos">-34.68%</td>
+          <td class="pos">✅ 性价比最高</td>
+        </tr>
+        <tr style="background: var(--bg-1);">
+          <td><strong>基准 BH</strong></td>
+          <td>Buy & Hold 沪深 300</td>
+          <td class="neu">+1.59%</td>
+          <td class="neg">-0.02</td>
+          <td class="neg">-46.70%</td>
+          <td class="neu">基准</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight">
+      <h4>🏆 唯一跑赢 buy & hold 的策略</h4>
+      <p><strong>Value (Low PB)</strong> — 2.78% 年化, Sharpe 0.06, MDD 仅 -35.6%</p>
+      <p class="small">LongOnly TSMOM 跑平基准。Kelly sweep 显示 Half Kelly 是 sweet spot (终值 1.48 vs Full Kelly 1.68, 但波动减半)。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Backtest #2 · 横截面 ML</h2>
+    <p class="lead">把模型做"真"一点：1,800 只股横截面，18 个 alpha 因子，LightGBM walk-forward，月度调仓。</p>
+
+    <div class="highlight">
+      <h4>ML 真实预测能力 (OOS)</h4>
+      <div class="big">IC = -0.018</div>
+      <p>月度 Spearman <strong>负的</strong>，比随机还差 1%。这印证了 López de Prado 的论断：金融 ML 90% 是防过拟合。</p>
+    </div>
+
+    <h3 style="margin-top: 40px; font-size: 22px;">实际回测（扣除摩擦成本）</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>策略</th>
+          <th>年化</th>
+          <th>Sharpe</th>
+          <th>MDD</th>
+          <th>Calmar</th>
+          <th>评价</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Q5 (Top 20%) 等权</strong></td>
+          <td class="pos">+11.31%</td>
+          <td class="neu">+0.39</td>
+          <td class="neg">-35.23%</td>
+          <td class="neu">+0.32</td>
+          <td class="pos">✅ 跑赢基准</td>
+        </tr>
+        <tr>
+          <td>Q1 (Bottom 20%) 等权</td>
+          <td class="neu">+7.87%</td>
+          <td class="neu">+0.42</td>
+          <td class="pos">-17.88%</td>
+          <td class="pos">+0.44</td>
+          <td class="neu">回撤小</td>
+        </tr>
+        <tr>
+          <td>TopBottom 多空对冲</td>
+          <td class="neg">-1.56%</td>
+          <td class="neg">-0.20</td>
+          <td class="neg">-37.17%</td>
+          <td class="neg">-0.04</td>
+          <td class="neg">❌ 做空端亏</td>
+        </tr>
+        <tr style="background: var(--bg-1);">
+          <td><strong>Universe 等权 (基准)</strong></td>
+          <td class="pos">+10.18%</td>
+          <td class="pos">+0.52</td>
+          <td class="pos">-16.29%</td>
+          <td class="pos">+0.62</td>
+          <td class="pos">最稳</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top: 40px; font-size: 22px;">Top 10 因子（LightGBM 重要性）</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>排名</th>
+          <th>因子</th>
+          <th>含义</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>hi_252_ratio</td><td>52 周新高比（价格位置）</td></tr>
+        <tr><td>2</td><td>mom_1</td><td>1 日动量</td></tr>
+        <tr><td>3</td><td>mom_60</td><td>60 日动量</td></tr>
+        <tr><td>4</td><td>vol_60</td><td>60 日波动率</td></tr>
+        <tr><td>5</td><td>turn_60</td><td>60 日换手率（流动性）</td></tr>
+        <tr><td>6</td><td>lo_252_ratio</td><td>52 周新低比</td></tr>
+        <tr><td>7</td><td>mom_20</td><td>20 日动量</td></tr>
+        <tr><td>8</td><td>mom_5</td><td>5 日动量</td></tr>
+        <tr><td>9</td><td>vol_20</td><td>20 日波动率</td></tr>
+        <tr><td>10</td><td>mom_10</td><td>10 日动量</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>四个最关键的真实发现</h2>
+
+    <div class="findings">
+      <ol>
+        <li>
+          <b>A 股长期持有 alpha 极低</b>。沪深 300 2010-2026 年化 <em>1.6%</em>，<em>Sharpe 接近 0</em>。
+          真正 alpha 来源不是被动持有，是<em>主动管理 + 风险管理</em>。
+        </li>
+        <li>
+          <b>摩擦成本是 A 股量化的最大敌人</b>。单标 + 简单信号 + A 股双边千三摩擦
+          → 5 个策略里 <em>4 个被摩擦吃光</em>。真正赚钱的策略需要：<em>高换手 + 低摩擦品种 (ETF) + 多标分散</em>。
+        </li>
+        <li>
+          <b>ML 真的很难</b>。严格 walk-forward + 6 特征 + GBR，OOS R² = <em>-12%</em>（比预测零还差）。
+          横截面 18 因子 + LightGBM，<em>IC = -0.018</em>。这印证了 López de Prado
+          <em>"金融 ML 90% 是防过拟合"</em> 的论断。
+        </li>
+        <li>
+          <b>风险管理是唯一稳赚的改造</b>。Vol Targeting 10% 让 MDD 从 <em>-47% 降到 -35%</em>，
+          年化几乎不变。<em>Half Kelly 是 sweet spot</em>（终值 1.48 vs Full Kelly 1.68，但波动减半）。
+          在 A 股，单标的唯一<em>确定能赚的"alpha"</em>是来自风险管理，不是预测。
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>行业 vs 真实差距</h2>
+    <p class="lead">行业头部量化私募 8-12% alpha 的真正来源：</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>行业标准</th>
+          <th>我的真实结果</th>
+          <th>差距</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>IC mean</td><td>&gt; 0.03</td><td>-0.018</td><td class="neg">数量级差</td></tr>
+        <tr><td>ICIR</td><td>&gt; 0.5</td><td>-0.098</td><td class="neg">5 倍差</td></tr>
+        <tr><td>因子数</td><td>100+</td><td>18</td><td class="neg">5-6 倍</td></tr>
+        <tr><td>行业中性化</td><td>必须</td><td>无</td><td class="neg">100%</td></tr>
+        <tr><td>财报数据</td><td>必须</td><td>无</td><td class="neg">100%</td></tr>
+        <tr><td>Barra 风险模型</td><td>必须</td><td>无</td><td class="neg">100%</td></tr>
+        <tr><td>样本年限</td><td>5-10 年</td><td>2.5 年</td><td class="neg">2-4 倍</td></tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top: 32px; color: var(--text-muted); font-size: 16px;">
+      <strong>结论</strong>：真实差距 = 因子数量 + 行业数据 + 风险模型 + 样本年限。
+      头部 8-12% alpha 来自"**数百因子 + 行业中性 + 真正 Barra + 容量上杠杆**"。
+      简化的 18 因子 + 无行业中性 → IC 微负是预期之内的。
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>代码与方法</h2>
+    <p class="lead">5 阶段流水线：拉数据 → 因子工程 → ML 训练 → 回测 → 综合报告</p>
+
+    <h3 style="font-size: 22px; margin-top: 32px;">Backtest #1（单标）</h3>
+<pre><code>PY=~/.hermes/projects/finance-refresh/a-stock-sentiment/.venv-quant/bin/python
+
+# Stage 1: 拉数据 (秒级，有缓存)
+$PY ~/.hermes/projects/finance-refresh/quant-schools/08-backtest/scripts/_shared.py
+
+# Stage 2-5: 跑 5 个 backtest
+for s in 01_trend_cta 02_mean_reversion 03_factor 04_ml 05_risk_mgmt; do
+    $PY ~/.hermes/projects/finance-refresh/quant-schools/08-backtest/scripts/${s}.py
+done
+
+# Stage 6: 综合报告
+$PY ~/.hermes/projects/finance-refresh/quant-schools/08-backtest/scripts/00_consolidate.py</code></pre>
+
+    <h3 style="font-size: 22px; margin-top: 32px;">Backtest #2（横截面 ML）</h3>
+<pre><code>PY=~/.hermes/projects/finance-refresh/a-stock-sentiment/.venv-quant/bin/python
+
+# Stage 1: 拉 1,800 只股 × 2.5 年数据 (~15 min, 之后秒级)
+$PY ~/.hermes/projects/finance-refresh/quant-schools/08-backtest/cross_section_ml/scripts/01_build_panel.py
+
+# Stage 2-5: 因子 → ML → 回测 → 报告
+$PY scripts/02_factor_engineering.py
+$PY scripts/03_ml_train.py
+$PY scripts/04_backtest.py
+$PY scripts/05_consolidate.py</code></pre>
+
+    <div class="cta-row">
+      <a href="https://github.com/chasejwang/hermes-notes" class="btn btn-secondary">View Source</a>
+      <a href="index.html" class="btn btn-secondary">Back to Essays</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>研究项目 · 2026-07-30 · 数据截至 2026-07-30 收盘</p>
+    <p><a href="index.html">A Few Quiet Things</a> · <a href="quant-backtest.html">Quant</a></p>
+    <p>Chase · Shanghai · 用数据说话，即使数据让你不舒服</p>
+  </div>
+</footer>
+
+</body>
+</html>
