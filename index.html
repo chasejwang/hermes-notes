@@ -757,54 +757,70 @@
 
 
 <script>
-  // Tag filter logic
+  // Tag filter logic (with event delegation + debug logging)
   (function() {
-    const pills = document.querySelectorAll('.tag-pill');
-    const sections = {
-      'essay': { grid: document.getElementById('essays-grid'), prefix: 'essay' },
-      'quant': { grid: document.getElementById('quant-grid'), prefix: 'quant' },
-    };
+    function applyFilter(prefix, tag) {
+      const grid = document.getElementById(prefix + '-grid');
+      if (!grid) {
+        console.warn('[tag-filter] No grid found for prefix:', prefix);
+        return;
+      }
 
-    pills.forEach(pill => {
-      pill.addEventListener('click', function() {
-        const prefix = this.dataset.prefix;
-        const tag = this.dataset.tag;
+      // Update active state on pills (within the same group)
+      document.querySelectorAll('.tag-pill[data-prefix="' + prefix + '"]').forEach(function(p) {
+        p.classList.remove('active');
+      });
+      const activePill = document.querySelector(
+        '.tag-pill[data-prefix="' + prefix + '"][data-tag="' + tag + '"]'
+      );
+      if (activePill) activePill.classList.add('active');
 
-        // Update active state within the same filter group
-        document.querySelectorAll(`.tag-pill[data-prefix="${prefix}"]`).forEach(p => {
-          p.classList.remove('active');
-        });
-        this.classList.add('active');
-
-        // Filter cards in the matching section
-        const grid = document.getElementById(prefix + '-grid');
-        if (!grid) return;
-        const cards = grid.querySelectorAll('.card');
-        let visible = 0;
-        cards.forEach(card => {
-          if (tag === 'all' || card.dataset.tags.split(',').includes(tag)) {
-            card.classList.remove('hidden');
-            visible++;
-          } else {
-            card.classList.add('hidden');
-          }
-        });
-
-        // Empty state
-        let empty = grid.parentNode.querySelector('.empty-state');
-        if (visible === 0) {
-          if (!empty) {
-            empty = document.createElement('div');
-            empty.className = 'empty-state';
-            empty.textContent = 'No articles match this tag yet.';
-            grid.parentNode.appendChild(empty);
-          }
-          empty.style.display = 'block';
-        } else if (empty) {
-          empty.style.display = 'none';
+      // Filter cards in the matching grid
+      const cards = grid.querySelectorAll('.card');
+      let visible = 0;
+      cards.forEach(function(card) {
+        const cardTags = (card.getAttribute('data-tags') || '').split(',').map(function(s) { return s.trim(); });
+        const match = (tag === 'all' || cardTags.indexOf(tag) >= 0);
+        if (match) {
+          card.classList.remove('hidden');
+          card.style.display = '';
+          visible++;
+        } else {
+          card.classList.add('hidden');
+          card.style.display = 'none';
         }
       });
+
+      console.log('[tag-filter] prefix=' + prefix + ' tag=' + tag + ' visible=' + visible + '/' + cards.length);
+
+      // Empty state
+      const container = grid.parentNode;
+      let empty = container.querySelector('.empty-state');
+      if (visible === 0) {
+        if (!empty) {
+          empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.textContent = 'No articles match this tag yet.';
+          container.appendChild(empty);
+        }
+        empty.style.display = 'block';
+      } else if (empty) {
+        empty.style.display = 'none';
+      }
+    }
+
+    // Event delegation: bind ONE listener to document, check if click was on a pill
+    document.addEventListener('click', function(e) {
+      const pill = e.target.closest && e.target.closest('.tag-pill');
+      if (!pill) return;
+      e.preventDefault();
+      const prefix = pill.getAttribute('data-prefix');
+      const tag = pill.getAttribute('data-tag');
+      if (!prefix || !tag) return;
+      applyFilter(prefix, tag);
     });
+
+    console.log('[tag-filter] ready, pills:', document.querySelectorAll('.tag-pill').length);
   })();
 </script>
 
