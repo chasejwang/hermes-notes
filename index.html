@@ -760,9 +760,11 @@
   // Tag filter logic (with event delegation + debug logging)
   (function() {
     function applyFilter(prefix, tag) {
-      const grid = document.getElementById(prefix + '-grid');
+      // Map prefix to actual grid ID (essay prefix → essays-grid, quant → quant-grid)
+      const gridId = (prefix === 'essay' ? 'essays' : prefix) + '-grid';
+      const grid = document.getElementById(gridId);
       if (!grid) {
-        console.warn('[tag-filter] No grid found for prefix:', prefix);
+        console.warn('[tag-filter] No grid found for id:', gridId);
         return;
       }
 
