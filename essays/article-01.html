@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Is the memory cycle peaking? Six core signals</title>
+<title>RAG vs AutoRAG: principles, trade-offs, scenarios</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -100,98 +100,76 @@
 
 <nav>
   <div class="nav-inner">
-    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <a href="../index.html" class="nav-brand">a few quiet things</a>
     <ul class="nav-links">
-      <li><a href="index.html#essays">Essays</a></li>
-      <li><a href="index.html#about">About</a></li>
+      <li><a href="../index.html#essays">Essays</a></li>
+      <li><a href="../index.html#about">About</a></li>
     </ul>
   </div>
 </nav>
 
-<article class="article">
-  <a href="index.html" class="back-link">Back to essays</a>
-  <div class="article-tag">Storage · Cycle</div>
-  <h1>Is the memory cycle peaking? Six core signals</h1>
-  <div class="article-meta">2026-07-24 · 5 min read · audio 1:54</div>
-  <img class="article-cover" src="images/03-memory-art.jpg" alt="Memory cycle" />
+<article class="article" data-tags="ai, rag, genai, 2026">
+  <a href="../index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">AI · RAG</div>
+  <h1>RAG vs AutoRAG: principles, trade-offs, scenarios</h1>
+  <div class="article-meta">2026-07-24 · 5 min read · audio 1:35</div>
+  <img class="article-cover" src="../images/01-rag-art.jpg" alt="RAG vs AutoRAG" />
 
   <div class="audio-block">
     <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
     <audio controls preload="metadata">
-      <source src="audio/03-memory-cycle-summary.mp3" type="audio/mpeg">
+      <source src="../audio/01-rag-summary.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
   </div>
 
   <div class="content">
-    <h2>Prices themselves tell the story</h2>
-    <p>Look at a few numbers (Q2 2026 contract prices, TrendForce):</p>
-    <ul>
-      <li><strong>DRAM contract prices</strong>: up 58% to 63% QoQ</li>
-      <li><strong>NAND Flash contract prices</strong>: up 70% to 75% QoQ</li>
-      <li><strong>HBM supply gap</strong>: about 5.1% (the highest since 2011)</li>
-      <li><strong>DRAM supply gap</strong>: about 4.9% (the highest since 2011)</li>
-    </ul>
-    <p>Note the detail: HBM rises faster than DRAM, and DRAM rises faster than NAND. This is not an average move. It is a transmission of price pressure from the top of the supply chain downstream. HBM serves AI compute cards, where demand is most inelastic; DRAM serves servers, less inelastic; NAND serves SSDs, the most elastic. The further upstream, the tighter the supply; the further downstream, the earlier the rise.</p>
-    <blockquote>Conclusion: this round is structural scarcity, not broad-based tightness.</blockquote>
+    <h2>What is RAG, really</h2>
+    <p><strong>RAG (Retrieval-Augmented Generation)</strong> is a polite engineering term for "look it up first, then answer." The pipeline is straightforward: chunk a document, embed the chunks, store them in a vector database, retrieve the most similar ones at query time, and ask a language model to compose an answer from those retrieved passages. It works beautifully in demos and fails quietly in production.</p>
+    <pre>Query  →  Embed  →  Vector Search  →  Top-K Chunks  →  LLM Prompt  →  Answer</pre>
+    <p>The friction is not in any single step. It is in the handoffs.</p>
 
-    <h2>Why a "super cycle" rather than an ordinary one</h2>
+    <h2>Five failure modes</h2>
+    <p>What goes wrong, in plain terms:</p>
     <table>
-      <thead><tr><th>Feature</th><th>Ordinary cycle</th><th>This cycle</th></tr></thead>
+      <thead><tr><th>#</th><th>Failure</th><th>What it looks like in production</th></tr></thead>
       <tbody>
-        <tr><td>Core driver</td><td>PC / mobile / servers</td><td>AI compute</td></tr>
-        <tr><td>Demand elasticity</td><td>High (price rises kill demand)</td><td>Low (AI must buy)</td></tr>
-        <tr><td>Supply response</td><td>12 to 18 months to expand</td><td>24 to 36 months (technical bottlenecks)</td></tr>
-        <tr><td>Duration</td><td>3 to 4 years</td><td>5+ years (industry consensus)</td></tr>
+        <tr><td>1</td><td><strong>Chunked out of context</strong></td><td>The contract clause is sliced mid-sentence. The model answers a different clause.</td></tr>
+        <tr><td>2</td><td><strong>Wrong neighbourhood</strong></td><td>User asks for Q3 revenue. The retriever returns all four quarters.</td></tr>
+        <tr><td>3</td><td><strong>Confabulation</strong></td><td>Document does not say it. The model says it anyway.</td></tr>
+        <tr><td>4</td><td><strong>Single-hop ceiling</strong></td><td>"Who chairs the parent of Acme?" requires a chain. RAG returns one piece.</td></tr>
+        <tr><td>5</td><td><strong>Static index</strong></td><td>Documents change. Index rebuilds take hours. Answers lag reality.</td></tr>
       </tbody>
     </table>
-    <blockquote>Consumer-side price rises will naturally cool the market. Not a crash — a gentle easing.</blockquote>
+    <p>None of these is a model problem. They are retrieval problems dressed up as generation problems.</p>
 
-    <h2>Six core signals</h2>
-    <p>Six dimensions to judge where we are in the cycle:</p>
+    <blockquote>Traditional RAG retrieves once, then composes. AutoRAG retrieves, evaluates, reflects, and re-retrieves, until the answer is no longer embarrassing.</blockquote>
 
-    <h3>Signal 1: Price moves — still rising</h3>
+    <h2>What AutoRAG adds</h2>
+    <p>AutoRAG is a re-framing of the same primitives with a control loop wrapped around them. The retrieved passages are scored. If the top-K is not good enough, the query is rewritten and retrieval is run again. If still not good enough, a different retrieval strategy is tried. The model is asked, after answering, whether the citation chain actually supports the claim. If not, the loop runs once more.</p>
+    <pre>Query  →  Retrieve  →  Score  →  Reflect
+                  ↑                ↓
+                  ←←  Rewrite ←← if poor</pre>
+    <p>It is not a different model. It is a different <em>posture</em> — closer to a researcher who checks their own work than a junior analyst who quotes the first thing they find.</p>
+
+    <h2>How to choose</h2>
+    <table>
+      <thead><tr><th>If you are...</th><th>Use...</th></tr></thead>
+      <tbody>
+        <tr><td>Answering a 200-page FAQ</td><td>Traditional RAG (fast, cheap, good enough)</td></tr>
+        <tr><td>Running a customer-support bot</td><td>AutoRAG (resolves ambiguity)</td></tr>
+        <tr><td>Indexing more than 1,000 enterprise documents</td><td>AutoRAG (non-negotiable at scale)</td></tr>
+        <tr><td>Parsing multi-hop legal questions</td><td>AutoRAG</td></tr>
+        <tr><td>Prototyping on a weekend</td><td>Traditional RAG</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Three takeaways</h2>
     <ul>
-      <li>DRAM up 58% to 63% QoQ</li>
-      <li>NAND up 70% to 75% QoQ</li>
-      <li>Trend: top not yet in</li>
+      <li>Traditional RAG in production answers fewer than three in ten enterprise questions correctly. The bottleneck is not the model.</li>
+      <li>AutoRAG is not a better retriever. It is a retriever that evaluates itself and re-tries. That is the entire difference.</li>
+      <li>In the next two years, AutoRAG will become the default configuration for enterprise RAG. The teams that ship it first will own the workflow.</li>
     </ul>
-
-    <h3>Signal 2: Supply gap — still widening</h3>
-    <ul>
-      <li>DRAM gap 4.9%, NAND gap 4.2%, HBM gap 5.1%</li>
-    </ul>
-
-    <h3>Signal 3: Big-three expansion — deliberately not</h3>
-    <ul>
-      <li>Samsung, SK Hynix, Micron are deliberately not expanding</li>
-      <li>HBM capacity already locked in by AI customers</li>
-    </ul>
-
-    <h3>Signal 4: Domestic-firm earnings — exploding</h3>
-    <ul>
-      <li>GigaDevice: Q1 2026 net profit +522.79%</li>
-      <li>Netac: revenue +502%, net profit +4943%</li>
-    </ul>
-
-    <h3>Signal 5: Domestic substitution — accelerating</h3>
-    <ul>
-      <li>CXMT filed for STAR Market IPO, valuation 150 billion</li>
-      <li>YMTC Q1 revenue above 200 billion</li>
-    </ul>
-
-    <h3>Signal 6: Stock prices — partly priced in</h3>
-    <ul>
-      <li>Micron +249% YTD, SK Hynix +218%, Samsung +175%</li>
-    </ul>
-
-    <p>Six signals: five green lights, one yellow.</p>
-
-    <h2>Final verdict</h2>
-    <blockquote>We are in the middle-to-late stage of this super cycle. Not the top, but no longer the bottom either.</blockquote>
-
-    <h2>One sentence for those still boarding</h2>
-    <blockquote>This cycle is not "rally then crash". It is "rally then plateau, then gentle cooling." Investors do not need to call the top — follow earnings, follow capacity, follow AI compute growth.</blockquote>
   </div>
 </article>
 

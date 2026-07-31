@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RAG vs AutoRAG: principles, trade-offs, scenarios</title>
+<title>Value meets quant: a personal approach</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -100,75 +100,88 @@
 
 <nav>
   <div class="nav-inner">
-    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <a href="../index.html" class="nav-brand">a few quiet things</a>
     <ul class="nav-links">
-      <li><a href="index.html#essays">Essays</a></li>
-      <li><a href="index.html#about">About</a></li>
+      <li><a href="../index.html#essays">Essays</a></li>
+      <li><a href="../index.html#about">About</a></li>
     </ul>
   </div>
 </nav>
 
-<article class="article">
-  <a href="index.html" class="back-link">Back to essays</a>
-  <div class="article-tag">AI · RAG</div>
-  <h1>RAG vs AutoRAG: principles, trade-offs, scenarios</h1>
-  <div class="article-meta">2026-07-24 · 5 min read · audio 1:35</div>
-  <img class="article-cover" src="images/01-rag-art.jpg" alt="RAG vs AutoRAG" />
+<article class="article" data-tags="investing, method, quant, 2026">
+  <a href="../index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">Investing · Method</div>
+  <h1>Value meets quant: a personal approach</h1>
+  <div class="article-meta">2026-07-24 · 6 min read · audio 1:42</div>
+  <img class="article-cover" src="../images/02-value-art.jpg" alt="Value meets quant" />
 
   <div class="audio-block">
     <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
     <audio controls preload="metadata">
-      <source src="audio/01-rag-summary.mp3" type="audio/mpeg">
+      <source src="../audio/02-value-quant-summary.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
   </div>
 
   <div class="content">
-    <h2>What is RAG, really</h2>
-    <p><strong>RAG (Retrieval-Augmented Generation)</strong> is a polite engineering term for "look it up first, then answer." The pipeline is straightforward: chunk a document, embed the chunks, store them in a vector database, retrieve the most similar ones at query time, and ask a language model to compose an answer from those retrieved passages. It works beautifully in demos and fails quietly in production.</p>
-    <pre>Query  →  Embed  →  Vector Search  →  Top-K Chunks  →  LLM Prompt  →  Answer</pre>
-    <p>The friction is not in any single step. It is in the handoffs.</p>
+    <h2>Value investing: the core idea</h2>
+    <p>Value investing was proposed by Benjamin Graham in 1934 and refined by Warren Buffett. Buy an asset at a price materially below its intrinsic value, then wait for the market to recognise that value.</p>
 
-    <h2>Five failure modes</h2>
-    <p>What goes wrong, in plain terms:</p>
+    <h3>Four core principles</h3>
+    <ol>
+      <li><strong>Stock = part of a business</strong> — buying a stock means buying a stake in a real company</li>
+      <li><strong>Margin of safety</strong> — only buy when price is materially below intrinsic value</li>
+      <li><strong>Mr. Market</strong> — view the market as an emotional quoting service, not as truth</li>
+      <li><strong>Long-term holding</strong> — a quality business is the friend of time</li>
+    </ol>
+
+    <h3>The classic five-step stock screen (Graham + Buffett)</h3>
+    <ol>
+      <li>ROE above 15% (long-term average)</li>
+      <li>Gross margin above 40%</li>
+      <li>Debt ratio below 50%</li>
+      <li>Free cash flow positive and growing</li>
+      <li>Competent management (buybacks, dividends, capital discipline)</li>
+    </ol>
+
+    <h2>Quantitative investing: not the opposite of value</h2>
+    <p>Quantitative investing looks like a different method, but its underlying logic does not actually conflict with value investing. Use mathematics, data, and algorithms to surface repeatable statistical edges from historical patterns.</p>
+
+    <h3>Four schools of quant</h3>
     <table>
-      <thead><tr><th>#</th><th>Failure</th><th>What it looks like in production</th></tr></thead>
+      <thead><tr><th>School</th><th>Timeframe</th><th>Suitable for individuals</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td><strong>Chunked out of context</strong></td><td>The contract clause is sliced mid-sentence. The model answers a different clause.</td></tr>
-        <tr><td>2</td><td><strong>Wrong neighbourhood</strong></td><td>User asks for Q3 revenue. The retriever returns all four quarters.</td></tr>
-        <tr><td>3</td><td><strong>Confabulation</strong></td><td>Document does not say it. The model says it anyway.</td></tr>
-        <tr><td>4</td><td><strong>Single-hop ceiling</strong></td><td>"Who chairs the parent of Acme?" requires a chain. RAG returns one piece.</td></tr>
-        <tr><td>5</td><td><strong>Static index</strong></td><td>Documents change. Index rebuilds take hours. Answers lag reality.</td></tr>
+        <tr><td>High-frequency trading (HFT)</td><td>Microseconds</td><td>Not suitable (datacenter + co-location required)</td></tr>
+        <tr><td>Statistical arbitrage</td><td>Seconds to minutes</td><td>Hard (small accounts uncompetitive)</td></tr>
+        <tr><td>Multi-factor stock selection</td><td>Weeks to months</td><td>Best fit for individuals</td></tr>
+        <tr><td>CTA / trend following</td><td>Days to weeks</td><td>Accessible</td></tr>
       </tbody>
     </table>
-    <p>None of these is a model problem. They are retrieval problems dressed up as generation problems.</p>
 
-    <blockquote>Traditional RAG retrieves once, then composes. AutoRAG retrieves, evaluates, reflects, and re-retrieves, until the answer is no longer embarrassing.</blockquote>
+    <h2>Value × Quant: a combined framework for individuals</h2>
+    <p>The two seemingly opposite systems can be combined in a complementary way. Value investing = stock selection logic (what to buy). Quantitative investing = execution discipline (how and when to buy).</p>
 
-    <h2>What AutoRAG adds</h2>
-    <p>AutoRAG is a re-framing of the same primitives with a control loop wrapped around them. The retrieved passages are scored. If the top-K is not good enough, the query is rewritten and retrieval is run again. If still not good enough, a different retrieval strategy is tried. The model is asked, after answering, whether the citation chain actually supports the claim. If not, the loop runs once more.</p>
-    <pre>Query  →  Retrieve  →  Score  →  Reflect
-                  ↑                ↓
-                  ←←  Rewrite ←← if poor</pre>
-    <p>It is not a different model. It is a different <em>posture</em> — closer to a researcher who checks their own work than a junior analyst who quotes the first thing they find.</p>
+    <h3>Four-step combined process</h3>
+    <ol>
+      <li><strong>Step 1:</strong> Value screen (filter out the bad on fundamentals)</li>
+      <li><strong>Step 2:</strong> Quantitative ranking (factor-score the rest)</li>
+      <li><strong>Step 3:</strong> Portfolio construction (diversification + position sizing)</li>
+      <li><strong>Step 4:</strong> Periodic rebalance (quarterly or semi-annually)</li>
+    </ol>
 
-    <h2>How to choose</h2>
-    <table>
-      <thead><tr><th>If you are...</th><th>Use...</th></tr></thead>
-      <tbody>
-        <tr><td>Answering a 200-page FAQ</td><td>Traditional RAG (fast, cheap, good enough)</td></tr>
-        <tr><td>Running a customer-support bot</td><td>AutoRAG (resolves ambiguity)</td></tr>
-        <tr><td>Indexing more than 1,000 enterprise documents</td><td>AutoRAG (non-negotiable at scale)</td></tr>
-        <tr><td>Parsing multi-hop legal questions</td><td>AutoRAG</td></tr>
-        <tr><td>Prototyping on a weekend</td><td>Traditional RAG</td></tr>
-      </tbody>
-    </table>
+    <h2>Tools recommended for individuals</h2>
+    <ul>
+      <li><strong>Stock screeners</strong>: LiXinger, Xueqiu, Turtle Quant</li>
+      <li><strong>Backtesting</strong>: JoinQuant, RiceQuant, Guorn</li>
+      <li><strong>Valuation</strong>: DCF, DDM, relative multiples (most practical)</li>
+      <li><strong>Data</strong>: annual reports, Tonghuashun, Xueqiu deep articles</li>
+    </ul>
 
     <h2>Three takeaways</h2>
     <ul>
-      <li>Traditional RAG in production answers fewer than three in ten enterprise questions correctly. The bottleneck is not the model.</li>
-      <li>AutoRAG is not a better retriever. It is a retriever that evaluates itself and re-tries. That is the entire difference.</li>
-      <li>In the next two years, AutoRAG will become the default configuration for enterprise RAG. The teams that ship it first will own the workflow.</li>
+      <li>Value investing × quantitative investing = complementary — one picks the "what", the other picks the "how".</li>
+      <li>Individuals do not need to code. Off-the-shelf tools are enough to start.</li>
+      <li>Discipline is the edge. Do not predict, only follow factors + rebalance.</li>
     </ul>
   </div>
 </article>

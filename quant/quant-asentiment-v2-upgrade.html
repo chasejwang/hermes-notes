@@ -110,25 +110,25 @@
 
 <nav>
   <div class="nav-inner">
-    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <a href="../index.html" class="nav-brand">a few quiet things</a>
     <ul class="nav-links">
-      <li><a href="index.html#essays">Essays</a></li>
-      <li><a href="index.html#about">About</a></li>
+      <li><a href="../index.html#essays">Essays</a></li>
+      <li><a href="../index.html#about">About</a></li>
     </ul>
   </div>
 </nav>
 
-<article class="article">
-  <a href="index.html" class="back-link">Back to essays</a>
+<article class="article" data-tags="quant, cn, a-share, sentiment, 2026">
+  <a href="../index.html" class="back-link">Back to essays</a>
   <div class="article-tag">Quant · v2 Upgrade · Data Repair · A-share</div>
   <h1>v2 升级：从 24.4 到 14.7 · 13 成分全档 + 0 元数据修复</h1>
   <div class="article-meta">2026-07-28 · 12 min read</div>
-  <img class="article-cover" src="images/13-cubism-upgrade.jpg" alt="v2 数据升级 · Cubism 立体派封面" />
+  <img class="article-cover" src="../images/13-cubism-upgrade.jpg" alt="v2 数据升级 · Cubism 立体派封面" />
 
   <div class="audio-block">
     <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
     <audio controls preload="metadata">
-      <source src="audio/13-v2-upgrade-summary.mp3" type="audio/mpeg">
+      <source src="../audio/13-v2-upgrade-summary.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
   </div>
@@ -138,13 +138,13 @@
     <blockquote>v1 标记的"4 个数据缺口"，80% 是我用错了接口。修正后：13 成分全档全历史、当前情绪从 24.4 跌到 14.7、极恐样本数翻倍、胜率更准。成本：0 元。</blockquote>
 
     <figure class="article-figure">
-      <img src="images/13-v1-vs-v2.png" alt="v1 vs v2 情绪指数时序对比" />
+      <img src="../images/13-v1-vs-v2.png" alt="v1 vs v2 情绪指数时序对比" />
       <figcaption class="caption">v1（6 成分基础版，蓝色填充）与 v2（13 成分全档，橙色填充）的 8 年对照。整体形状相似，但 v2 在 2022、2023、2024-2025 期间在 25 以下的时间明显更多——加上的宽度+资金面成分对市场结构变化反应更快。2026 起点 v1=24.4 / v2=14.7。</figcaption>
     </figure>
 
     <h2>起因</h2>
 
-    <p>上周发了 <a href="article-11.html">《A 股情绪指数：当市场恐慌到 24.4 分，我做了件事》</a> 和 <a href="article-12.html">《行业版：4 个极度恐惧，2 个中性》</a>。</p>
+    <p>上周发了 <a href="quant-asentiment.html">《A 股情绪指数：当市场恐慌到 24.4 分，我做了件事》</a> 和 <a href="quant-asentiment-sector-v2.html">《行业版：4 个极度恐惧，2 个中性》</a>。</p>
 
     <p>有读者看了我的 v1 README 之后问我：<em>"为什么数据有缺口？为什么不接入 Tushare Pro 拿到全历史？"</em></p>
 
@@ -204,7 +204,7 @@
     <h2>v1 vs v2 实战对比</h2>
 
     <figure class="article-figure">
-      <img src="images/13-timeseries.png" alt="v2 情绪指数时序 vs 沪深 300" />
+      <img src="../images/13-timeseries.png" alt="v2 情绪指数时序 vs 沪深 300" />
       <figcaption class="caption">v2 情绪指数（蓝色填充）与沪深 300 累计净值（黑色线）的 8 年对照。红色虚线为极恐/极贪阈值。下方四色曲线为四个类别得分（动量 / 宽度 / 资金 / 波动率）。</figcaption>
     </figure>
 
@@ -230,14 +230,14 @@
     <h2>v2 完整回测</h2>
 
     <figure class="article-figure">
-      <img src="images/13-extreme-returns.png" alt="v2 极值后收益分布" />
+      <img src="../images/13-extreme-returns.png" alt="v2 极值后收益分布" />
       <figcaption class="caption">v2 · 4 个时间窗口（5/10/20/60 日）× 4 个阈值（极恐 2/极恐/极贪/极贪 2）= 16 个箱型图。极恐 2（&lt;15）后 5 日和 20 日的中位收益最明显地偏向正值。</figcaption>
     </figure>
 
     <h2>滚动胜率 + 策略回测</h2>
 
     <figure class="article-figure">
-      <img src="images/13-hit-rate.png" alt="v2 滚动胜率 + 策略回测" />
+      <img src="../images/13-hit-rate.png" alt="v2 滚动胜率 + 策略回测" />
       <figcaption class="caption">左上：v2 极恐（&lt;25）后 20 日上涨胜率（3 年滚动）。右上：60 日上涨胜率。 左下：极贪（&gt;75）后 20 日下跌胜率。 右下：极恐次日买入策略 vs 沪深 300 持有。</figcaption>
     </figure>
 

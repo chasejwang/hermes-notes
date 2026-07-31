@@ -110,25 +110,25 @@
 
 <nav>
   <div class="nav-inner">
-    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <a href="../index.html" class="nav-brand">a few quiet things</a>
     <ul class="nav-links">
-      <li><a href="index.html#essays">Essays</a></li>
-      <li><a href="index.html#about">About</a></li>
+      <li><a href="../index.html#essays">Essays</a></li>
+      <li><a href="../index.html#about">About</a></li>
     </ul>
   </div>
 </nav>
 
-<article class="article">
-  <a href="index.html" class="back-link">Back to essays</a>
+<article class="article" data-tags="quant, cn, a-share, sector, sentiment, 2026">
+  <a href="../index.html" class="back-link">Back to essays</a>
   <div class="article-tag">Quant · Sector Sentiment · A-share · Structural Divergence</div>
     <h1>行业版 A 股情绪指数：4 个极度恐惧，2 个中性，1 个恐惧</h1>
     <div class="article-meta">2026-07-28 · 11 min read</div>
-    <img class="article-cover" src="images/12-industry-mondrian.jpg" alt="行业版 A 股情绪指数 · Mondrian 几何封面" />
+    <img class="article-cover" src="../images/12-industry-mondrian.jpg" alt="行业版 A 股情绪指数 · Mondrian 几何封面" />
 
     <div class="audio-block">
       <div class="label">Audio version · MiniMax TTS · male-qn-jingying</div>
       <audio controls preload="metadata">
-        <source src="audio/12-industry-summary.mp3" type="audio/mpeg">
+        <source src="../audio/12-industry-summary.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
       </audio>
     </div>
@@ -138,7 +138,7 @@
       <div style="background: linear-gradient(135deg, #fff4e0 0%, #fbe4cf 100%); border: 1px solid #ed8936; border-radius: 14px; padding: 24px 28px; margin: 0 0 36px 0;">
         <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #b45837; margin-bottom: 10px;">★ v2 升级 · 2026-07-28 更新</div>
         <h3 style="font-family: 'PP Editorial New', Georgia, serif; font-size: 22px; font-weight: 500; margin: 0 0 10px 0; color: #1a1814;">v1 判的"4 个极度恐惧"，v2 全部修正为"恐惧"。</h3>
-        <p style="margin: 0 0 12px 0; font-size: 16px; color: #1a1814;">v1 行业版只用了 5 个成分（动量×3 + 波动 + 通道），完全没接资金面。v2 升级到 13 成分全档，并接上 <code>macro_china_market_margin_sh/sz</code> + <code>stock_hsgt_hist_em</code> + <code>index_option_50etf_qvix</code> 三个大盘 macro 接口——和<a href="article-13.html">《v2 升级篇》</a>里的大盘版同口径。</p>
+        <p style="margin: 0 0 12px 0; font-size: 16px; color: #1a1814;">v1 行业版只用了 5 个成分（动量×3 + 波动 + 通道），完全没接资金面。v2 升级到 13 成分全档，并接上 <code>macro_china_market_margin_sh/sz</code> + <code>stock_hsgt_hist_em</code> + <code>index_option_50etf_qvix</code> 三个大盘 macro 接口——和<a href="quant-asentiment-v2-upgrade.html">《v2 升级篇》</a>里的大盘版同口径。</p>
         <p style="margin: 0; font-size: 16px; color: #1a1814;"><strong>结果：v1 极度恐惧的 4 个行业（科技 / 新能源 / 制造 / 周期）用 v2 全部升到恐惧区间（25-45）</strong>。原因是当前融资余额 / 北向资金都在历史中位以上，供给端有支撑，v1 漏掉了这个信号。</p>
       </div>
 
@@ -146,7 +146,7 @@
 
       <h2>起因</h2>
 
-      <p>上周发了 <a href="article-11.html">《A 股情绪指数：当市场恐慌到 24.4 分，我做了件事》</a>，有读者问我：能不能看到底是哪些板块在恐慌？</p>
+      <p>上周发了 <a href="quant-asentiment.html">《A 股情绪指数：当市场恐慌到 24.4 分，我做了件事》</a>，有读者问我：能不能看到底是哪些板块在恐慌？</p>
 
       <p>这是一个好问题。大盘情绪 24.4 是<strong>加权结果</strong>——金融消费权重高，成长板块（科技 / 新能源）已经极度恐惧，但大盘指数因为防御板块的稳定而显得没那么惨。</p>
 
@@ -157,7 +157,7 @@
       <p>同样 7 个申万一级行业，同样是 2026-07-27 这个交易日，v1 和 v2 给出的判断完全不一样：</p>
 
       <figure class="article-figure">
-        <img src="images/12-v2-snapshot.png" alt="v1 vs v2 行业情绪分对比" />
+        <img src="../images/12-v2-snapshot.png" alt="v1 vs v2 行业情绪分对比" />
         <figcaption class="caption">v1 (5 成分 · 灰) vs v2 (13 成分 + 正确 API · 蓝) 当前读数对比。v1 极度恐惧的 4 个行业（科技 / 新能源 / 制造 / 周期）v2 全部升到恐惧区间；消费反而从中性降到恐惧，金融保持中性。</figcaption>
       </figure>
 
@@ -182,7 +182,7 @@
       <p>每个行业一个点。落在 y=x 线下面 = v2 比 v1 恐惧；上面 = v2 比 v1 贪婪。所有 7 个点都在 y=x 上方——v2 整体比 v1 乐观。</p>
 
       <figure class="article-figure">
-        <img src="images/12-v1-vs-v2.png" alt="v1 vs v2 行业情绪散点图" />
+        <img src="../images/12-v1-vs-v2.png" alt="v1 vs v2 行业情绪散点图" />
         <figcaption class="caption">7 个行业 v1 vs v2 当前读数散点图。颜色区分行业。所有点都在 y=x 上方（v2 > v1）—— v2 整体比 v1 悲观程度更低。最显著的修正：科技（+19.9）、周期（+19.2）、新能源（+18.1）从极度恐惧区跃升至恐惧/边界区。</figcaption>
       </figure>
 
@@ -235,7 +235,7 @@
         </tbody>
       </table>
 
-      <p><strong>★ 关键修复</strong>：v1 漏接 macro 是最大的设计缺陷。v2 复用了<a href="article-13.html">大盘 v2</a> 的 3 个 macro 接口：</p>
+      <p><strong>★ 关键修复</strong>：v1 漏接 macro 是最大的设计缺陷。v2 复用了<a href="quant-asentiment-v2-upgrade.html">大盘 v2</a> 的 3 个 macro 接口：</p>
 
       <ul>
         <li><code>macro_china_market_margin_sh()</code> + <code>macro_china_market_margin_sz()</code>（沪市 + 深市融资余额，按日期合并）</li>
@@ -282,24 +282,24 @@
       <h2>8 年情绪周期</h2>
 
       <figure class="article-figure">
-        <img src="images/12-timeseries.png" alt="v1 行业情绪指数时序对比（5 成分）" />
+        <img src="../images/12-timeseries.png" alt="v1 行业情绪指数时序对比（5 成分）" />
         <figcaption class="caption"><strong>v1 (5 成分) 时序对比</strong>。2018-2026 期间 7 个申万一级行业情绪分。红色填充 = 贪婪侧 / 蓝色填充 = 恐惧侧。2018-Q4 / 2021-Q1 是全行业齐涨顶点；2020-Q2 / 2022-Q2 是全行业齐跌谷底。</figcaption>
       </figure>
 
       <figure class="article-figure">
-        <img src="images/12-v2-timeseries.png" alt="v2 行业情绪指数时序对比（13 成分）" />
+        <img src="../images/12-v2-timeseries.png" alt="v2 行业情绪指数时序对比（13 成分）" />
         <figcaption class="caption"><strong>v2 (13 成分) 时序对比</strong>。同一组行业，v2 信号明显更稳，2024-2026 的"极度恐惧"区间在 v2 里大部分上移到恐惧区间。</figcaption>
       </figure>
 
       <h2>月度热力图</h2>
 
       <figure class="article-figure">
-        <img src="images/12-heatmap.png" alt="v1 月度行业情绪热力图" />
+        <img src="../images/12-heatmap.png" alt="v1 月度行业情绪热力图" />
         <figcaption class="caption"><strong>v1 (5 成分) 月度热力图</strong>。红色 = 贪婪 / 绿色 = 恐惧。2024-2025 起金融消费结构性抗跌，是大盘情绪指数看不到的。</figcaption>
       </figure>
 
       <figure class="article-figure">
-        <img src="images/12-v2-heatmap.png" alt="v2 月度行业情绪热力图" />
+        <img src="../images/12-v2-heatmap.png" alt="v2 月度行业情绪热力图" />
         <figcaption class="caption"><strong>v2 (13 成分) 月度热力图</strong>。整体颜色普遍比 v1 偏中性红色（不再那么冷），说明 v2 的"恐惧"区间在月尺度上比 v1 缓和。</figcaption>
       </figure>
 
@@ -308,7 +308,7 @@
       <p>行业版最值钱的地方不是单个行业的读数，而是<strong>横截面分歧</strong>——什么时候行业之间分化大、什么时候齐涨齐跌。</p>
 
       <figure class="article-figure">
-        <img src="images/12-v2-dispersion.png" alt="v2 横截面均值 + 离散度" />
+        <img src="../images/12-v2-dispersion.png" alt="v2 横截面均值 + 离散度" />
         <figcaption class="caption"><strong>v2 横截面均值 + 60 日分歧度</strong>。上图：v1 (灰) vs v2 (蓝) 7 行业均值时序。v2 均值整体比 v1 偏高，且分歧度（标准差）显著低于 v1（收敛 60%）。下图：60 日滚动横截面标准差，v2 明显比 v1 缓和。</figcaption>
       </figure>
 

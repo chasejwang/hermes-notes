@@ -117,25 +117,25 @@
 
 <nav>
   <div class="nav-inner">
-    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <a href="../index.html" class="nav-brand">a few quiet things</a>
     <ul class="nav-links">
-      <li><a href="index.html#essays">Essays</a></li>
-      <li><a href="index.html#about">About</a></li>
+      <li><a href="../index.html#essays">Essays</a></li>
+      <li><a href="../index.html#about">About</a></li>
     </ul>
   </div>
 </nav>
 
-<article class="article">
-  <a href="index.html" class="back-link">Back to essays</a>
+<article class="article" data-tags="ai, ml, agent, 2026">
+  <a href="../index.html" class="back-link">Back to essays</a>
   <div class="article-tag">AI Research · Karpathy · Agentic · 2026-03</div>
   <h1>karpathy/autoresearch：3 文件 + 1 agent = 100 实验/晚</h1>
   <div class="article-meta">2026-07-29 · 11 min read</div>
-  <img class="article-cover" src="images/14-autoresearch-cover.jpg" alt="AutoResearch · 自主科研封面（金色粒子云）" />
+  <img class="article-cover" src="../images/14-autoresearch-cover.jpg" alt="AutoResearch · 自主科研封面（金色粒子云）" />
 
   <div class="audio-block">
     <div class="label">Audio version · MiniMax TTS · male-qn-jingying · 2:25</div>
     <audio controls preload="metadata">
-      <source src="audio/14-autoresearch-summary.mp3" type="audio/mpeg">
+      <source src="../audio/14-autoresearch-summary.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
   </div>
@@ -154,7 +154,7 @@
     <p>Karpathy 把项目控制在最少文件数。<strong>三个文件，每个角色清晰：</strong></p>
 
     <figure class="article-figure">
-      <img src="images/14-program-md.png" alt="三个文件 + 一个 agent 的概念图" />
+      <img src="../images/14-program-md.png" alt="三个文件 + 一个 agent 的概念图" />
       <figcaption class="caption">karpathy/autoresearch 的三个文件：<code>prepare.py</code> 冻结、<code>train.py</code> agent 修改、<code>program.md</code> 人类修改。中心是 AI coding agent（Claude Code / OpenAI Codex），围绕 program.md 的指令循环迭代。</figcaption>
     </figure>
 
@@ -176,7 +176,7 @@
     <p>循环很简单。Agent 编辑 <code>train.py</code> → 跑 5 分钟（固定时间，wall clock）→ 比较 <strong>val_bpb</strong>（bits per byte，越低越好）→ 更好就保留，否则回滚。</p>
 
     <figure class="article-figure">
-      <img src="images/14-autoresearch-loop.png" alt="5 分钟实验循环流程图" />
+      <img src="../images/14-autoresearch-loop.png" alt="5 分钟实验循环流程图" />
       <figcaption class="caption">单次实验循环：① Agent 编辑 <code>train.py</code> → ② 跑 5 分钟（单 GPU）→ ③ 对比 val_bpb → ④ keep / discard。中心红框是设计核心：固定 5 分钟。一晚 100 个实验。</figcaption>
     </figure>
 
@@ -192,7 +192,7 @@
     <p>数学很简单：<strong>~12 次实验/小时，~100 次/晚</strong>。Agent 不睡觉，你一晚醒来看到 100 行实验日志 + 一个更好的模型。</p>
 
     <figure class="article-figure">
-      <img src="images/14-experiment-log.png" alt="100 实验模拟时序图" />
+      <img src="../images/14-experiment-log.png" alt="100 实验模拟时序图" />
       <figcaption class="caption">一晚 100 个实验的模拟时序：横轴是实验编号（~5 分钟/次），纵轴是 val_bpb。蓝点 = 失败实验（被回滚），红点 = 保留实验（更新当前最佳）。下图是累计保留曲线 —— 100 次后保留 15 次左右（12% 命中率），但每次保留都比上次更好。</figcaption>
     </figure>
 
@@ -201,7 +201,7 @@
     <p>Karpathy 把这放进了一个更宽的框架：<strong>AI 介入研究的三阶段</strong>。</p>
 
     <figure class="article-figure">
-      <img src="images/14-paradigm-shift.png" alt="范式转变三阶段" />
+      <img src="../images/14-paradigm-shift.png" alt="范式转变三阶段" />
       <figcaption class="caption">Vibe Coding → Agentic Engineering → Independent Research。当前位于第三阶段的开端，autoresearch 是它的种子项目。</figcaption>
     </figure>
 
@@ -221,7 +221,7 @@
     <p>autoresearch 不是孤例。<strong>2026-03 之后，整个生态爆炸</strong>：</p>
 
     <figure class="article-figure">
-      <img src="images/14-ecosystem-treemap.png" alt="AutoResearch 生态 30+ 项目 treemap" />
+      <img src="../images/14-ecosystem-treemap.png" alt="AutoResearch 生态 30+ 项目 treemap" />
       <figcaption class="caption">30+ 个项目按 stars 大小排列。karpathy 92.3k 一骑绝尘。右侧 5 个 next-big 是 End-to-End 完整流水线（AI-Scientist / AutoResearchClaw / AI-Scientist / RD-Agent / AutoResearchClaw）。底部 6 个是其他分类（Deep Research / Code Agents / Skills / Domain / Writing / Awesome）。颜色 = 类别。</figcaption>
     </figure>
 
@@ -247,7 +247,7 @@
 
     <h2>我的"金融版 autoresearch"</h2>
 
-    <p>我之前做的 <a href="article-11.html">A 股情绪指数</a> 项目 —— 13 成分、滚动分位数、5 年回测 —— 实际上就是一个<strong>手工版的 autoresearch</strong>。</p>
+    <p>我之前做的 <a href="../quant/quant-asentiment.html">A 股情绪指数</a> 项目 —— 13 成分、滚动分位数、5 年回测 —— 实际上就是一个<strong>手工版的 autoresearch</strong>。</p>
 
     <p>对比一下：</p>
 
@@ -263,7 +263,7 @@
       </tbody>
     </table>
 
-    <p>我手动跑了 3 个版本（<a href="article-11.html">大盘版</a> → <a href="article-12.html">行业版 v1</a> → <a href="article-12.html">行业版 v2</a>）。如果用 autoresearch 的范式 + 写一个 <code>program.md</code>，<strong>一晚 100 个版本不是梦</strong>。</p>
+    <p>我手动跑了 3 个版本（<a href="../quant/quant-asentiment.html">大盘版</a> → <a href="../quant/quant-asentiment-sector-v2.html">行业版 v1</a> → <a href="../quant/quant-asentiment-sector-v2.html">行业版 v2</a>）。如果用 autoresearch 的范式 + 写一个 <code>program.md</code>，<strong>一晚 100 个版本不是梦</strong>。</p>
 
     <h2>局限：创造力的天花板</h2>
 

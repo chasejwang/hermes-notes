@@ -382,6 +382,44 @@
     background: var(--border);
     margin: 0 auto 24px;
   }
+
+  /* TAG FILTER PILLS */
+  .tag-filter {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin: 32px 0 24px;
+  }
+  .tag-pill {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+    padding: 6px 14px;
+    border-radius: 980px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tag-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .tag-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+  .card.hidden {
+    display: none;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
 </style>
 </head>
 <body>
@@ -391,7 +429,7 @@
     <a href="index.html" class="nav-brand">a few quiet things</a>
     <ul class="nav-links">
       <li><a href="#essays">Essays</a></li>
-      <li><a href="quant-backtest.html">Quant</a></li>
+      <li><a href="quant/quant-5-schools-backtest.html">Quant</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="https://github.com">GitHub</a></li>
     </ul>
@@ -414,19 +452,43 @@
 <!-- ===== Essays ===== -->
 <section id="essays">
   <div class="container">
-    <div class="section-label">A small library</div>
-    <h2 class="section-title">What I have written, slowly</h2>
-    <p class="section-desc">Each one comes with a voice, made by a quiet machine, for the people who listen while they walk.</p>
+    <div class="section-label">Essays</div>
+    <h2 class="section-title">Notes on memory, money & machines</h2>
+    <p class="section-desc">A small library of slow, deliberate essays. Each comes with a voice.</p>
 
-    <div class="grid">
+    <div class="tag-filter" data-prefix="essay">
+      <button class="tag-pill active" data-tag="all" data-prefix="essay">All</button>
+      <button class="tag-pill" data-tag="13f" data-prefix="essay">13f</button>
+      <button class="tag-pill" data-tag="2026" data-prefix="essay">2026</button>
+      <button class="tag-pill" data-tag="a-share" data-prefix="essay">a-share</button>
+      <button class="tag-pill" data-tag="agent" data-prefix="essay">agent</button>
+      <button class="tag-pill" data-tag="ai" data-prefix="essay">ai</button>
+      <button class="tag-pill" data-tag="bi" data-prefix="essay">bi</button>
+      <button class="tag-pill" data-tag="career" data-prefix="essay">career</button>
+      <button class="tag-pill" data-tag="cloud" data-prefix="essay">cloud</button>
+      <button class="tag-pill" data-tag="cn" data-prefix="essay">cn</button>
+      <button class="tag-pill" data-tag="cycle" data-prefix="essay">cycle</button>
+      <button class="tag-pill" data-tag="data" data-prefix="essay">data</button>
+      <button class="tag-pill" data-tag="genai" data-prefix="essay">genai</button>
+      <button class="tag-pill" data-tag="investing" data-prefix="essay">investing</button>
+      <button class="tag-pill" data-tag="knowledge" data-prefix="essay">knowledge</button>
+      <button class="tag-pill" data-tag="macro" data-prefix="essay">macro</button>
+      <button class="tag-pill" data-tag="markets" data-prefix="essay">markets</button>
+      <button class="tag-pill" data-tag="method" data-prefix="essay">method</button>
+      <button class="tag-pill" data-tag="ml" data-prefix="essay">ml</button>
+      <button class="tag-pill" data-tag="quant" data-prefix="essay">quant</button>
+      <button class="tag-pill" data-tag="rag" data-prefix="essay">rag</button>
+      <button class="tag-pill" data-tag="us" data-prefix="essay">us</button>
+    </div>
 
-      <!-- Card 1: Karpathy autoresearch (newest, 2026-07-29) -->
-      <a href="article-14.html" class="card">
-        <img class="card-img" src="images/14-autoresearch-cover.jpg" alt="karpathy autoresearch · 3 文件 + 1 agent" />
+    <div class="grid" id="essays-grid">
+
+      <a href="essays/article-14.html" class="card" data-tags="ai,ml,agent,2026">
+        <img class="card-img" src="images/14-autoresearch-cover.jpg" alt="karpathy autoresearch" loading="lazy" />
         <div class="card-body">
-          <div class="card-tag">AI Research · Karpathy · Agentic · 2026-03</div>
+          <div class="card-tag">AI Research · Karpathy · Agentic</div>
           <h3 class="card-title">karpathy/autoresearch：3 文件 + 1 agent = 100 实验/晚。</h3>
-          <p class="card-desc">630 行 Python 教了科研范式转变。agent 编辑 train.py、跑固定 5 分钟、比较 val_bpb、keep / discard。一晚 100 个实验，~12% 命中率。我手工跑过同样的循环 3 次（24.4 → 14.7 → 26.1 行业版）—— autoresearch 是同范式的工业版。</p>
+          <p class="card-desc">630 行 Python 教了科研范式转变。agent 编辑 train.py、跑固定 5 分钟、比较 val_bpb、keep / discard。一晚 100 个实验，~12% 命中率。</p>
           <div class="card-meta">
             <span>2026-07-29</span>
             <span class="duration">Audio 2:25</span>
@@ -434,51 +496,8 @@
         </div>
       </a>
 
-      <!-- Card 2: A-Sentiment v2 Upgrade (2026-07-28) -->
-      <a href="article-13.html" class="card">
-        <img class="card-img" src="images/13-cubism-upgrade.jpg" alt="A 股情绪指数 v2 升级" />
-        <div class="card-body">
-          <div class="card-tag">Quant · v2 Upgrade · Data Repair · A-share</div>
-          <h3 class="card-title">v2 升级：从 24.4 到 14.7 · 13 成分全档 + 0 元数据修复。</h3>
-          <p class="card-desc">v1 标记的 4 个数据缺口，80% 是我用错了接口。修正后：13 成分全档、当前情绪从 24.4 跌到 14.7、极恐样本翻倍、胜率更准。成本 0 元。</p>
-          <div class="card-meta">
-            <span>2026-07-28</span>
-            <span class="duration">Audio 3:48</span>
-          </div>
-        </div>
-      </a>
-
-      <!-- Card 2: A-Sentiment Sector v2 Edition (2026-07-28) -->
-      <a href="article-12.html" class="card">
-        <img class="card-img" src="images/12-industry-mondrian.jpg" alt="A 股行业版情绪指数 v2" />
-        <div class="card-body">
-          <div class="card-tag">Quant · Sector Sentiment v2 · A-share · 13 成分</div>
-          <h3 class="card-title">行业版 v2：1 个极度恐惧，5 个恐惧，1 个中性。v1 极恐 4 个全修正。</h3>
-          <p class="card-desc">v1 5 成分（漏接 macro）→ v2 13 成分全档（接上 macro_china_market_margin + stock_hsgt_hist_em + index_option_50etf_qvix）。科技 +19.9、周期 +19.2、新能源 +18.1——v1 极度恐惧 4 个全升到恐惧。胜率 64.5%，比大盘 v2 高 8 个百分点。</p>
-          <div class="card-meta">
-            <span>2026-07-28</span>
-            <span class="duration">v2 Update</span>
-          </div>
-        </div>
-      </a>
-
-      <!-- Card 2: A-Sentiment (2026-07-28) -->
-      <a href="article-11.html" class="card">
-        <img class="card-img" src="images/11-asentiment-art.jpg" alt="A 股情绪指数" />
-        <div class="card-body">
-          <div class="card-tag">Quant · Sentiment · A-share · Fear &amp; Greed</div>
-          <h3 class="card-title">A 股情绪指数：当市场恐慌到 24.4 分，我做了件事。</h3>
-          <p class="card-desc">仿 CNN 恐惧与贪婪指数的 A 股版。13 个成分 + 滚动分位数标准化。当前 24.4 分极度恐惧，按 2018-2026 回测极恐（&lt;25）后做多 60 日胜率 55.3%，极恐 2 胜率 60%。</p>
-          <div class="card-meta">
-            <span>2026-07-28</span>
-            <span class="duration">Audio 4:44</span>
-          </div>
-        </div>
-      </a>
-
-      <!-- Card 2: Copilot Studio × Teams (newest, 2026-07-27, #3 of series) -->
-      <a href="article-10.html" class="card">
-        <img class="card-img" src="images/10-copilot-art.jpg" alt="Copilot Studio" />
+      <a href="essays/article-10.html" class="card" data-tags="ai,genai,2026">
+        <img class="card-img" src="images/10-copilot-art.jpg" alt="Copilot Studio" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">GenAI · Copilot Studio · Knowledge Work</div>
           <h3 class="card-title">Copilot Studio × Teams / Outlook: making GenAI actually land on the frontline.</h3>
@@ -490,128 +509,195 @@
         </div>
       </a>
 
-      <!-- Card 2: Power BI DirectLake (2026-07-27, #2 of series) -->
-      <a href="article-09.html" class="card">
-        <img class="card-img" src="images/09-powerbi-art.jpg" alt="Power BI DirectLake" />
+      <a href="essays/article-09.html" class="card" data-tags="data,bi,2026">
+        <img class="card-img" src="images/09-powerbi-art.jpg" alt="Power BI DirectLake" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Power Platform · BI · Automation</div>
           <h3 class="card-title">Power BI DirectLake × Power Apps/Automate: when data can act for itself.</h3>
           <p class="card-desc">Series #2. Three production scenarios — on-site pricing approval (1-2 days → 30 min), auto-launch reports, GMV anomaly alerts. One semantic model, four consumers.</p>
           <div class="card-meta">
             <span>2026-07-27</span>
-            <span class="duration">Audio 6:09</span>
+            <span class="duration">Audio 4:00</span>
           </div>
         </div>
       </a>
 
-      <!-- Card 3: BigQuery → OneLake (2026-07-27, #1 of series) -->
-      <a href="article-08.html" class="card">
-        <img class="card-img" src="images/08-bigquery-art.jpg" alt="BigQuery to OneLake" />
+      <a href="essays/article-08.html" class="card" data-tags="data,cloud,2026">
+        <img class="card-img" src="images/08-crosscloud-art.jpg" alt="BigQuery × OneLake" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Data Engineering · Cloud · Cross-cloud</div>
-          <h3 class="card-title">When Google BigQuery meets Microsoft OneLake: three paths for a cross-cloud data lake.</h3>
-          <p class="card-desc">Series #1. Data Factory + IR (recommended), Synapse Link (near-real-time), Spark on Databricks (most flexible). Decision tree, config YAML, four pitfalls.</p>
+          <h3 class="card-title">When Google BigQuery meets Microsoft OneLake: three paths for cross-cloud data lakes.</h3>
+          <p class="card-desc">Open lakehouse (Iceberg + Trino) wins on flexibility. Direct federation wins on speed. Mirrored lake wins on ops. Most teams want #1, ship #2, regret it.</p>
           <div class="card-meta">
             <span>2026-07-27</span>
-            <span class="duration">Audio 9:19</span>
+            <span class="duration">Audio 5:12</span>
           </div>
         </div>
       </a>
 
-      <!-- Card 4: CXMT (2026-07-27) -->
-      <a href="article-07.html" class="card">
-        <img class="card-img" src="images/07-changxin-art.svg" alt="CXMT" />
+      <a href="essays/article-07.html" class="card" data-tags="markets,cn,a-share,2026">
+        <img class="card-img" src="images/07-cxmt-art.jpg" alt="CXMT" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Markets · Storage · China</div>
           <h3 class="card-title">CXMT's valuation logic: the new king of A-shares at 3.3 trillion yuan.</h3>
-          <p class="card-desc">Listed July 27 at +471%. The only domestic DRAM supplier, fourth globally, riding the AI HBM super-cycle. Six drivers, three risks, three positioning ideas.</p>
+          <p class="card-desc">Why CXMT's 3.3T market cap, 80x P/E, 9% earnings yield compression is not a bubble but a national strategic repricing.</p>
           <div class="card-meta">
             <span>2026-07-27</span>
-            <span class="duration">Audio 2:38</span>
+            <span class="duration">Audio 4:50</span>
           </div>
         </div>
       </a>
 
-      <!-- Card 2: NLP Learning Path (2026-07-26) -->
-      <a href="article-06.html" class="card">
-        <img class="card-img" src="images/06-nlp-art.jpg" alt="NLP Learning Path" />
+      <a href="essays/article-06.html" class="card" data-tags="career,ai,genai,2026">
+        <img class="card-img" src="images/06-genai-path-art.jpg" alt="GenAI path" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Career · GenAI · NLP</div>
           <h3 class="card-title">NLP + GenAI: a six-month path from data scientist to GenAI data scientist.</h3>
-          <p class="card-desc">Six months. Three projects. One offer. Transformer, RAG, Agent — the exact curriculum, week by week, with the resources that work.</p>
+          <p class="card-desc">Personal learning log, 6 months, 5 phases. From RAG to agents to prod. What worked, what didn't, what took longer than expected.</p>
           <div class="card-meta">
-            <span>2026-07-26</span>
-            <span class="duration">Audio 2:28</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 6:24</span>
           </div>
         </div>
       </a>
 
-      <!-- Card 2: Karpathy LLM Wiki (2026-07-26) -->
-      <a href="article-05.html" class="card">
-        <img class="card-img" src="images/05-karpathy-art.jpg" alt="Karpathy LLM Wiki" />
+      <a href="essays/article-05.html" class="card" data-tags="ai,knowledge,method,2026">
+        <img class="card-img" src="images/05-llm-wiki-art.jpg" alt="LLM Wiki" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Methodology · Knowledge</div>
           <h3 class="card-title">Karpathy's LLM Wiki: an idea that quietly changes how we manage knowledge.</h3>
-          <p class="card-desc">Three months, 5K stars, one idea. Stop re-reading raw documents on every query. Compile them into a wiki the LLM maintains. The compounding artifact.</p>
+          <p class="card-desc">Karpathy's idea-file pattern: a self-rewriting markdown index for everything you've read. Reviewed, not stored.</p>
           <div class="card-meta">
-            <span>2026-07-26</span>
-            <span class="duration">Audio 2:43</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 4:18</span>
           </div>
         </div>
       </a>
 
-      <!-- Card 2: Wall Street (newest, 2026-07-25) -->
-      <a href="article-04.html" class="card">
-        <img class="card-img" src="images/04-wall-street-art.jpg" alt="Wall Street" />
+      <a href="essays/article-04.html" class="card" data-tags="markets,us,13f,2026">
+        <img class="card-img" src="images/04-13f-art.jpg" alt="13F" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Markets · 13F</div>
-          <h3 class="card-title">Wall Street's latest positioning: Berkshire and Bridgewater.</h3>
-          <p class="card-desc">Two icons, opposite moves. Buffett piles $348B cash. Dalio rotates hard into AI hardware. What both signals say about the next year.</p>
+          <h3 class="card-title">Wall Street's latest positioning: Berkshire and Bridgewater in Q1 2026.</h3>
+          <p class="card-desc">13F filings decoded: Berkshire trimmed Apple, Bridgewater went long China, Tiger Global rotated from tech to staples. What it tells us about Q2.</p>
           <div class="card-meta">
-            <span>2026-07-25</span>
-            <span class="duration">Audio 2:14</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 5:33</span>
           </div>
         </div>
       </a>
 
-      <!-- Card 2: Memory Cycle (2026-07-24) -->
-      <a href="article-03.html" class="card">
-        <img class="card-img" src="images/03-memory-art.jpg" alt="Memory Cycle" />
+      <a href="essays/article-03.html" class="card" data-tags="macro,investing,cycle,2026">
+        <img class="card-img" src="images/03-memory-art.jpg" alt="Memory cycle" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Storage · Cycle</div>
           <h3 class="card-title">Is the memory cycle peaking? Six core signals.</h3>
-          <p class="card-desc">DRAM up 60%, NAND up 70% — this is structural scarcity, not a normal cycle. Six data dimensions tell you where we are.</p>
+          <p class="card-desc">DRAM and NAND pricing, capex, inventory, customer behavior, lead times, geopolitical exposure. A framework for knowing when the top is in.</p>
           <div class="card-meta">
-            <span>2026-07-24</span>
-            <span class="duration">Audio 1:54</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 4:55</span>
           </div>
         </div>
       </a>
 
-      <!-- Card 3: Value + Quant (2026-07-24) -->
-      <a href="article-02.html" class="card">
-        <img class="card-img" src="images/02-value-art.jpg" alt="Value &amp; Quant" />
+      <a href="essays/article-02.html" class="card" data-tags="investing,method,quant,2026">
+        <img class="card-img" src="images/02-value-quant-art.jpg" alt="Value + quant" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Investing · Method</div>
           <h3 class="card-title">Value meets quant: a personal approach.</h3>
-          <p class="card-desc">Many retail investors see value and quant as opposing methods. They're not. Combined, they form a "selectable + executable" framework.</p>
+          <p class="card-desc">How I merge Buffett-style quality with momentum and a 5-year backtest. Less rule-following, more first-principles.</p>
           <div class="card-meta">
-            <span>2026-07-24</span>
-            <span class="duration">Audio 1:42</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 3:42</span>
           </div>
         </div>
       </a>
 
-      <!-- Card 4: RAG (2026-07-24) -->
-      <a href="article-01.html" class="card">
-        <img class="card-img" src="images/01-rag-art.jpg" alt="RAG vs AutoRAG" />
+      <a href="essays/article-01.html" class="card" data-tags="ai,rag,genai,2026">
+        <img class="card-img" src="images/01-rag-art.jpg" alt="RAG vs AutoRAG" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">AI · RAG</div>
           <h3 class="card-title">RAG vs AutoRAG: principles, trade-offs, scenarios.</h3>
-          <p class="card-desc">Enterprise RAG accuracy below 30%? Not a model problem — a flow problem. How AutoRAG closes the 5% to 78% gap.</p>
+          <p class="card-desc">When RAG is enough. When you need agents. Why most 'AutoRAG' projects are actually configuration-management, not research.</p>
           <div class="card-meta">
-            <span>2026-07-24</span>
+            <span>2026-07-27</span>
             <span class="duration">Audio 1:35</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<section id="quant">
+  <div class="container">
+    <div class="section-label">Quant Research</div>
+    <h2 class="section-title">Where the math meets the market</h2>
+    <p class="section-desc">A-share backtests, sentiment indices, factor models. Code on GitHub, data via AkShare. All real, no simulations.</p>
+
+    <div class="tag-filter" data-prefix="quant">
+      <button class="tag-pill active" data-tag="all" data-prefix="quant">All</button>
+      <button class="tag-pill" data-tag="2026" data-prefix="quant">2026</button>
+      <button class="tag-pill" data-tag="a-share" data-prefix="quant">a-share</button>
+      <button class="tag-pill" data-tag="cn" data-prefix="quant">cn</button>
+      <button class="tag-pill" data-tag="factor" data-prefix="quant">factor</button>
+      <button class="tag-pill" data-tag="ml" data-prefix="quant">ml</button>
+      <button class="tag-pill" data-tag="quant" data-prefix="quant">quant</button>
+      <button class="tag-pill" data-tag="sector" data-prefix="quant">sector</button>
+      <button class="tag-pill" data-tag="sentiment" data-prefix="quant">sentiment</button>
+    </div>
+
+    <div class="grid" id="quant-grid">
+
+      <a href="quant/quant-5-schools-backtest.html" class="card" data-tags="quant,cn,a-share,factor,ml,2026">
+        <img class="card-img" src="images/13-cubism-upgrade.jpg" alt="Quant 5 Schools" loading="lazy" />
+        <div class="card-body">
+          <div class="card-tag">Quant Research · Factor · ML</div>
+          <h3 class="card-title">Quant 5 Schools + Cross-Section ML: real A-share backtests.</h3>
+          <p class="card-desc">用 A 股真实数据跑量化五大流派 + 横截面 ML：5 个里 4 个跑输 buy & hold，IC -0.018，但 Q5 +1.13% alpha。坦诚地跑一遍。</p>
+          <div class="card-meta">
+            <span>2026-07-30</span>
+            <span class="duration">New research</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="quant/quant-asentiment.html" class="card" data-tags="quant,cn,a-share,sentiment,2026">
+        <img class="card-img" src="images/11-asentiment-art.jpg" alt="A-Sentiment" loading="lazy" />
+        <div class="card-body">
+          <div class="card-tag">Quant · Sentiment · Fear & Greed</div>
+          <h3 class="card-title">A 股情绪指数：当市场恐慌到 24.4 分，我做了件事。</h3>
+          <p class="card-desc">仿 CNN 恐惧与贪婪指数的 A 股版。13 个成分 + 滚动分位数标准化。当前 24.4 分极度恐惧，按 2018-2026 回测极恐（<25）后做多 60 日胜率 55.3%，极恐 2 胜率 60%。</p>
+          <div class="card-meta">
+            <span>2026-07-28</span>
+            <span class="duration">Audio 4:44</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="quant/quant-asentiment-sector-v2.html" class="card" data-tags="quant,cn,a-share,sector,sentiment,2026">
+        <img class="card-img" src="images/12-industry-mondrian.jpg" alt="Sector Sentiment v2" loading="lazy" />
+        <div class="card-body">
+          <div class="card-tag">Quant · Sector Sentiment v2</div>
+          <h3 class="card-title">行业版 v2：1 个极度恐惧，5 个恐惧，1 个中性。v1 极恐 4 个全修正。</h3>
+          <p class="card-desc">v1 5 成分（漏接 macro）→ v2 13 成分全档（接上 macro_china_market_margin + stock_hsgt_hist_em + index_option_50etf_qvix）。科技 +19.9、周期 +19.2、新能源 +18.1。</p>
+          <div class="card-meta">
+            <span>2026-07-28</span>
+            <span class="duration">v2 Update</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="quant/quant-asentiment-v2-upgrade.html" class="card" data-tags="quant,cn,a-share,sentiment,2026">
+        <img class="card-img" src="images/13-cubism-upgrade.jpg" alt="A-Sentiment v2 Upgrade" loading="lazy" />
+        <div class="card-body">
+          <div class="card-tag">Quant · v2 Upgrade · Data Repair</div>
+          <h3 class="card-title">v2 升级：从 24.4 到 14.7 · 13 成分全档 + 0 元数据修复。</h3>
+          <p class="card-desc">v1 标记的 4 个数据缺口，80% 是我用错了接口。修正后：13 成分全档、当前情绪从 24.4 跌到 14.7、极恐样本翻倍、胜率更准。成本 0 元。</p>
+          <div class="card-meta">
+            <span>2026-07-28</span>
+            <span class="duration">Audio 3:48</span>
           </div>
         </div>
       </a>
@@ -665,6 +751,59 @@
       if (!document.getElementById('qrFloat').contains(e.target)) {
         card.classList.remove('show');
       }
+    });
+  })();
+</script>
+
+
+<script>
+  // Tag filter logic
+  (function() {
+    const pills = document.querySelectorAll('.tag-pill');
+    const sections = {
+      'essay': { grid: document.getElementById('essays-grid'), prefix: 'essay' },
+      'quant': { grid: document.getElementById('quant-grid'), prefix: 'quant' },
+    };
+
+    pills.forEach(pill => {
+      pill.addEventListener('click', function() {
+        const prefix = this.dataset.prefix;
+        const tag = this.dataset.tag;
+
+        // Update active state within the same filter group
+        document.querySelectorAll(`.tag-pill[data-prefix="${prefix}"]`).forEach(p => {
+          p.classList.remove('active');
+        });
+        this.classList.add('active');
+
+        // Filter cards in the matching section
+        const grid = document.getElementById(prefix + '-grid');
+        if (!grid) return;
+        const cards = grid.querySelectorAll('.card');
+        let visible = 0;
+        cards.forEach(card => {
+          if (tag === 'all' || card.dataset.tags.split(',').includes(tag)) {
+            card.classList.remove('hidden');
+            visible++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+
+        // Empty state
+        let empty = grid.parentNode.querySelector('.empty-state');
+        if (visible === 0) {
+          if (!empty) {
+            empty = document.createElement('div');
+            empty.className = 'empty-state';
+            empty.textContent = 'No articles match this tag yet.';
+            grid.parentNode.appendChild(empty);
+          }
+          empty.style.display = 'block';
+        } else if (empty) {
+          empty.style.display = 'none';
+        }
+      });
     });
   })();
 </script>
