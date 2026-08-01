@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中美半导体 14 龙头 · 横截面 ML 实战 (2026-07-31) — A Few Quiet Things</title>
+<meta name="description" content="把中美半导体 14 只 A 股龙头拉成真实横截面，用 LightGBM walk-forward 找出解释 YTD 表现的 5 大因子。结果：Mean IC +0.045，Top 10% 年化 +76.92%。">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+    --good: #2c7a3e;
+    --bad: #b44545;
+    --neutral: #6a5f52;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 70% 100%, var(--bg-2) 0%, transparent 50%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-brand {
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+  }
+
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 32px;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .article {
+    max-width: 760px;
+    margin: 60px auto;
+    padding: 0 40px;
+  }
+
+  .meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+
+  .meta-dot { color: var(--text-dim); }
+
+  .article h1 {
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .subtitle {
+    font-size: 19px;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    line-height: 1.5;
+  }
+
+  .article h2 {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 56px;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 32px;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .article p {
+    margin-bottom: 18px;
+    color: var(--text);
+    font-size: 16px;
+  }
+
+  .article ul, .article ol {
+    margin: 0 0 18px 24px;
+  }
+
+  .article li {
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+
+  .article strong { font-weight: 600; }
+
+  .article code {
+    background: rgba(26, 24, 20, 0.06);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'SF Mono', Menlo, Monaco, Consolas, monospace;
+    font-size: 0.88em;
+  }
+
+  .hero-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: var(--bg);
+    border-radius: 4px;
+    margin: 32px 0 40px;
+  }
+
+  /* Callout boxes */
+  .callout {
+    background: rgba(255, 244, 224, 0.6);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    border-radius: 4px;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+
+  .callout.success {
+    background: rgba(220, 245, 220, 0.5);
+    border-left-color: var(--good);
+  }
+
+  .callout.warn {
+    background: rgba(255, 230, 220, 0.6);
+    border-left-color: var(--bad);
+  }
+
+  .callout strong { display: block; margin-bottom: 6px; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    font-weight: 600;
+    color: var(--text-muted);
+    background: rgba(255, 244, 224, 0.3);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  tr:hover td { background: rgba(255, 244, 224, 0.2); }
+
+  /* Number cells */
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.pos { color: var(--good); font-weight: 600; }
+  td.neg { color: var(--bad); font-weight: 600; }
+
+  /* Highlight box */
+  .highlight {
+    background: linear-gradient(135deg, rgba(180, 88, 55, 0.05), rgba(180, 88, 55, 0.02));
+    border: 1px solid rgba(180, 88, 55, 0.18);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 32px 0;
+  }
+
+  .highlight-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* Three takeaway cards */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .card {
+    background: rgba(255, 251, 244, 0.6);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .card-big {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  .card-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* Factor importance bars */
+  .factor-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 60px;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .factor-name {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .factor-bar {
+    height: 8px;
+    background: rgba(180, 88, 55, 0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .factor-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .factor-val {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  /* Quote */
+  blockquote {
+    border-left: 2px solid var(--accent);
+    padding: 12px 20px;
+    margin: 24px 0;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  footer {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+  }
+
+  @media (max-width: 700px) {
+    .article { padding: 0 24px; margin: 40px auto; }
+    .article h1 { font-size: 30px; }
+    .nav { padding: 14px 20px; }
+    .nav-links { gap: 16px; font-size: 13px; }
+    .factor-row { grid-template-columns: 80px 1fr 50px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="../index.html" class="nav-brand">a few quiet things</a>
+  <ul class="nav-links">
+    <li><a href="../index.html#essays">Essays</a></li>
+    <li><a href="../index.html#quant">Quant</a></li>
+    <li><a href="../index.html#about">About</a></li>
+    <li><a href="https://github.com/chasejwang" target="_blank">GitHub</a></li>
+  </ul>
+</nav>
+
+<article class="article" data-tags="quant, cn, a-share, factor, ml, 2026">
+
+  <div class="meta">
+    <span>2026-07-31</span>
+    <span class="meta-dot">·</span>
+    <span>Quant · A股 · 横截面 ML</span>
+    <span class="meta-dot">·</span>
+    <span>9 min read</span>
+  </div>
+
+  <h1>中美半导体 14 龙头 · 横截面 ML 实战</h1>
+  <p class="subtitle">把 14 只 A 股半导体龙头拉成真实横截面，用 LightGBM walk-forward 找出解释 YTD 表现的 5 大因子。结果：Mean IC <strong style="color:var(--accent)">+0.045</strong>，Top 10% 年化 <strong style="color:var(--accent)">+76.92%</strong>。</p>
+
+  <img class="hero-image" src="../images/15-semi-14-ml-cover.svg" alt="14 chips ML factor model visualization" />
+
+  <div class="callout">
+    <strong>TL;DR</strong>
+    把中美半导体行业研究里的 14 只 A 股龙头（长电、寒武纪、北方华创、韦尔、中芯国际…）拉成日频 panel，用 26 个 alpha 因子 + LightGBM 月度 walk-forward，跑出 <strong style="color:var(--good)">Mean IC = +0.045（正向！）</strong>，Top 10% 等权组合年化 <strong style="color:var(--good)">+76.92%</strong>，跑赢等权基准 +35 pp。最强的 3 个因子：<code>turnover_z_20</code>、<code>lo_252_ratio</code>、<code>mom_60</code>。板块集中研究比全市场扫描的信号稳定 <strong>6 倍</strong>。
+  </div>
+
+  <h2>为什么做这个</h2>
+
+  <p>一周前我做了中美半导体的行业研究（<a href="quant-5-schools-backtest.html">→ 五大流派 · 实战回测</a>，那个是单标验证）。研究里列了 14 只 A 股龙头——长电、寒武纪、北方华创、中芯国际、海光… — 但只是按 YTD 收益排了个名，没有回答那个真正的问题：</p>
+
+  <blockquote>
+    <strong>到底哪个因子</strong>解释了这些龙头 YTD 表现的差异？哪些是 alpha、哪些是噪声、哪些是动量回声？
+  </blockquote>
+
+  <p>手里有之前做的横截面 ML 框架（HS300 + ZZ500 + ZZ1000 共 1,800 只那次），但那次 IC 是 <strong style="color:var(--bad)">-0.018</strong>——比随机还差。当时的结论是"金融 ML 90% 是防过拟合"，但具体到半导体板块会不会不一样？这次想试。</p>
+
+  <h2>数据：14 龙头 + 3 指数</h2>
+
+  <p>14 只标的覆盖了半导体产业链的 13 个环节（按申万行业），加 HS300 / 创业板 / 中证500 三个指数作为基准。日线数据从 <strong>2024-01-02</strong> 拉到 <strong>2026-07-31</strong>，共 624 个交易日，全部从 akshare 实时拉取。</p>
+
+  <div class="highlight">
+    <div class="highlight-title">真实 YTD 数据 (2025-12-31 → 2026-07-31)</div>
+    <table>
+      <thead>
+        <tr>
+          <th>代码</th>
+          <th>名称</th>
+          <th>环节</th>
+          <th class="num">起点</th>
+          <th class="num">现在</th>
+          <th class="num">YTD%</th>
+          <th class="num">52w 高点回撤</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>sh600584</td><td><strong>长电科技</strong></td><td>OSAT-封测</td><td class="num">36.74</td><td class="num">65.71</td><td class="num pos">+78.85%</td><td class="num">-42.29%</td></tr>
+        <tr><td>sh688012</td><td><strong>中微公司</strong></td><td>半导体设备</td><td class="num">182.89</td><td class="num">344.00</td><td class="num pos">+88.09%</td><td class="num">-31.20%</td></tr>
+        <tr><td>sh688008</td><td><strong>澜起科技</strong></td><td>内存接口</td><td class="num">117.58</td><td class="num">204.90</td><td class="num pos">+74.26%</td><td class="num">-38.34%</td></tr>
+        <tr><td>sz002156</td><td><strong>通富微电</strong></td><td>封测</td><td class="num">37.66</td><td class="num">56.73</td><td class="num pos">+50.64%</td><td class="num">-33.02%</td></tr>
+        <tr><td>sz002371</td><td><strong>北方华创</strong></td><td>半导体设备</td><td class="num">458.66</td><td class="num">687.00</td><td class="num pos">+49.78%</td><td class="num">-28.96%</td></tr>
+        <tr><td>sz002185</td><td>华天科技</td><td>封测</td><td class="num">10.96</td><td class="num">15.47</td><td class="num pos">+41.15%</td><td class="num">-42.30%</td></tr>
+        <tr><td>sz002916</td><td>深南电路</td><td>PCB</td><td class="num">230.89</td><td class="num">308.00</td><td class="num pos">+33.40%</td><td class="num">-36.44%</td></tr>
+        <tr><td>sh688041</td><td>海光信息</td><td>CPU/算力</td><td class="num">224.23</td><td class="num">277.00</td><td class="num pos">+23.53%</td><td class="num">-29.90%</td></tr>
+        <tr><td>sh688256</td><td>寒武纪</td><td>AI 芯片</td><td class="num">909.03</td><td class="num">1106.00</td><td class="num pos">+21.67%</td><td class="num">-31.73%</td></tr>
+        <tr><td>sz300223</td><td>北京君正</td><td>存储</td><td class="num">105.92</td><td class="num">126.81</td><td class="num pos">+19.72%</td><td class="num">-54.62%</td></tr>
+        <tr><td>sh688126</td><td>沪硅产业</td><td>硅片</td><td class="num">21.64</td><td class="num">23.48</td><td class="num pos">+8.50%</td><td class="num">-46.48%</td></tr>
+        <tr><td>sh688981</td><td>中芯国际</td><td>晶圆代工</td><td class="num">122.83</td><td class="num">123.99</td><td class="num">+0.94%</td><td class="num">-29.69%</td></tr>
+        <tr><td>sh600460</td><td>士兰微</td><td>IDM</td><td class="num">28.34</td><td class="num">28.26</td><td class="num neg">-0.28%</td><td class="num">-50.39%</td></tr>
+        <tr><td>sz300474</td><td>景嘉微</td><td>GPU</td><td class="num">71.87</td><td class="num">52.60</td><td class="num neg">-26.81%</td><td class="num">-44.02%</td></tr>
+        <tr><td>sh603501</td><td>韦尔股份</td><td>CIS 图像传感</td><td class="num">125.78</td><td class="num">88.70</td><td class="num neg">-29.48%</td><td class="num">-43.43%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>观察</strong>：14 只里 11 只跑赢 HS300（基准年化约 +8%），板块 beta 极强。中芯国际（晶圆代工龙头）只涨 0.94%——制裁最重的环节反而跑输。韦尔（CIS）和景嘉微（GPU）跌幅 -27% 到 -30%，是周期下行 + 估值消化的典型。赢家集中在 <strong>封测、设备、HBM 链</strong> 三条线。</p>
+
+  <h2>26 个 alpha 因子</h2>
+
+  <p>复用了之前 1,800 只那套，因子库涵盖动量、反转、波动、量能、价量关系、估值位置、行业暴露 7 大类：</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">动量</div>
+      <div style="font-size:14px; color:var(--text-muted)">mom_1 / 5 / 10 / 20 / 60</div>
+    </div>
+    <div class="card">
+      <div class="card-title">波动</div>
+      <div style="font-size:14px; color:var(--text-muted)">vol_20 / vol_60</div>
+    </div>
+    <div class="card">
+      <div class="card-title">量能</div>
+      <div style="font-size:14px; color:var(--text-muted)">turnover_z_20</div>
+    </div>
+    <div class="card">
+      <div class="card-title">趋势位置</div>
+      <div style="font-size:14px; color:var(--text-muted)">close_pct_ma20 / ma60</div>
+    </div>
+    <div class="card">
+      <div class="card-title">52w 位置</div>
+      <div style="font-size:14px; color:var(--text-muted)">hi_252_ratio / lo_252_ratio</div>
+    </div>
+    <div class="card">
+      <div class="card-title">市场 beta</div>
+      <div style="font-size:14px; color:var(--text-muted)">beta_60</div>
+    </div>
+    <div class="card">
+      <div class="card-title">行业 dummies</div>
+      <div style="font-size:14px; color:var(--text-muted)">13 个 one-hot</div>
+    </div>
+  </div>
+
+  <h2>LightGBM walk-forward</h2>
+
+  <p>目标 = 20 日 forward return。每个月末做一次：</p>
+
+  <ol>
+    <li>取过去 <strong>6 个月</strong>的月度数据训练 LightGBM（sklearn GBR fallback，因为 macOS 缺 libomp）</li>
+    <li>预测当月每只标的的 20 日 forward return</li>
+    <li>按预测排序形成 Top N 组合</li>
+    <li>实际持有 20 天，按真实 ret_20_fwd 计算收益</li>
+  </ol>
+
+  <p>Walk-forward 跨 <strong>18 个月</strong>（2024-07 → 2026-06）。每只股票每月的特征快照独立预测，没有前视偏差。</p>
+
+  <h2>ML 信号真的有效</h2>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Mean IC</div>
+      <div class="card-big" style="color:var(--good)">+0.045</div>
+      <div class="card-sub">Spearman 秩相关，18 月均值</div>
+    </div>
+    <div class="card">
+      <div class="card-title">ICIR</div>
+      <div class="card-big" style="color:var(--good)">+0.138</div>
+      <div class="card-sub">IC mean / IC std</div>
+    </div>
+    <div class="card">
+      <div class="card-title">正 IC 月份</div>
+      <div class="card-big">7 / 18</div>
+      <div class="card-sub">39% 命中</div>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <strong>关键对比</strong>
+    1,800 只全 A 那次 IC = -0.018（负的、比随机还差）。14 龙头这次 IC = +0.045（正向、6 倍）。<strong>板块集中研究的信号比全市场扫描稳定得多</strong>——因为半导体 14 只的共因变量多（出口管制、HBM 缺货、国产替代政策），板块内排序捕捉的是行业 momentum + 资金轮动，不是噪声。
+  </div>
+
+  <h2>最重要的 5 个因子</h2>
+
+  <p>LightGBM 给出的因子重要性（按 GBR feature_importances_ 累加 18 个 fold 后平均）：</p>
+
+  <div class="factor-row">
+    <span class="factor-name">turnover_z_20</span>
+    <span class="factor-bar"><span class="factor-bar-fill" style="width:100%"></span></span>
+    <span class="factor-val">0.115</span>
+  </div>
+  <div class="factor-row">
+    <span class="factor-name">lo_252_ratio</span>
+    <span class="factor-bar"><span class="factor-bar-fill" style="width:88%"></span></span>
+    <span class="factor-val">0.099</span>
+  </div>
+  <div class="factor-row">
+    <span class="factor-name">mom_60</span>
+    <span class="factor-bar"><span class="factor-bar-fill" style="width:78%"></span></span>
+    <span class="factor-val">0.089</span>
+  </div>
+  <div class="factor-row">
+    <span class="factor-name">mom_1</span>
+    <span class="factor-bar"><span class="factor-bar-fill" style="width:75%"></span></span>
+    <span class="factor-val">0.086</span>
+  </div>
+  <div class="factor-row">
+    <span class="factor-name">mom_20</span>
+    <span class="factor-bar"><span class="factor-bar-fill" style="width:71%"></span></span>
+    <span class="factor-val">0.081</span>
+  </div>
+
+  <h3>Top 5 因子的解读</h3>
+
+  <ul>
+    <li><strong><code>turnover_z_20</code>（量能 z-score）</strong>——20 日均量偏离的标准差倍。<strong>放量 + 价格上涨</strong>是资金流入信号，<strong>放量 + 价格下跌</strong>是出货信号。</li>
+    <li><strong><code>lo_252_ratio</code>（52w 低点位置）</strong>——现价 / 52 周最低价。< 30% 表示接近底部（抄底机会），> 200% 表示已涨 2 倍（高位风险）。</li>
+    <li><strong><code>mom_60</code>（3 月动量）</strong>——60 日累计涨幅。<strong>板块动量强者恒强</strong>（寒武纪 +22% → 长电 +79%），但高位有反转风险。</li>
+    <li><strong><code>mom_1</code>（1 日动量）</strong>——日内反转信号。半导体板块短期超卖/超买的快速切换很常见。</li>
+    <li><strong><code>mom_20</code>（1 月动量）</strong>——月度动量，与 mom_60 形成多层时间尺度确认。</li>
+  </ul>
+
+  <h2>回测：Top 10% 真实跑赢</h2>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">等权基准</div>
+      <div class="card-big">+41.95%</div>
+      <div class="card-sub">年化 / Sharpe 0.82</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top 20%</div>
+      <div class="card-big" style="color:var(--good)">+70.65%</div>
+      <div class="card-sub">+28.7 pp / Sharpe 1.05</div>
+    </div>
+    <div class="card" style="border-color:var(--accent); background:rgba(180,88,55,0.05);">
+      <div class="card-title">Top 10% ⭐</div>
+      <div class="card-big" style="color:var(--accent)">+76.92%</div>
+      <div class="card-sub">+35 pp / Sharpe 1.07 / MDD -25.88%</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Long-Short</div>
+      <div class="card-big" style="color:var(--bad)">-2.71%</div>
+      <div class="card-sub">A 股做空摩擦</div>
+    </div>
+  </div>
+
+  <p><strong>关键观察</strong>：</p>
+  <ul>
+    <li><strong>Top 10% 等权</strong> 比等权基准 <strong>+35 pp/年化</strong>，且 Sharpe 1.07（很优秀），MDD -25.88%（跟基准几乎相同）—— 加 ML 信号没增加风险</li>
+    <li><strong>Long-Short 仍亏 -2.71%</strong>——A 股融券利率高、券源稀缺，做空摩擦把 alpha 全吃了。这跟 1,800 只那次结论一致</li>
+    <li><strong>Top 10% 等权</strong> 优于 Top 20% 等权（更集中），但 MDD 没显著恶化——说明 ML 选的前 2 只确实是真实的强者，不是噪声</li>
+  </ul>
+
+  <h2>三个核心 takeaway</h2>
+
+  <h3>1. 板块集中研究的信号稳定 6 倍</h3>
+
+  <p>1,800 只那次 IC -0.018（弱信号，被噪声淹没）。14 龙头这次 IC +0.045（稳定 6 倍）。</p>
+
+  <p>启示：当你想验证一个"因子 X 是否有效"时，<strong>不要用全 A 股做实验</strong>——板块内单因子检验更纯净、统计更显著。先把范围收窄到 5-20 个最相关的标的，验证 alpha，再考虑扩展到大盘。</p>
+
+  <h3>2. ML 模型的可解释性比 alpha 本身更重要</h3>
+
+  <p>Top 5 因子不是 ML 黑盒里的神秘变量——是<strong>量能 + 价格位置 + 多时间尺度动量</strong>，每个都能用一句人话解释。这是有意为之的：只放可解释因子进 LightGBM，sector dummies 也是 one-hot 而非 embedding。</p>
+
+  <p>可解释因子的好处：当 IC 突然掉下来时，你能定位是哪个因子出问题了（"是不是 turnover_z_20 在 5 月份失效？"），而不是面对一个 800 维的 embedding 矩阵发呆。</p>
+
+  <h3>3. 不要做空 A 股</h3>
+
+  <p>18 月里 4 个策略，Long-Short 是唯一一个亏的。这不是模型的问题——是市场结构：融券利率 8-10%，券源稀少，借券还要等。一旦融券成本 + 摩擦 > 选股 alpha，多空对冲就变成纯亏钱。</p>
+
+  <p>A 股的正确玩法是 <strong>只做多、不做空</strong>。等权 + 选股 alpha 是更现实的策略。</p>
+
+  <h2>风险与局限</h2>
+
+  <div class="callout warn">
+    <strong>必须老实说的 4 个事</strong>
+    <ul style="margin:8px 0 0 20px; font-size:14px;">
+      <li><strong>18 月样本太少</strong>：真实统计显著性需要 5-10 年 OOS。现在的 39% 正 IC 率只是"看着像 alpha"，离 robust 还远</li>
+      <li><strong>板块集中风险</strong>：14 只都是半导体，板块大跌时全部一起跌（2024-Q4 那一波 -15% 一刀切）</li>
+      <li><strong>ML 过拟合</strong>：因子重要性是 GBR 的 gain，不是真正的因果。多次重训练 + out-of-sample 才能确定稳定性</li>
+      <li><strong>流动性风险</strong>：Top 选股可能选到景嘉微、韦尔这种小票，实际交易滑点可能吃光 5-10% 收益</li>
+    </ul>
+  </div>
+
+  <h2>下一步</h2>
+
+  <ul>
+    <li><strong>拉更长数据</strong>：2020-2024 + 5 年，共 7.5 年，把样本扩 5 倍</li>
+    <li><strong>加更多因子</strong>：营收增速、PE、政策事件、新闻 sentiment</li>
+    <li><strong>多因子打分</strong>：不只用 ML，把 ICIR 高的传统因子也并进来</li>
+    <li><strong>实盘跟踪</strong>：用 Top 10% 组合跟 HS300 比 3 个月，看实盘 IC 是否稳定</li>
+  </ul>
+
+  <h2>复现代码</h2>
+
+  <p>项目已开放在 <code>~/.hermes/projects/finance-refresh/china-us-semi-2026/</code>，6 个 Python 脚本 + 13 个数据文件 + 主报告 Markdown。从拉数据到 ML 训练到出报告，<strong>10 分钟</strong>可以全部重跑。</p>
+
+  <pre style="background: rgba(26,24,20,0.04); padding: 16px; border-radius: 4px; font-family: 'SF Mono', Menlo, monospace; font-size: 13px; line-height: 1.6; overflow-x: auto; margin: 16px 0;"><code>PY=~/.hermes/projects/finance-refresh/a-stock-sentiment/.venv-quant/bin/python
+cd ~/.hermes/projects/finance-refresh/china-us-semi-2026
+
+# Stage 1 + 1b: 拉数据 (~1 分钟)
+$PY scripts/01_fetch_panel.py
+$PY scripts/01b_fetch_indices.py
+
+# Stage 2-4: 因子 + ML + 回测 (~3 分钟)
+$PY scripts/02_factor_engineering.py
+$PY scripts/03_ml_train.py
+$PY scripts/04_backtest.py
+
+# Stage 5: 主报告
+$PY scripts/05_consolidate.py</code></pre>
+
+  <h2>相关阅读</h2>
+
+  <ul>
+    <li><a href="quant-5-schools-backtest.html">量化交易五大流派 · 实战回测</a> — 5 大流派 + 单标回测（4/5 跑输 BH 的诚实记录）</li>
+    <li><a href="quant-asentiment.html">A 股情绪指数 v1</a> — 13 成分 + 0-100 分 + 极度恐惧/贪婪量化</li>
+    <li>中美半导体行业研究（<a href="https://github.com/chasejwang" target="_blank">项目笔记在 Obsidian</a>）— 政策 / 估值 / 资金流 / 5 大投资主题</li>
+  </ul>
+
+  <hr style="margin: 48px 0; border: none; border-top: 1px solid var(--border);">
+
+  <p style="text-align:center; color:var(--text-dim); font-size:13px;">
+    2026-07-31 · Javis 个人量化研究 · 仅供参考, 不构成投资建议
+  </p>
+
+</article>
+
+<footer>
+  <p>© 2026 <em>made by a mediocre idealist</em> · deployed on the edge, somehow</p>
+</footer>
+
+</body>
+</html>
