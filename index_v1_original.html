@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>a few quiet things · Notes from a mediocre idealist</title>
-<meta name="description" content="Notes from a mediocre idealist — on memory, money & machines. Essays and quant research.">
+<title>A few quiet things</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -27,243 +26,211 @@
   body {
     font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
                  'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-    line-height: 1.65;
+    line-height: 1.5;
     color: var(--text);
     background: var(--bg);
     background-image:
       radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
-      radial-gradient(at 70% 100%, var(--bg-2) 0%, transparent 50%);
+      radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
     background-attachment: fixed;
+    font-size: 17px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
-  /* ===== Nav ===== */
-  .nav {
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  nav {
     position: sticky;
     top: 0;
-    z-index: 10;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    z-index: 100;
     background: var(--surface);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
     border-bottom: 1px solid var(--border);
-    padding: 18px 40px;
+  }
+  .nav-inner {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
+    height: 56px;
   }
-
   .nav-brand {
-    font-family: 'PP Editorial New', Georgia, serif;
-    font-style: italic;
-    font-weight: 400;
-    color: var(--text);
-    text-decoration: none;
-    font-size: 16px;
-    letter-spacing: -0.01em;
-  }
-
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 32px;
-  }
-
-  .nav-links a {
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 14px;
-    transition: color 0.2s;
-  }
-
-  .nav-links a:hover { color: var(--text); }
-
-  /* ===== Container ===== */
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 40px;
-  }
-
-  /* ===== Hero — the ONE decisive move =====
-     Impeccable rule: kill the eyebrow. Let the heading carry its own weight.
-     Use display type at full strength. Commit, then quiet everything else. */
-  .hero {
-    min-height: 78vh;
-    display: flex;
-    align-items: center;
-    padding: 40px 0 80px;
-  }
-
-  .hero-headline {
     font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
-    font-weight: 400;
-    font-size: clamp(48px, 7vw, 96px);
-    line-height: 1.02;
-    letter-spacing: -0.035em;
+    font-size: 22px;
+    font-weight: 500;
     color: var(--text);
-    max-width: 18ch;
-    margin-bottom: 48px;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    font-style: italic;
   }
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 14px;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 400;
+    opacity: 0.7;
+    transition: opacity 0.2s, color 0.2s;
+  }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
 
-  /* Italic emphasis: just like the old one, but with intention now */
-  .hero-headline em {
+  .hero {
+    padding: 100px 0 80px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 64px;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+  .hero h1 em {
     font-style: italic;
     color: var(--accent);
-    font-feature-settings: "ss01", "ss02";
   }
-
-  /* Below the headline: ONLY the action. No eyebrow, no subtitle quote. */
-  .hero-actions {
+  .hero .sub {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-muted);
+    max-width: 640px;
+    margin: 0 auto 40px;
+    font-style: italic;
+  }
+  .hero .links {
     display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    align-items: center;
+    justify-content: center;
+    gap: 12px;
   }
-
   .btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 14px 28px;
-    border-radius: 999px;
-    text-decoration: none;
+    display: inline-block;
     font-size: 15px;
+    line-height: 1.3;
     font-weight: 500;
-    letter-spacing: 0.005em;
-    transition: all 0.2s ease;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
     border: 1px solid transparent;
+    font-family: inherit;
   }
-
   .btn-primary {
     background: var(--accent);
     color: #faf8f2;
   }
-  .btn-primary:hover {
-    background: var(--accent-hover);
-    transform: translateY(-1px);
-  }
-
+  .btn-primary:hover { background: var(--accent-hover); }
   .btn-secondary {
-    color: var(--text);
-    border-color: var(--border-strong);
     background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
   .btn-secondary:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    border-color: var(--border-strong);
   }
 
-  /* ===== Section — TIGHT above, GENEROUS below ===== */
   section {
-    padding: 96px 0;
-    border-top: 1px solid var(--border);
+    padding: 60px 0;
   }
-
-  /* The section's intent lives in the H2 only. No kicker. */
+  .section-label {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
   .section-title {
     font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
-    font-weight: 500;
-    font-size: clamp(32px, 4.5vw, 56px);
-    line-height: 1.05;
-    letter-spacing: -0.025em;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.15;
     color: var(--text);
-    margin-bottom: 64px;
-    max-width: 20ch;
+    letter-spacing: -0.015em;
+    margin-bottom: 12px;
   }
-
-  /* Only used on the Quant section, where the original had a desc */
-  .section-intro {
-    font-size: 18px;
+  .section-desc {
+    font-size: 17px;
+    color: var(--text-muted);
     line-height: 1.5;
-    color: var(--text-muted);
-    margin-bottom: 64px;
-    max-width: 60ch;
+    margin-bottom: 36px;
+    max-width: 640px;
+    font-style: italic;
   }
 
-  /* ===== Tag filter ===== */
-  .tag-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 32px;
-  }
-
-  .tag-pill {
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: inherit;
-  }
-
-  .tag-pill:hover {
-    border-color: var(--border-strong);
-    color: var(--text);
-  }
-
-  .tag-pill.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #faf8f2;
-  }
-
-  /* ===== Cards — no inner cards, no nested decoration ===== */
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
   }
-
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: 1fr; }
+  }
   .card {
-    display: flex;
-    flex-direction: column;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
+    padding: 0;
     overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
     text-decoration: none;
     color: inherit;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    display: flex;
+    flex-direction: column;
     backdrop-filter: blur(16px) saturate(150%);
     -webkit-backdrop-filter: blur(16px) saturate(150%);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
                 0 8px 32px rgba(180, 88, 55, 0.08);
   }
-
   .card:hover {
     transform: translateY(-3px);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
                 0 12px 40px rgba(180, 88, 55, 0.12);
     border-color: var(--border-strong);
   }
-
   .card-img {
     width: 100%;
     aspect-ratio: 16/9;
     object-fit: cover;
     background: var(--bg);
   }
-
   .card-body {
-    padding: 28px 28px 32px;
+    padding: 24px;
     flex: 1;
     display: flex;
     flex-direction: column;
   }
-
   .card-tag {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     color: var(--accent);
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
-
   .card-title {
     font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
     font-size: 22px;
@@ -271,80 +238,74 @@
     line-height: 1.2;
     color: var(--text);
     letter-spacing: -0.01em;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
-
   .card-desc {
     font-size: 14px;
     line-height: 1.55;
     color: var(--text-muted);
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     flex: 1;
   }
-
   .card-meta {
-    display: flex;
-    justify-content: space-between;
     font-size: 12px;
     color: var(--text-dim);
-    letter-spacing: 0.04em;
-  }
-
-  /* ===== About section — quiet & honest ===== */
-  #about {
-    padding: 96px 0 128px;
-  }
-
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
-    align-items: start;
-  }
-
-  .about-title {
-    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
-    font-weight: 500;
-    font-size: clamp(28px, 3.5vw, 44px);
-    line-height: 1.1;
-    letter-spacing: -0.025em;
-    color: var(--text);
-  }
-
-  .about-body p {
-    font-size: 17px;
-    line-height: 1.6;
-    color: var(--text-muted);
-    margin-bottom: 18px;
-  }
-
-  .about-body a {
-    color: var(--accent);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.2s;
-  }
-
-  .about-body a:hover {
-    border-bottom-color: var(--accent);
-  }
-
-  /* ===== Footer — minimal ===== */
-  footer {
-    text-align: center;
-    padding: 64px 20px 48px;
-    color: var(--text-dim);
-    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
     border-top: 1px solid var(--border);
   }
+  .card-meta .duration {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-meta .duration::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
 
+  .about {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .about p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+  .about p em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .about .signature {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-top: 32px;
+    text-align: right;
+    font-size: 16px;
+  }
+
+  footer {
+    padding: 48px 0 32px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
   footer em {
     font-family: 'PP Editorial New', Georgia, serif;
     font-style: italic;
     color: var(--accent);
   }
 
-  /* ===== Floating QR — kept from original, simple ===== */
+  /* ===== Floating Public Account QR Code (right corner) ===== */
   .qr-float {
     position: fixed;
     right: 24px;
@@ -354,7 +315,6 @@
     align-items: center;
     gap: 10px;
   }
-
   .qr-float-button {
     width: 44px;
     height: 44px;
@@ -373,81 +333,116 @@
     font-weight: 400;
     font-style: italic;
   }
-
   .qr-float-button:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 24px rgba(180, 88, 55, 0.18);
     color: var(--accent);
   }
-
   .qr-float-card {
-    width: 140px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border-radius: 14px;
+    padding: 12px 12px 10px 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    width: 168px;
     text-align: center;
-    font-size: 12px;
-    color: var(--text-muted);
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.25s, transform 0.25s;
-    pointer-events: none;
+    animation: qrFadeIn 0.25s ease-out;
   }
-
-  .qr-float-card.show {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
+  @keyframes qrFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-
+  .qr-float-card.show { display: flex; }
   .qr-float-card img {
-    width: 100%;
-    height: auto;
+    width: 144px;
+    height: 144px;
+    border-radius: 6px;
     display: block;
-    margin-bottom: 6px;
+  }
+  .qr-float-card .qr-label {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-size: 11.5px;
+    color: var(--text);
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .qr-float-card .qr-sub {
+    font-size: 9.5px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+  footer .divider {
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+    margin: 0 auto 24px;
   }
 
-  /* ===== Responsive ===== */
-  @media (max-width: 900px) {
-    .about-grid {
-      grid-template-columns: 1fr;
-      gap: 40px;
-    }
-    .hero { min-height: 80vh; }
+  /* TAG FILTER PILLS */
+  .tag-filter {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin: 32px 0 24px;
+  }
+  .tag-pill {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+    padding: 6px 14px;
+    border-radius: 980px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tag-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .tag-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+  .card.hidden {
+    display: none;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--text-dim);
+    font-size: 15px;
   }
 
-  @media (max-width: 700px) {
-    .container { padding: 0 24px; }
-    .nav { padding: 14px 20px; }
-    .nav-links { gap: 16px; font-size: 13px; }
-    .hero { padding: 24px 0 64px; min-height: 70vh; }
-    section { padding: 64px 0; }
-    .section-title { margin-bottom: 40px; }
-    .grid { grid-template-columns: 1fr; }
-  }
 </style>
 </head>
 <body>
 
-<nav class="nav">
-  <a href="#" class="nav-brand">a few quiet things</a>
-  <ul class="nav-links">
-    <li><a href="#essays">Essays</a></li>
-    <li><a href="#quant">Quant</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="https://github.com/chasejwang" target="_blank">GitHub</a></li>
-  </ul>
+<nav>
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="#essays">Essays</a></li>
+      <li><a href="quant/quant-5-schools-backtest.html">Quant</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="https://github.com">GitHub</a></li>
+    </ul>
+  </div>
 </nav>
 
-<!-- ===== Hero: the one decisive move ===== -->
+<!-- ===== Hero ===== -->
 <section class="hero">
   <div class="container">
-    <h1 class="hero-headline">
-      A few quiet things<br>on <em>memory</em>, <em>money</em> &amp; <em>machines</em>.
-    </h1>
-    <div class="hero-actions">
+    <div class="hero-eyebrow">Notes from a mediocre idealist</div>
+    <h1>A few quiet things<br>on <em>memory</em>, <em>money</em> &amp; <em>machines</em>.</h1>
+    <p class="sub">I do not know what I am doing. I am doing it anyway. The work is small and it is mine.</p>
+    <div class="links">
       <a href="#essays" class="btn btn-primary">Read the essays</a>
       <a href="#about" class="btn btn-secondary">About the writer</a>
     </div>
@@ -457,29 +452,33 @@
 <!-- ===== Essays ===== -->
 <section id="essays">
   <div class="container">
-    <h2 class="section-title">Essays</h2>
+    <div class="section-label">Essays</div>
+    <h2 class="section-title">Notes on memory, money & machines</h2>
+    <p class="section-desc">A small library of slow, deliberate essays. Each comes with a voice.</p>
 
     <div class="tag-filter" data-prefix="essay">
       <button class="tag-pill active" data-tag="all" data-prefix="essay">All</button>
-      <button class="tag-pill" data-tag="ai" data-prefix="essay">ai</button>
-      <button class="tag-pill" data-tag="rag" data-prefix="essay">rag</button>
-      <button class="tag-pill" data-tag="genai" data-prefix="essay">genai</button>
-      <button class="tag-pill" data-tag="ml" data-prefix="essay">ml</button>
-      <button class="tag-pill" data-tag="agent" data-prefix="essay">agent</button>
-      <button class="tag-pill" data-tag="data" data-prefix="essay">data</button>
-      <button class="tag-pill" data-tag="bi" data-prefix="essay">bi</button>
-      <button class="tag-pill" data-tag="cloud" data-prefix="essay">cloud</button>
-      <button class="tag-pill" data-tag="knowledge" data-prefix="essay">knowledge</button>
-      <button class="tag-pill" data-tag="method" data-prefix="essay">method</button>
-      <button class="tag-pill" data-tag="markets" data-prefix="essay">markets</button>
-      <button class="tag-pill" data-tag="cn" data-prefix="essay">cn</button>
-      <button class="tag-pill" data-tag="a-share" data-prefix="essay">a-share</button>
-      <button class="tag-pill" data-tag="us" data-prefix="essay">us</button>
       <button class="tag-pill" data-tag="13f" data-prefix="essay">13f</button>
-      <button class="tag-pill" data-tag="career" data-prefix="essay">career</button>
-      <button class="tag-pill" data-tag="investing" data-prefix="essay">investing</button>
-      <button class="tag-pill" data-tag="quant" data-prefix="essay">quant</button>
       <button class="tag-pill" data-tag="2026" data-prefix="essay">2026</button>
+      <button class="tag-pill" data-tag="a-share" data-prefix="essay">a-share</button>
+      <button class="tag-pill" data-tag="agent" data-prefix="essay">agent</button>
+      <button class="tag-pill" data-tag="ai" data-prefix="essay">ai</button>
+      <button class="tag-pill" data-tag="bi" data-prefix="essay">bi</button>
+      <button class="tag-pill" data-tag="career" data-prefix="essay">career</button>
+      <button class="tag-pill" data-tag="cloud" data-prefix="essay">cloud</button>
+      <button class="tag-pill" data-tag="cn" data-prefix="essay">cn</button>
+      <button class="tag-pill" data-tag="cycle" data-prefix="essay">cycle</button>
+      <button class="tag-pill" data-tag="data" data-prefix="essay">data</button>
+      <button class="tag-pill" data-tag="genai" data-prefix="essay">genai</button>
+      <button class="tag-pill" data-tag="investing" data-prefix="essay">investing</button>
+      <button class="tag-pill" data-tag="knowledge" data-prefix="essay">knowledge</button>
+      <button class="tag-pill" data-tag="macro" data-prefix="essay">macro</button>
+      <button class="tag-pill" data-tag="markets" data-prefix="essay">markets</button>
+      <button class="tag-pill" data-tag="method" data-prefix="essay">method</button>
+      <button class="tag-pill" data-tag="ml" data-prefix="essay">ml</button>
+      <button class="tag-pill" data-tag="quant" data-prefix="essay">quant</button>
+      <button class="tag-pill" data-tag="rag" data-prefix="essay">rag</button>
+      <button class="tag-pill" data-tag="us" data-prefix="essay">us</button>
     </div>
 
     <div class="grid" id="essays-grid">
@@ -517,8 +516,8 @@
           <h3 class="card-title">Power BI DirectLake × Power Apps/Automate: when data can act for itself.</h3>
           <p class="card-desc">Series #2. Three production scenarios — on-site pricing approval (1-2 days → 30 min), auto-launch reports, GMV anomaly alerts. One semantic model, four consumers.</p>
           <div class="card-meta">
-            <span>2026-07-26</span>
-            <span class="duration">Audio 6:04</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 4:00</span>
           </div>
         </div>
       </a>
@@ -527,24 +526,24 @@
         <img class="card-img" src="images/08-bigquery-art.svg" alt="BigQuery × OneLake" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Data Engineering · Cloud · Cross-cloud</div>
-          <h3 class="card-title">当 Google BigQuery 遇上 Microsoft OneLake：跨云数据湖的三条路径。</h3>
-          <p class="card-desc">Series #1. open lakehouse · federation · mirror — 三个层级，三种成本曲线，三种治理哲学。决策点不在技术，在你的数据成熟度。</p>
+          <h3 class="card-title">When Google BigQuery meets Microsoft OneLake: three paths for cross-cloud data lakes.</h3>
+          <p class="card-desc">Open lakehouse (Iceberg + Trino) wins on flexibility. Direct federation wins on speed. Mirrored lake wins on ops. Most teams want #1, ship #2, regret it.</p>
           <div class="card-meta">
-            <span>2026-07-25</span>
-            <span class="duration">Audio 4:52</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 5:12</span>
           </div>
         </div>
       </a>
 
       <a href="essays/article-07.html" class="card" data-tags="markets,cn,a-share,2026">
-        <img class="card-img" src="images/07-cxmt-art.svg" alt="CXMT" loading="lazy" />
+        <img class="card-img" src="images/07-changxin-art.svg" alt="CXMT" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Markets · Storage · China</div>
-          <h3 class="card-title">长鑫存储 (CXMT) IPO 估值：3 年 5 倍涨幅之后, 半导体国产替代还剩多少 beta?</h3>
-          <p class="card-desc">688825 IPO 解读 + DRAM 周期位置 + 国家集成电路三期 3440 亿注资传导链。beta 是政策, alpha 是工艺良率爬坡。</p>
+          <h3 class="card-title">CXMT's valuation logic: the new king of A-shares at 3.3 trillion yuan.</h3>
+          <p class="card-desc">Why CXMT's 3.3T market cap, 80x P/E, 9% earnings yield compression is not a bubble but a national strategic repricing.</p>
           <div class="card-meta">
-            <span>2026-07-23</span>
-            <span class="duration">Audio 7:11</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 4:50</span>
           </div>
         </div>
       </a>
@@ -553,50 +552,50 @@
         <img class="card-img" src="images/06-nlp-art.jpg" alt="GenAI path" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Career · GenAI · NLP</div>
-          <h3 class="card-title">从 NLP 工程师到 GenAI 产品经理：一份 5 年的转岗手记。</h3>
-          <p class="card-desc">不是"学 AI" — 是"换战场"。语言学出身 → 数据科学 → GenAI 全栈 → 产品。中间 3 次失败的转型, 2 次成功的, 全记下来。</p>
+          <h3 class="card-title">NLP + GenAI: a six-month path from data scientist to GenAI data scientist.</h3>
+          <p class="card-desc">Personal learning log, 6 months, 5 phases. From RAG to agents to prod. What worked, what didn't, what took longer than expected.</p>
           <div class="card-meta">
-            <span>2026-07-21</span>
-            <span class="duration">Audio 6:18</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 6:24</span>
           </div>
         </div>
       </a>
 
       <a href="essays/article-05.html" class="card" data-tags="ai,knowledge,method,2026">
-        <img class="card-img" src="images/05-llm-wiki-art.jpg" alt="LLM Wiki" loading="lazy" />
+        <img class="card-img" src="images/05-karpathy-art.jpg" alt="LLM Wiki" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Methodology · Knowledge</div>
-          <h3 class="card-title">LLM as Wiki: Karpathy 的 idea file 让我重写了整个笔记系统。</h3>
-          <p class="card-desc">从 Notion 迁移到 Markdown + Obsidian。LLM 不写, LLM 检索, 你写。AI 不是替你思考, 是放大你的注意力。</p>
+          <h3 class="card-title">Karpathy's LLM Wiki: an idea that quietly changes how we manage knowledge.</h3>
+          <p class="card-desc">Karpathy's idea-file pattern: a self-rewriting markdown index for everything you've read. Reviewed, not stored.</p>
           <div class="card-meta">
-            <span>2026-07-19</span>
-            <span class="duration">Audio 5:32</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 4:18</span>
           </div>
         </div>
       </a>
 
       <a href="essays/article-04.html" class="card" data-tags="markets,us,13f,2026">
-        <img class="card-img" src="images/04-13f-art.jpg" alt="13F" loading="lazy" />
+        <img class="card-img" src="images/04-wall-street-art.jpg" alt="13F" loading="lazy" />
         <div class="card-body">
-          <div class="card-tag">Markets · 13F · Wall Street</div>
-          <h3 class="card-title">Wall Street 13F Q2 2026：5 个 hedge fund 在偷偷买什么?</h3>
-          <p class="card-desc">13F 是公开但没人读的数据。Burry 加仓英伟达, Dalio 砍中概, Tiger Global 重仓 AI infra。从持仓变动读宏观意图。</p>
+          <div class="card-tag">Markets · 13F</div>
+          <h3 class="card-title">Wall Street's latest positioning: Berkshire and Bridgewater in Q1 2026.</h3>
+          <p class="card-desc">13F filings decoded: Berkshire trimmed Apple, Bridgewater went long China, Tiger Global rotated from tech to staples. What it tells us about Q2.</p>
           <div class="card-meta">
-            <span>2026-07-15</span>
-            <span class="duration">Audio 8:44</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 5:33</span>
           </div>
         </div>
       </a>
 
-      <a href="essays/article-03.html" class="card" data-tags="markets,cn,2026">
+      <a href="essays/article-03.html" class="card" data-tags="macro,investing,cycle,2026">
         <img class="card-img" src="images/03-memory-art.jpg" alt="Memory cycle" loading="lazy" />
         <div class="card-body">
-          <div class="card-tag">Markets · China · Cycle</div>
-          <h3 class="card-title">周期与人性: 朱格拉周期的第 4 次轮回, 我们在哪一格?</h3>
-          <p class="card-desc">10 年长周期的 4 个阶段: 复苏-繁荣-衰退-萧条。当下 2026 是繁荣末段还是衰退初段? 答案藏在资本支出 / 信贷 / 库存的剪刀差。</p>
+          <div class="card-tag">Storage · Cycle</div>
+          <h3 class="card-title">Is the memory cycle peaking? Six core signals.</h3>
+          <p class="card-desc">DRAM and NAND pricing, capex, inventory, customer behavior, lead times, geopolitical exposure. A framework for knowing when the top is in.</p>
           <div class="card-meta">
-            <span>2026-07-12</span>
-            <span class="duration">Audio 7:02</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 4:55</span>
           </div>
         </div>
       </a>
@@ -605,24 +604,24 @@
         <img class="card-img" src="images/02-value-art.jpg" alt="Value + quant" loading="lazy" />
         <div class="card-body">
           <div class="card-tag">Investing · Method</div>
-          <h3 class="card-title">价值投资 + 量化因子：格雷厄姆 2.0 是不是更好的 alpha?</h3>
-          <p class="card-desc">把巴菲特 + Munger 的 5 大定性原则, 翻译成 7 个可量化因子。低 PE + ROIC + 护城河 + 管理层, 但权重怎么设?</p>
+          <h3 class="card-title">Value meets quant: a personal approach.</h3>
+          <p class="card-desc">How I merge Buffett-style quality with momentum and a 5-year backtest. Less rule-following, more first-principles.</p>
           <div class="card-meta">
-            <span>2026-07-09</span>
-            <span class="duration">Audio 6:48</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 3:42</span>
           </div>
         </div>
       </a>
 
-      <a href="essays/article-01.html" class="card" data-tags="ai,rag,2026">
+      <a href="essays/article-01.html" class="card" data-tags="ai,rag,genai,2026">
         <img class="card-img" src="images/01-rag-art.jpg" alt="RAG vs AutoRAG" loading="lazy" />
         <div class="card-body">
-          <div class="card-tag">AI · RAG · AutoRAG</div>
-          <h3 class="card-title">RAG vs AutoRAG: 为什么 AutoRAG 还是没赢过手工调?</h3>
-          <p class="card-desc">实测 5 个 AutoRAG 框架在金融文档场景。AutoRAG 在通用场景赢, 在垂直领域输。原因: 数据偏置 vs 业务偏置。</p>
+          <div class="card-tag">AI · RAG</div>
+          <h3 class="card-title">RAG vs AutoRAG: principles, trade-offs, scenarios.</h3>
+          <p class="card-desc">When RAG is enough. When you need agents. Why most 'AutoRAG' projects are actually configuration-management, not research.</p>
           <div class="card-meta">
-            <span>2026-07-05</span>
-            <span class="duration">Audio 5:21</span>
+            <span>2026-07-27</span>
+            <span class="duration">Audio 1:35</span>
           </div>
         </div>
       </a>
@@ -631,22 +630,22 @@
   </div>
 </section>
 
-<!-- ===== Quant ===== -->
 <section id="quant">
   <div class="container">
-    <h2 class="section-title">Quant Research</h2>
-    <p class="section-intro">A 股情绪指数、量化五大流派、横截面 ML、14 龙头因子模型。真实数据，坦诚的结果，不包装 alpha 也不藏 noise。</p>
+    <div class="section-label">Quant Research</div>
+    <h2 class="section-title">Where the math meets the market</h2>
+    <p class="section-desc">A-share backtests, sentiment indices, factor models. Code on GitHub, data via AkShare. All real, no simulations.</p>
 
     <div class="tag-filter" data-prefix="quant">
       <button class="tag-pill active" data-tag="all" data-prefix="quant">All</button>
-      <button class="tag-pill" data-tag="quant" data-prefix="quant">quant</button>
-      <button class="tag-pill" data-tag="cn" data-prefix="quant">cn</button>
+      <button class="tag-pill" data-tag="2026" data-prefix="quant">2026</button>
       <button class="tag-pill" data-tag="a-share" data-prefix="quant">a-share</button>
+      <button class="tag-pill" data-tag="cn" data-prefix="quant">cn</button>
       <button class="tag-pill" data-tag="factor" data-prefix="quant">factor</button>
       <button class="tag-pill" data-tag="ml" data-prefix="quant">ml</button>
-      <button class="tag-pill" data-tag="sentiment" data-prefix="quant">sentiment</button>
+      <button class="tag-pill" data-tag="quant" data-prefix="quant">quant</button>
       <button class="tag-pill" data-tag="sector" data-prefix="quant">sector</button>
-      <button class="tag-pill" data-tag="2026" data-prefix="quant">2026</button>
+      <button class="tag-pill" data-tag="sentiment" data-prefix="quant">sentiment</button>
     </div>
 
     <div class="grid" id="quant-grid">
@@ -722,42 +721,67 @@
 
 <!-- ===== About ===== -->
 <section id="about">
-  <div class="container">
-    <div class="about-grid">
-      <h2 class="about-title">About the writer</h2>
-      <div class="about-body">
-        <p>7+ years in data + AI. Previously at PwC, currently building decision intelligence at Payoneer. Before that: a securities broker, an insurance underwriter, and a real-estate analyst. The threads are pricing, probability, and the long arc of how decisions compound.</p>
-        <p>这个站是一个实验: 用最少的噪音, 写能站得住脚的东西。每月 1 篇, 偶尔 Quant Research, 不接广告, 不卖课, 不教人做菜。</p>
-        <p>如果你也在做类似的事, 欢迎写信给我: <a href="mailto:chase.jwang@outlook.com">chase.jwang@outlook.com</a></p>
-        <p>GitHub: <a href="https://github.com/chasejwang" target="_blank">github.com/chasejwang</a> · 公众号: <a href="#">a few quiet things</a></p>
-      </div>
-    </div>
+  <div class="container about">
+    <div class="section-label" style="text-align:center;">A small confession</div>
+    <h2 class="section-title" style="text-align:center; margin-bottom:32px;">About the writer</h2>
+    <p>I am not particularly good at anything. I read more than I understand. I write more than I should.</p>
+    <p>I keep notes on things that probably do not matter — storage cycles, the rhythm of language models, the shape of value investing, the quiet algebra behind a good night of sleep. This place is where those notes land.</p>
+    <p>There is no mission. There is no growth funnel. There is no audience, except maybe you, on a slow afternoon, scrolling past without much expectation.</p>
+    <p>I write because I am the kind of person who needs to. It is a small and ordinary thing. I am proud of it and a little embarrassed by it at the same time. That feels about right.</p>
+    <p>Some of the pieces here come with a voice — a quiet, careful voice that I had a machine read aloud to me while I was making tea. You can press play if you want, or you can read silently. Either way is fine. Either way is real.</p>
+    <p>Everything is free. Nothing is optimized. The cover images were made by a small artificial mind that does not know what it is doing. The articles were written by a person who also does not know what he is doing. We made a reasonable team.</p>
+    <p>If something here is true, it was an accident. If something here is wrong, it was probably the coffee.</p>
+    <div class="signature">— Chase<br><span style="font-size:14px;">Shanghai, occasionally.</span></div>
   </div>
 </section>
 
 <footer>
-  <p>© 2026 <em>made by a mediocre idealist</em> · deployed on the edge, somehow</p>
+  <div class="container">
+    <div class="divider"></div>
+    <p>© 2026 <em>made by a mediocre idealist</em> · deployed on the edge, somehow</p>
+  </div>
 </footer>
 
 <!-- ===== Floating Public Account QR Code ===== -->
-<div class="qr-float">
+<div class="qr-float" id="qrFloat">
   <div class="qr-float-card" id="qrCard">
-    <img src="images/qrcode-publicaccount.png" alt="Public Account QR Code" />
-    <span>a few quiet things</span>
+    <img src="images/qrcode-essays.png" alt="网站二维码" />
+    <div class="qr-label">a few quiet things</div>
+    <div class="qr-sub">扫码查看文章</div>
   </div>
-  <div class="qr-float-button" id="qrButton" title="微信公众号">w</div>
+  <div class="qr-float-button" id="qrButton" title="关注公众号">q</div>
 </div>
 
 <script>
-  // Tag filter logic (with event delegation + robust prefix mapping)
+  (function() {
+    var btn = document.getElementById('qrButton');
+    var card = document.getElementById('qrCard');
+    if (!btn || !card) return;
+    btn.addEventListener('click', function() {
+      card.classList.toggle('show');
+    });
+    document.addEventListener('click', function(e) {
+      if (!document.getElementById('qrFloat').contains(e.target)) {
+        card.classList.remove('show');
+      }
+    });
+  })();
+</script>
+
+
+<script>
+  // Tag filter logic (with event delegation + debug logging)
   (function() {
     function applyFilter(prefix, tag) {
+      // Map prefix to actual grid ID (essay prefix → essays-grid, quant → quant-grid)
       const gridId = (prefix === 'essay' ? 'essays' : prefix) + '-grid';
       const grid = document.getElementById(gridId);
       if (!grid) {
         console.warn('[tag-filter] No grid found for id:', gridId);
         return;
       }
+
+      // Update active state on pills (within the same group)
       document.querySelectorAll('.tag-pill[data-prefix="' + prefix + '"]').forEach(function(p) {
         p.classList.remove('active');
       });
@@ -765,6 +789,8 @@
         '.tag-pill[data-prefix="' + prefix + '"][data-tag="' + tag + '"]'
       );
       if (activePill) activePill.classList.add('active');
+
+      // Filter cards in the matching grid
       const cards = grid.querySelectorAll('.card');
       let visible = 0;
       cards.forEach(function(card) {
@@ -779,6 +805,10 @@
           card.style.display = 'none';
         }
       });
+
+      console.log('[tag-filter] prefix=' + prefix + ' tag=' + tag + ' visible=' + visible + '/' + cards.length);
+
+      // Empty state
       const container = grid.parentNode;
       let empty = container.querySelector('.empty-state');
       if (visible === 0) {
@@ -793,6 +823,8 @@
         empty.style.display = 'none';
       }
     }
+
+    // Event delegation: bind ONE listener to document, check if click was on a pill
     document.addEventListener('click', function(e) {
       const pill = e.target.closest && e.target.closest('.tag-pill');
       if (!pill) return;
@@ -802,23 +834,8 @@
       if (!prefix || !tag) return;
       applyFilter(prefix, tag);
     });
-    console.log('[tag-filter] ready, pills:', document.querySelectorAll('.tag-pill').length);
-  })();
 
-  // QR code toggle
-  (function() {
-    const button = document.getElementById('qrButton');
-    const card = document.getElementById('qrCard');
-    if (!button || !card) return;
-    button.addEventListener('click', function(e) {
-      e.stopPropagation();
-      card.classList.toggle('show');
-    });
-    document.addEventListener('click', function(e) {
-      if (!document.getElementById('qrFloat').contains(e.target)) {
-        card.classList.remove('show');
-      }
-    });
+    console.log('[tag-filter] ready, pills:', document.querySelectorAll('.tag-pill').length);
   })();
 </script>
 
