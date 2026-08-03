@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Agent: Two Failures and One Honest Win · a few quiet things</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf8f2;
+    --text: #1a1a1a;
+    --accent: #b45837;
+    --muted: #6a6a6a;
+    --line: #e8e0cc;
+    --success: #2d6a4f;
+    --failure: #9d2933;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+                 'STHeiti', 'STSongti-SC-Regular', 'PingFang SC',
+                 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-brand {
+    font-family: 'Georgia', 'STSongti-SC-Regular', serif;
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    font-size: 14px;
+  }
+
+  .nav-links a {
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+
+  .nav-links a:hover {
+    opacity: 1;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 100px 32px 60px;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .hero-title {
+    font-family: 'Georgia', 'STSongti-SC-Regular', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin-bottom: 24px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 32px;
+  }
+
+  .hero-meta {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ===== ARTICLE BODY ===== */
+  article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 32px 120px;
+  }
+
+  article h2 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 64px;
+    margin-bottom: 20px;
+    line-height: 1.25;
+  }
+
+  article h3 {
+    font-size: 21px;
+    font-weight: 600;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+
+  article p {
+    margin-bottom: 20px;
+  }
+
+  article strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  article em {
+    font-style: italic;
+  }
+
+  article a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  article blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 4px 20px;
+    margin: 28px 0;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ===== HIGHLIGHT BOX (verdict / failure / success) ===== */
+  .verdict {
+    background: rgba(45, 106, 79, 0.06);
+    border-left: 4px solid var(--success);
+    padding: 20px 24px;
+    margin: 32px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .verdict-fail {
+    background: rgba(157, 41, 51, 0.05);
+    border-left-color: var(--failure);
+  }
+
+  .verdict h4 {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--success);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .verdict-fail h4 {
+    color: var(--failure);
+  }
+
+  .verdict p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ===== TABLES ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+
+  th, td {
+    border: 1px solid var(--line);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: rgba(180, 88, 55, 0.06);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  td.failure {
+    color: var(--failure);
+    font-weight: 600;
+  }
+  td.success {
+    color: var(--success);
+    font-weight: 600;
+  }
+
+  /* ===== CODE ===== */
+  code {
+    font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+    font-size: 14px;
+    background: rgba(180, 88, 55, 0.06);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  pre {
+    background: #f0eadb;
+    border: 1px solid var(--line);
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    overflow-x: auto;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: 13.5px;
+  }
+
+  /* ===== SECTION DIVIDER ===== */
+  .divider {
+    text-align: center;
+    margin: 80px 0;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+  }
+
+  /* ===== NUMBERED LIST ===== */
+  article ol, article ul {
+    padding-left: 24px;
+    margin-bottom: 20px;
+  }
+
+  article ol li, article ul li {
+    margin-bottom: 8px;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 40px 32px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    .hero { padding: 60px 20px 40px; }
+    article { padding: 20px 20px 80px; }
+    nav { padding: 14px 20px; }
+    .nav-links { gap: 14px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="../index.html" class="nav-brand">a few quiet things</a>
+  <div class="nav-links">
+    <a href="../index.html#essays">Essays</a>
+    <a href="../index.html#quant">Quant</a>
+    <a href="../index.html#about">About</a>
+    <a href="https://github.com/chasejwang">GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Multi-Agent · Case Study · 8 min read</div>
+  <h1 class="hero-title">Two <em>failures</em> and<br>one honest <em>win</em></h1>
+  <p class="hero-sub">How four prompt-engineering principles turned a stubborn 0-byte experiment into a 70&nbsp;KB deliverable.</p>
+  <div class="hero-meta">JAVIS · AUGUST 3, 2026</div>
+</section>
+
+<article>
+
+<p>I spent an entire afternoon running the same task three times. The first two runs produced zero bytes. The third run produced 70&nbsp;KB across six files. The difference wasn't the model, the harness, or the network. The difference was four prompt-engineering principles I had been skipping — taught to me by the failures themselves.</p>
+
+<blockquote>The hard truth is that "multi-agent" is not a single thing you turn on. It's a contract between agents. When the contract is vague, you get zero. When it's tight, you get 6 files in 8 minutes.</blockquote>
+
+<h2>The setup</h2>
+
+<p>I was preparing for a 60-day job-search sprint. Five target companies — BCG X, Thermo Fisher, 得物, 数传集团, 滴滴 — each needed its own market-intelligence brief: company background, JD reading, hiring preferences, interview questions, risk points. Total 5 × 800–1,200 Chinese characters per brief.</p>
+
+<p>This is the textbook case for multi-agent work. Five truly independent research tasks. No cross-dependencies. Each task is 30 minutes of single-agent effort. Done in parallel, the wall-clock should drop from 2.5 hours to 30 minutes. That's a 5× speedup — exactly the scenario where multi-agent is supposed to win.</p>
+
+<p>So I designed two multi-agent runs. Both produced <strong>0 bytes</strong>. Then I designed a third, applied four principles I'd learned from the failures, and got 70&nbsp;KB of honest, sourced output. Here is what went wrong and what fixed it.</p>
+
+<div class="divider">· · ·</div>
+
+<h2>Failure #1 — The pipeline that never wrote a file</h2>
+
+<p><strong>Setup:</strong> Claude Code Agent Teams with 3 teammates — Research, Outline, Drafting — coordinated by a Lead agent. The task: write a 1,500-word Chinese WeChat article comparing multi-agent frameworks.</p>
+
+<p><strong>What happened:</strong> 4 minutes 21 seconds. 50 API calls. Zero bytes.</p>
+
+<p><strong>Root cause:</strong> Three teammates were spawned (I confirmed this in the stream-json log — three distinct <code>parent_tool_use_id</code> values, all <code>subagent_type: general-purpose</code>). The Research teammate ran 16+ web searches. But Drafting never wrote a file. The Lead agent waited for Drafting to write. The 30-iteration budget ran out.</p>
+
+<p>The fundamental mistake: <strong>the Lead agent's prompt assumed Drafting would write the final file</strong>. Drafting's prompt, in turn, assumed the Lead would integrate. Nobody was explicitly told to write the file. Nobody had a fallback. The contract was vague.</p>
+
+<div class="verdict verdict-fail">
+<h4>The 5-second test</h4>
+<p>If you read the Lead agent's prompt and ask "who is responsible for the file on disk?" — if you can't point to one specific role, the prompt is broken. Vague contracts produce zero output.</p>
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2>Failure #2 — Six minutes of <code>expect</code> debugging</h2>
+
+<p><strong>Setup:</strong> Claude Code Agent Teams again, this time with 5 teammates — one per company. The Lead agent had a clear contract with each teammate: "research X company, output 800–1,200 characters."</p>
+
+<p><strong>What happened:</strong> 6 minutes 42 seconds. 50 API calls. Zero bytes. The Lead agent ran out of iterations, but more importantly — ran out of honest options.</p>
+
+<p><strong>Root cause #1 (technical):</strong> I had asked the Lead agent to use <code>claude --teammate-mode in-process -p "..."</code>. That combination is <em>invalid</em>. The <code>--teammate-mode</code> flag activates internal Claude Code tools (TeamCreate, TeammateSpawn) that <strong>only exist in an interactive REPL</strong>, not in print mode. Stream-json output flowed to stdout; the Lead agent polled and got nothing back.</p>
+
+<p><strong>Root cause #2 (environmental):</strong> Even with the correct invocation, the Hermes sandbox lacked <code>tmux</code>. The Lead agent tried <code>screen</code>, <code>expect</code>, Python's <code>pty</code> module. The expect regex didn't match "Yes, I accept" on the bypass-permissions dialog. Six probing iterations timed out.</p>
+
+<p><strong>Root cause #3 (integrity):</strong> The Lead agent recognized the situation. Instead of fabricating research output and writing "fake token-savings numbers," it filed an honest failure report. That's the right call. But from a delivery perspective, it's still 0 bytes.</p>
+
+<div class="verdict verdict-fail">
+<h4>The lesson</h4>
+<p>Multi-agent failures come in two flavors. (1) The agents are told to do something but no one is told to write the file. (2) The infrastructure doesn't support the team-spawn, and the Lead agent wastes time reinventing infrastructure instead of doing the work. Both flavors burn tokens without producing artifacts.</p>
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2>The four principles that fixed it</h2>
+
+<p>Between failure #2 and success #1, I extracted four principles from the transcripts and wrote them into a subagent prompt template. Then I dispatched the same task — 5 companies, parallel research — through Hermes's native <code>delegate_task</code> instead of Claude Code Agent Teams.</p>
+
+<p><strong>Result:</strong> 8 minutes 22 seconds. 30 API calls (down 40%). 6 files. 69,753 bytes. 98 real URLs cited. 48 explicit "未知 / 待核实" markers where data couldn't be verified.</p>
+
+<p>Here are the four principles.</p>
+
+<h3>1. Each agent has one clear purpose</h3>
+
+<p>Not "coordinate 3 teammates." Not "spawn agents and integrate their output." A subagent prompt must say what the agent produces, by itself, with no integration step. The first failure's prompt was:</p>
+
+<pre><code>你是总协调编辑。请启用并实际使用 Agent Teams, spawn 3 个 teammates,
+角色必须分别命名为 Research、Outline、Drafting。协作完成一篇约1500字的中文公众号文章。
+你负责协调三者、交叉核验, 最后把成稿写入 ...</code></pre>
+
+<p>"You coordinate, cross-verify, write the final draft." Three responsibilities smeared across three roles. No one owns the deliverable. The third run's prompts said, instead:</p>
+
+<pre><code>Subagent 1: 独立完成 BCG X + Thermo Fisher 的市场情报, 不依赖其他 subagent。
+Subagent 2: 独立完成 得物 + 数传集团 的市场情报, 不依赖其他 subagent。
+Subagent 3: 独立完成 滴滴 的市场情报 + 5 家公司综合 summary, 不依赖其他 subagent。</code></pre>
+
+<p>Each agent's purpose is one sentence. Each subagent owns its output. No integration step required.</p>
+
+<h3>2. Each agent has independent, verifiable evaluation</h3>
+
+<p>Self-reported "I finished the research" is not an evaluation. A verifiable evaluation is a file path, a word count, a section count, and a content checklist:</p>
+
+<pre><code>考核标准:
+- 2 个独立 .md 文件, 每个 ≥ 600 字
+- 每个文件包含: 公司背景 (1段) + JD 解读 (1段) +
+  招聘偏好 (3-5条) + 面试预测 (3-5题) + 风险点 (2-3条)
+- 必须调用 write_file, 不要只返回文本
+- 诚实原则: "未知 / 待核实" 标记, 不编造数据</code></pre>
+
+<p>When the Lead agent can <em>verify</em> the output by reading the file, the contract becomes enforceable. When the contract is "do a good job," it isn't.</p>
+
+<h3>3. Each agent does different work</h3>
+
+<p>Sub-tasks do not overlap. The five companies were split cleanly:</p>
+
+<table>
+<tr><th>Subagent</th><th>Does</th><th>Does NOT do</th></tr>
+<tr><td>1</td><td>BCG X + Thermo Fisher</td><td>得物 / 数传 / 滴滴</td></tr>
+<tr><td>2</td><td>得物 + 数传</td><td>BCG / Thermo / 滴滴</td></tr>
+<tr><td>3</td><td>滴滴 + 5-companies summary</td><td>BCG / Thermo / 得物 / 数传</td></tr>
+</table>
+
+<p>When work overlaps, subagents duplicate it. When work is partitioned, parallelism actually happens. The summary task is owned by Subagent 3, not by a downstream "Lead integration" step. The summary uses prompt expectations, not the output of Subagents 1 and 2.</p>
+
+<h3>4. Each agent writes its own files</h3>
+
+<p>The Lead agent does not write the final file. <em>Every subagent writes its own files</em>. This is the single biggest fix. Failure #1 was 0 bytes because the Lead waited for a Drafting teammate that didn't know it was supposed to write. Failure #3 (success) shipped 6 files because each subagent had a specific file path, a specific word count, and was explicitly told: "调用 write_file, 不要只返回文本."</p>
+
+<div class="divdictator">· · ·</div>
+
+<h2>The honesty discipline (the fifth principle)</h2>
+
+<p>The four principles are about delivery. There's a fifth principle that's about integrity. It deserves its own section because it's the reason the final output was <em>trustworthy</em>.</p>
+
+<p>Every file in the success run was structured as:</p>
+
+<pre><code>**事实：** [fact with real URL]
+**判断：** [Javis-specific recommendation]
+**未知 / 待核实：** [thing that couldn't be verified]</code></pre>
+
+<p>Across 6 files, the agents wrote <strong>48 explicit "未知" markers</strong>. Things they couldn't verify — 中国 salary bands for BCG X, the exact current headcount at 数传, the public LinkedIn profile of the hiring manager at 得物 — were not invented. They were marked as needing manual verification.</p>
+
+<p>This matters because the alternative is what almost happened in Failure #2. The Lead agent had access to training data that included plausible-sounding salary ranges and JD details. If it had decided to fabricate, the 5 research briefs would have looked professional but contained unsourced numbers. That is the kind of failure a hiring sprint cannot afford.</p>
+
+<p>The honesty discipline is enforced in the prompt: <em>"如果 web search 拿不到真实数据, 写 '未知 — 需手动核实', 不要编造数字。"</em></p>
+
+<div class="divider">· · ·</div>
+
+<h2>The technical fix (delegate_task, not Claude Code Agent Teams)</h2>
+
+<p>The third run did not use Claude Code Agent Teams. It used Hermes's native <code>delegate_task</code> tool. The difference:</p>
+
+<table>
+<tr><th>Approach</th><th>Sandbox-ready?</th><th>Print-mode compatible?</th><th>Spawns real subagents?</th></tr>
+<tr><td>Claude Code Agent Teams (<code>--teammate-mode -p</code>)</td><td class="failure">No (needs tmux + interactive REPL)</td><td class="failure">No</td><td class="failure">No (just stdout)</td></tr>
+<tr><td>Hermes <code>delegate_task</code></td><td class="success">Yes</td><td class="success">Yes</td><td class="success">Yes</td></tr>
+</table>
+
+<p>Inside Hermes's sandbox, <code>--teammate-mode in-process -p</code> cannot succeed. The flag is real, the command is real, but the model in the sandbox routes through a proxy and the dialogs can't be answered by a non-interactive driver. <code>delegate_task</code> spawns proper leaf agents with their own tools, terminal, and context — no PTY required.</p>
+
+<div class="verdict">
+<h4>If you take one thing from this article</h4>
+<p>For multi-agent work in a Claude Code + Hermes environment, use <code>delegate_task</code>. Save Claude Code Agent Teams for environments with direct Anthropic auth, a working <code>tmux</code>, and PTY-driven interactive sessions. The two flags (<code>--teammate-mode -p</code>) are not interchangeable.</p>
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2>The honest comparison</h2>
+
+<table>
+<tr><th>Metric</th><th>Fail #1</th><th>Fail #2</th><th class="success">Success</th></tr>
+<tr><td>Wall time</td><td>4m 21s</td><td>6m 42s</td><td class="success">8m 22s</td></tr>
+<tr><td>API calls</td><td>50</td><td>50</td><td class="success">30</td></tr>
+<tr><td>Files written</td><td class="failure">0</td><td class="failure">0</td><td class="success">6</td></tr>
+<tr><td>Total bytes</td><td class="failure">0</td><td class="failure">0</td><td class="success">69,753</td></tr>
+<tr><td>Real URLs cited</td><td class="failure">0</td><td class="failure">0</td><td class="success">98</td></tr>
+<tr><td>"未知" markers</td><td class="failure">0</td><td class="failure">0</td><td class="success">48</td></tr>
+<tr><td>Other-agent correction</td><td>—</td><td>—</td><td class="success">数传 subagent corrected my prior research</td></tr>
+</table>
+
+<p>The success run took longer wall-time than either failure. It produced 30 fewer API calls than either failure. It shipped six files, ninety-eight URLs, and forty-eight honest "unknown" markers. It also surfaced a self-correcting behavior I didn't expect: the 数传 subagent explicitly corrected information from my prior <code>5-companies-research-2026-08-03.md</code>. That's the real win. Multi-agent work, when the contract is tight, produces <em>verification</em>, not just output.</p>
+
+<div class="divider">· · ·</div>
+
+<h2>The four principles, restated</h2>
+
+<p>For anyone who has to write a multi-agent prompt tomorrow:</p>
+
+<ol>
+<li><strong>One agent, one purpose.</strong> State what the agent produces by itself, with no integration step.</li>
+<li><strong>Verifiable deliverables.</strong> Specify the file path, the word count, the sections. Not "do a good job."</li>
+<li><strong>Different work per agent.</strong> No overlap. No "and also do X for context." Partition first.</li>
+<li><strong>Each agent writes its own files.</strong> The Lead agent coordinates but does not write. Each subagent calls <code>write_file</code> directly.</li>
+</ol>
+
+<p>Add the honesty discipline — <em>"未知 / 待核实" markers, not fabricated data</em> — and you have a contract that actually produces artifacts.</p>
+
+<div class="divider">· · ·</div>
+
+<h2>What I now run on autopilot</h2>
+
+<p>For the rest of the 60-day sprint, every multi-agent task — resume variants, cover letters, mock-interview Q&A, monthly essays, factor-analysis reports — gets the same four-principle template. The patterns generalize:</p>
+
+<ul>
+<li>5 resume variants → 5 subagents, each writes one resume</li>
+<li>3 monthly essays → 3 subagents, each writes one essay</li>
+<li>5 factor analyses → 5 subagents, each writes one analysis</li>
+</ul>
+
+<p>Each task is genuinely independent. Each subagent owns its file. Each file has an explicit path and word count. Each prompt has the honesty clause. The Lead agent only verifies.</p>
+
+<p>This is what multi-agent work looks like when it works. It is not a magic mode you flip on. It is a discipline you build into the prompt, the file paths, and the contract between agents. The 70&nbsp;KB I have on disk now is not the result of a clever framework. It is the result of writing a contract that no agent could misunderstand.</p>
+
+<blockquote>Two failures and one honest win. The wins are not produced by the tool. They are produced by the contract.</blockquote>
+
+<hr style="margin: 60px 0; border: none; border-top: 1px solid var(--line);">
+
+<p style="text-align: center; font-size: 14px; color: var(--muted); font-style: italic;">
+— Javis (汪健), writing from Shanghai<br>
+For the 60-day job-search sprint<br>
+Built with: <code>delegate_task</code>, not Claude Code Agent Teams
+</p>
+
+</article>
+
+<!-- FOOTER -->
+<footer>
+  <p><a href="../index.html">a few quiet things</a> · Notes from a mediocre idealist</p>
+  <p style="margin-top: 8px;">© 2026 Javis (汪健). Honest data, including honest uncertainty.</p>
+</footer>
+
+</body>
+</html>

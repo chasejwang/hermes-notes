@@ -1,0 +1,121 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#faf8f2"/>
+      <stop offset="1" stop-color="#f0eadb"/>
+    </linearGradient>
+    <linearGradient id="line-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b45837" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#1a1a1a" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bg-grad)"/>
+
+  <!-- Subtle background grid -->
+  <g opacity="0.04" stroke="#1a1a1a" stroke-width="0.5">
+    <line x1="0" y1="180" x2="1280" y2="180"/>
+    <line x1="0" y1="360" x2="1280" y2="360"/>
+    <line x1="0" y1="540" x2="1280" y2="540"/>
+    <line x1="320" y1="0" x2="320" y2="720"/>
+    <line x1="640" y1="0" x2="640" y2="720"/>
+    <line x1="960" y1="0" x2="960" y2="720"/>
+  </g>
+
+  <!-- LEFT: 2 failed runs (broken connections, red) -->
+  <g transform="translate(160, 220)">
+    <circle cx="0" cy="0" r="34" fill="none" stroke="#9d2933" stroke-width="2"/>
+    <text x="0" y="6" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#9d2933" font-weight="bold">F1</text>
+    <text x="0" y="-58" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6a6a6a" letter-spacing="2">FAIL</text>
+
+    <!-- Broken connection (dashed, faded) -->
+    <line x1="34" y1="0" x2="146" y2="0" stroke="#9d2933" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.4"/>
+    <text x="90" y="-8" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#9d2933">0 KB</text>
+
+    <circle cx="180" cy="0" r="34" fill="none" stroke="#9d2933" stroke-width="2"/>
+    <text x="180" y="6" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#9d2933" font-weight="bold">F2</text>
+    <text x="180" y="-58" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6a6a6a" letter-spacing="2">FAIL</text>
+
+    <!-- Another broken connection -->
+    <line x1="214" y1="0" x2="326" y2="0" stroke="#9d2933" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.4"/>
+    <text x="270" y="-8" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#9d2933">0 KB</text>
+  </g>
+
+  <!-- CENTER: 3 subagents (success path, solid lines, accent color) -->
+  <g transform="translate(160, 480)">
+    <text x="0" y="-30" font-family="-apple-system, sans-serif" font-size="11" fill="#6a6a6a" letter-spacing="2">SUCCESS</text>
+
+    <!-- Lead (center) -->
+    <circle cx="180" cy="0" r="42" fill="#b45837"/>
+    <text x="180" y="6" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#faf8f2" font-weight="bold">L</text>
+
+    <!-- Subagent 1 (left) -->
+    <circle cx="0" cy="-100" r="30" fill="none" stroke="#b45837" stroke-width="2"/>
+    <text x="0" y="4" text-anchor="middle" font-family="Georgia, serif" font-size="12" fill="#b45837" font-weight="bold">S1</text>
+    <text x="0" y="50" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#1a1a1a">bcg + thermo</text>
+
+    <!-- Subagent 2 (right) -->
+    <circle cx="360" cy="-100" r="30" fill="none" stroke="#b45837" stroke-width="2"/>
+    <text x="360" y="4" text-anchor="middle" font-family="Georgia, serif" font-size="12" fill="#b45837" font-weight="bold">S2</text>
+    <text x="360" y="50" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#1a1a1a">dewu + 数传</text>
+
+    <!-- Subagent 3 (bottom) -->
+    <circle cx="180" cy="120" r="30" fill="none" stroke="#b45837" stroke-width="2"/>
+    <text x="180" y="124" text-anchor="middle" font-family="Georgia, serif" font-size="12" fill="#b45837" font-weight="bold">S3</text>
+    <text x="180" y="170" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#1a1a1a">didi + summary</text>
+
+    <!-- Solid connection lines -->
+    <line x1="180" y1="0" x2="30" y2="-92" stroke="#b45837" stroke-width="2"/>
+    <line x1="180" y1="0" x2="330" y2="-92" stroke="#b45837" stroke-width="2"/>
+    <line x1="180" y1="0" x2="180" y2="90" stroke="#b45837" stroke-width="2"/>
+  </g>
+
+  <!-- RIGHT: 6 files (deliverables, dark + accent) -->
+  <g transform="translate(820, 180)">
+    <text x="0" y="-30" font-family="-apple-system, sans-serif" font-size="11" fill="#6a6a6a" letter-spacing="2">DELIVERABLES</text>
+
+    <!-- 6 file cards in 3x2 grid -->
+    <g>
+      <rect x="0" y="0" width="120" height="42" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+      <text x="60" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1a1a1a" font-style="italic">bcg-x</text>
+      <text x="60" y="35" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#6a6a6a">7.6 KB</text>
+    </g>
+    <g transform="translate(140, 0)">
+      <rect x="0" y="0" width="120" height="42" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+      <text x="60" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1a1a1a" font-style="italic">thermo</text>
+      <text x="60" y="35" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#6a6a6a">8.5 KB</text>
+    </g>
+    <g transform="translate(280, 0)">
+      <rect x="0" y="0" width="120" height="42" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+      <text x="60" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1a1a1a" font-style="italic">dewu</text>
+      <text x="60" y="35" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#6a6a6a">14.8 KB</text>
+    </g>
+    <g transform="translate(0, 60)">
+      <rect x="0" y="0" width="120" height="42" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+      <text x="60" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1a1a1a" font-style="italic">数传</text>
+      <text x="60" y="35" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#6a6a6a">17.4 KB</text>
+    </g>
+    <g transform="translate(140, 60)">
+      <rect x="0" y="0" width="120" height="42" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+      <text x="60" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#1a1a1a" font-style="italic">didi</text>
+      <text x="60" y="35" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#6a6a6a">9.3 KB</text>
+    </g>
+    <g transform="translate(280, 60)">
+      <rect x="0" y="0" width="120" height="42" fill="#b45837" stroke="#b45837" stroke-width="1"/>
+      <text x="60" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="11" fill="#faf8f2" font-style="italic">summary</text>
+      <text x="60" y="35" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="#faf8f2">12.0 KB</text>
+    </g>
+  </g>
+
+  <!-- Bottom-left small caption: 4 principles -->
+  <g transform="translate(60, 620)">
+    <text x="0" y="0" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a" letter-spacing="2">FOUR PRINCIPLES</text>
+    <text x="0" y="22" font-family="Georgia, serif" font-size="13" fill="#1a1a1a" font-style="italic">purpose · evaluation · partition · delivery</text>
+  </g>
+
+  <!-- Bottom-right counter -->
+  <g transform="translate(1220, 660)">
+    <text x="0" y="0" text-anchor="end" font-family="Georgia, serif" font-size="11" fill="#6a6a6a" letter-spacing="2">70 KB · 8 MIN · 30 CALLS</text>
+  </g>
+</svg>
