@@ -1,0 +1,95 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#faf8f2"/>
+      <stop offset="1" stop-color="#efe6d2"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b45837"/>
+      <stop offset="1" stop-color="#8a3a23"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bg)"/>
+
+  <!-- Faint grid (engineering notebook) -->
+  <g opacity="0.05" stroke="#1a1a1a" stroke-width="1">
+    <line x1="0" y1="180" x2="1280" y2="180"/>
+    <line x1="0" y1="360" x2="1280" y2="360"/>
+    <line x1="0" y1="540" x2="1280" y2="540"/>
+    <line x1="320" y1="0" x2="320" y2="720"/>
+    <line x1="640" y1="0" x2="640" y2="720"/>
+    <line x1="960" y1="0" x2="960" y2="720"/>
+  </g>
+
+  <!-- Stack of skill "cards" (left side) -->
+  <g transform="translate(120, 130)">
+    <!-- Card 1: grill-me (back) -->
+    <rect x="0" y="40" width="320" height="80" rx="6" fill="#1a1a1a" opacity="0.92"/>
+    <text x="20" y="72" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#faf8f2" letter-spacing="2">NAME</text>
+    <text x="20" y="100" font-family="Georgia, serif" font-size="20" font-style="italic" fill="#b45837">grill-me</text>
+
+    <!-- Card 2: tdd (middle) -->
+    <rect x="20" y="160" width="320" height="80" rx="6" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+    <text x="40" y="192" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#1a1a1a" letter-spacing="2">NAME</text>
+    <text x="40" y="220" font-family="Georgia, serif" font-size="20" font-style="italic" fill="#1a1a1a">tdd</text>
+    <circle cx="305" cy="200" r="12" fill="#9d2933"/>
+    <circle cx="305" cy="200" r="12" fill="none" stroke="#2d6a4f" stroke-width="3" stroke-dasharray="22 100" stroke-dashoffset="0" transform="rotate(-90 305 200)"/>
+
+    <!-- Card 3: grill-with-docs (front) -->
+    <rect x="40" y="280" width="320" height="80" rx="6" fill="url(#accent)"/>
+    <text x="60" y="312" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#faf8f2" letter-spacing="2">NAME</text>
+    <text x="60" y="340" font-family="Georgia, serif" font-size="20" font-style="italic" fill="#faf8f2">grill-with-docs</text>
+  </g>
+
+  <!-- Right side: "leading words" floating in space -->
+  <g transform="translate(560, 100)">
+    <!-- Word: relentless -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="220" height="60" rx="30" fill="none" stroke="#b45837" stroke-width="2"/>
+      <text x="110" y="40" font-family="Georgia, serif" font-size="22" font-style="italic" text-anchor="middle" fill="#b45837">relentless</text>
+    </g>
+    <!-- Word: red -->
+    <g transform="translate(280, 80)">
+      <rect x="0" y="0" width="120" height="56" rx="28" fill="#9d2933"/>
+      <text x="60" y="38" font-family="Georgia, serif" font-size="22" font-style="italic" text-anchor="middle" fill="#faf8f2">red</text>
+    </g>
+    <!-- Word: vertical -->
+    <g transform="translate(120, 160)">
+      <rect x="0" y="0" width="200" height="60" rx="30" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+      <text x="100" y="40" font-family="Georgia, serif" font-size="22" font-style="italic" text-anchor="middle" fill="#1a1a1a">vertical slice</text>
+    </g>
+    <!-- Word: deep -->
+    <g transform="translate(360, 220)">
+      <rect x="0" y="0" width="140" height="60" rx="30" fill="#1a1a1a"/>
+      <text x="70" y="40" font-family="Georgia, serif" font-size="22" font-style="italic" text-anchor="middle" fill="#faf8f2">deep</text>
+    </g>
+    <!-- Word: seam -->
+    <g transform="translate(0, 280)">
+      <rect x="0" y="0" width="160" height="60" rx="30" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+      <text x="80" y="40" font-family="Georgia, serif" font-size="22" font-style="italic" text-anchor="middle" fill="#1a1a1a">seam</text>
+    </g>
+    <!-- Word: grill -->
+    <g transform="translate(220, 340)">
+      <rect x="0" y="0" width="140" height="60" rx="30" fill="#b45837"/>
+      <text x="70" y="40" font-family="Georgia, serif" font-size="22" font-style="italic" text-anchor="middle" fill="#faf8f2">grill</text>
+    </g>
+  </g>
+
+  <!-- Bottom: thin horizontal accent line -->
+  <line x1="80" y1="600" x2="1200" y2="600" stroke="url(#accent)" stroke-width="2"/>
+
+  <!-- Top label: source -->
+  <text x="80" y="70" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#1a1a1a" letter-spacing="3">MATT POCOCK · SKILLS</text>
+  <text x="80" y="100" font-family="Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a">github.com/mattpocock/skills · 200k stars · MIT</text>
+
+  <!-- Bottom label: stats -->
+  <text x="80" y="650" font-family="-apple-system, sans-serif" font-size="14" font-weight="600" fill="#1a1a1a" letter-spacing="2">22 SKILLS</text>
+  <text x="240" y="650" font-family="-apple-system, sans-serif" font-size="14" font-weight="600" fill="#1a1a1a" letter-spacing="2">·</text>
+  <text x="280" y="650" font-family="-apple-system, sans-serif" font-size="14" font-weight="600" fill="#1a1a1a" letter-spacing="2">USER / MODEL</text>
+  <text x="500" y="650" font-family="-apple-system, sans-serif" font-size="14" font-weight="600" fill="#1a1a1a" letter-spacing="2">·</text>
+  <text x="540" y="650" font-family="-apple-system, sans-serif" font-size="14" font-weight="600" fill="#1a1a1a" letter-spacing="2">LEADING WORDS</text>
+
+  <text x="1200" y="650" font-family="-apple-system, sans-serif" font-size="13" fill="#6a6a6a" letter-spacing="2" text-anchor="end">CHASE'S DEEP DIVE</text>
+</svg>
