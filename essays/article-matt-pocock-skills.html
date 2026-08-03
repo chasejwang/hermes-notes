@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matt Pocock Skills · 22 skills, one philosophy: wrangle determinism out of a stochastic system · a few quiet things</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf8f2;
+    --text: #1a1a1a;
+    --accent: #b45837;
+    --muted: #6a6a6a;
+    --line: #e8e0cc;
+    --success: #2d6a4f;
+    --failure: #9d2933;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+                 'STHeiti', 'STSongti-SC-Regular', 'PingFang SC',
+                 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-brand {
+    font-family: 'Georgia', 'STSongti-SC-Regular', serif;
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    font-size: 14px;
+  }
+
+  .nav-links a {
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+
+  .nav-links a:hover {
+    opacity: 1;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 100px 32px 60px;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .hero-title {
+    font-family: 'Georgia', 'STSongti-SC-Regular', serif;
+    font-size: clamp(32px, 5.5vw, 56px);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin-bottom: 24px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 32px;
+  }
+
+  .hero-meta {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ===== HERO IMAGE ===== */
+  .hero-image {
+    max-width: 960px;
+    margin: 0 auto 40px;
+    padding: 0 32px;
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+  }
+
+  .hero-image-caption {
+    max-width: 720px;
+    margin: 12px auto 0;
+    padding: 0 32px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ===== ARTICLE BODY ===== */
+  article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 32px 120px;
+  }
+
+  article h2 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 64px;
+    margin-bottom: 20px;
+    line-height: 1.25;
+  }
+
+  article h3 {
+    font-size: 21px;
+    font-weight: 600;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+
+  article h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+
+  article p {
+    margin-bottom: 20px;
+  }
+
+  article strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  article em {
+    font-style: italic;
+  }
+
+  article a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  article blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 4px 20px;
+    margin: 28px 0;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ===== HIGHLIGHT BOX (verdict / callout) ===== */
+  .verdict {
+    background: rgba(180, 88, 55, 0.06);
+    border-left: 4px solid var(--accent);
+    padding: 20px 24px;
+    margin: 32px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .verdict h4 {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .verdict p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ===== TABLES ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+
+  th, td {
+    border: 1px solid var(--line);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: rgba(180, 88, 55, 0.06);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  td.user-inv { color: var(--accent); font-weight: 600; }
+  td.model-inv { color: var(--success); font-weight: 600; }
+
+  /* ===== CODE ===== */
+  code {
+    font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+    font-size: 14px;
+    background: rgba(180, 88, 55, 0.06);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  pre {
+    background: #f0eadb;
+    border: 1px solid var(--line);
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    overflow-x: auto;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: 13.5px;
+  }
+
+  /* ===== SECTION DIVIDER ===== */
+  .divider {
+    text-align: center;
+    margin: 80px 0;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+  }
+
+  /* ===== NUMBERED LIST ===== */
+  article ol, article ul {
+    padding-left: 24px;
+    margin-bottom: 20px;
+  }
+
+  article ol li, article ul li {
+    margin-bottom: 8px;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 40px 32px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    .hero { padding: 60px 20px 40px; }
+    article { padding: 20px 20px 80px; }
+    nav { padding: 14px 20px; }
+    .nav-links { gap: 14px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="../index.html" class="nav-brand">a few quiet things</a>
+  <div class="nav-links">
+    <a href="../index.html#essays">Essays</a>
+    <a href="../index.html#quant">Quant</a>
+    <a href="../index.html#about">About</a>
+    <a href="https://github.com/chasejwang">GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Skills · Deep Dive · 14 min read</div>
+  <h1 class="hero-title"><em>22</em> skills, one philosophy:<br>wrangle determinism out of a<br>stochastic system.</h1>
+  <p class="hero-sub">Matt Pocock 公开了他的 .agents 目录。一周读完之后，我把他每一类 skill、它们为什么存在、它们教我如何写自己的 skill，都整理成了这一篇。</p>
+  <div class="hero-meta">CHASE · AUGUST 3, 2026</div>
+</section>
+
+<!-- COVER -->
+<div class="hero-image">
+  <img src="../images/matt-pocock-skills-cover.svg" alt="Matt Pocock skills cover: stack of skill cards next to floating leading words" loading="lazy" />
+</div>
+<p class="hero-image-caption">22 skills · user-invoked vs model-invoked · leading words as the connective tissue</p>
+
+<article>
+
+<p>我大概一周前开始认真看 <a href="https://github.com/mattpocock/skills">mattpocock/skills</a>。200k stars，被 Claude Code 官方 marketplace 收录，MIT 许可——但真正打动我的是他 <a href="https://www.aihero.dev/skills">AI Hero 主页</a> 上那句 <em>"Skills For Real Engineers"</em>。</p>
+
+<blockquote>一个 skill 不是"我让 agent 做某件事"的文件。一个 skill 是 <strong>从随机系统里挤出确定性</strong> 的工程化产物。</blockquote>
+
+<p>这一篇不是教程，也不是翻译。我想做的是：把 22 个 skill 按"它解决什么失败模式"重新组织起来，让你读完知道：</p>
+<ol>
+  <li>他为什么写这 22 个 skill（不是 50 个、不是 10 个）</li>
+  <li>每一类 skill 的核心机制</li>
+  <li>怎么用他的思路写自己工作流里的 skill</li>
+</ol>
+
+<p>这一篇本身有 <strong>6500 字左右</strong>。如果你赶时间，章节里都有"心智模型"小标题，可以跳着读。最后有一份完整索引。</p>
+
+<div class="divider">· · ·</div>
+
+<h2>第 1 节：核心哲学</h2>
+
+<p>Matt 在 <code>writing-great-skills/SKILL.md</code> 里把整篇的根写得很清楚：</p>
+
+<blockquote>"A skill exists to wrangle determinism out of a stochastic system."<br><br>—— Predictability: agent 每次跑同样的 <strong>process</strong>，不是同样的 <strong>output</strong>。</blockquote>
+
+<p>翻译过来就是：</p>
+<ul>
+  <li>AI 是<strong>随机的</strong>（每次输出可能不同）</li>
+  <li>Skill 的核心价值 = <strong>让 AI 每次按同样流程做事</strong></li>
+  <li>不要追求"输出完全一样"——追求 <strong>过程稳定</strong></li>
+</ul>
+
+<p>这跟 superpowers（obra/superpowers，259K stars）的"TDD Iron Law"路线不同。superpowers 把工程纪律（Test-Driven / Red-Green-Refactor）做成核心约束；Matt 的路线是把"沟通纪律"做成核心约束。他观察到的 4 个失败模式，每一个的根都在"沟通不对齐"：</p>
+
+<table>
+  <thead>
+    <tr><th>失败模式</th><th>根因</th><th>Matt 的解法</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>#1 Agent 没做我想要的事</strong></td><td>对齐失败</td><td><code>grill-me</code> · <code>grill-with-docs</code></td></tr>
+    <tr><td><strong>#2 Agent 太啰嗦</strong></td><td>没共享语言</td><td><code>CONTEXT.md</code> · <code>domain-modeling</code></td></tr>
+    <tr><td><strong>#3 代码跑不起来</strong></td><td>反馈环太弱</td><td><code>tdd</code> · <code>diagnosing-bugs</code></td></tr>
+    <tr><td><strong>#4 代码库烂掉</strong></td><td>设计没人管</td><td><code>improve-codebase-architecture</code> · <code>codebase-design</code></td></tr>
+  </tbody>
+</table>
+
+<p>这 4 个失败模式对应 4 类 skill——也是 Matt 自己组织的逻辑：</p>
+<ol>
+  <li><strong>对齐（grill）</strong>：先想清楚再做</li>
+  <li><strong>语言（domain-modeling）</strong>：让 agent 和你用同一套词</li>
+  <li><strong>反馈（tdd / bugs）</strong>：让 agent 看得到自己的错</li>
+  <li><strong>设计（codebase）</strong>：保持代码库结构稳定</li>
+</ol>
+
+<div class="verdict">
+<h4>心智模型</h4>
+<p>他的 22 个 skill 不是"功能清单"，是 <strong>4 类失败模式的工程化反制</strong>。每一类反制都用 1-2 个 user-invoked skill（你显式调用）+ 3-5 个 model-invoked skill（agent 自动抓取）组成。</p>
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2>第 2 节：第一个核心机制——User-invoked vs Model-invoked</h2>
+
+<p>这是 Matt 整个 repo 最值钱的设计决策之一，也是他写 skill 写得比绝大多数人好的根本原因。</p>
+
+<h3>两者的 frontmatter 差异</h3>
+
+<pre><code>---
+name: grill-me
+description: A relentless interview to sharpen a plan or design.
+disable-model-invocation: true
+---
+Run a `/grilling` session.</code></pre>
+
+<pre><code>---
+name: tdd
+description: Test-driven development. Use when writing new
+  features or fixing bugs — strict red-green-refactor loop.
+---
+
+TDD is the red → green loop...</code></pre>
+
+<p>注意 <code>disable-model-invocation: true</code> 这个字段。打开它之后：</p>
+<ul>
+  <li><strong>User-invoked</strong> skill 的 <code>description</code> <strong>不进 context</strong>。只有当用户敲 <code>/grill-me</code> 时，skill body 才被加载。</li>
+  <li><strong>Model-invoked</strong> skill 的 <code>description</code> <strong>每轮都进 context</strong>。agent 看到描述，根据匹配度决定要不要加载 body。</li>
+</ul>
+
+<h3>为什么要分两类？</h3>
+
+<p>Token 经济学。</p>
+
+<ul>
+  <li>User-invoked skill 的触发是 <strong>用户的嘴</strong>（敲 <code>/xxx</code>）。所以 description 写得再烂没关系——用户已经知道要调它了。</li>
+  <li>Model-invoked skill 的触发是 <strong>模型的判断</strong>。每轮 token 都为它付钱。Description 必须写成一个 <strong>精准的 trigger phrase</strong>，多一个字都是浪费。</li>
+</ul>
+
+<h3>选择标准</h3>
+
+<table>
+  <thead>
+    <tr><th>你的使用模式</th><th>该用</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>只在某个具体场景手动调</td><td class="user-inv">User-invoked</td></tr>
+    <tr><td>agent 在写代码时自动该用</td><td class="model-inv">Model-invoked</td></tr>
+    <tr><td>需要 router 帮你挑（多个 user-invoked 共存）</td><td class="user-inv">User-invoked + 路由器（<code>ask-matt</code>）</td></tr>
+  </tbody>
+</table>
+
+<div class="verdict">
+<h4>心智模型</h4>
+<p><strong>User-invoked = 任务编排器（你指挥）。Model-invoked = 行为纪律（agent 自己用）。</strong>Matt 的 repo 里有 9 个 user-invoked、9 个 model-invoked 的 engineering skill，加上 productivity 里的 4+1，比例是精心平衡的——超过 50% user-invoked 说明你"包办流程"太多，agent 自主性被压死；超过 50% model-invoked 说明你"放手太多"，description 写不够精准会浪费 token。</p>
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2>第 3 节：22 个 skill 完整分类</h2>
+
+<p>下面是我重新组织的版本——按"它解决哪一类失败模式"分类，不是按文件夹分类。</p>
+
+<h3>Engineering 18 个</h3>
+
+<h4>🟦 User-invoked（9 个——你显式调用）</h4>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Skill</th><th>解决什么</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td><code>ask-matt</code></td><td><strong>路由器</strong>。"现在该用哪个 skill？"</td></tr>
+    <tr><td>2</td><td><code>grill-with-docs</code></td><td>边审问边建 <code>CONTEXT.md</code>。grill-me 升级版。</td></tr>
+    <tr><td>3</td><td><code>triage</code></td><td>issue 在状态机里流转（needs-triage → ready-for-spec → …）。</td></tr>
+    <tr><td>4</td><td><code>improve-codebase-architecture</code></td><td>扫代码库 → HTML 报告 → 挑 1 个重构机会深入讨论。</td></tr>
+    <tr><td>5</td><td><code>setup-matt-pocock-skills</code></td><td>首次配置（tracker / label / 文档位置）。每个 repo 跑 1 次。</td></tr>
+    <tr><td>6</td><td><code>to-spec</code></td><td>把当前对话合成 spec 并发布到 issue tracker。</td></tr>
+    <tr><td>7</td><td><code>to-tickets</code></td><td>把 spec/计划拆成 <strong>tracer-bullet vertical slice</strong>，带 blocker 关系。</td></tr>
+    <tr><td>8</td><td><code>implement</code></td><td>实施。在预约定 seam 触发 <code>/tdd</code>，提交前 <code>/code-review</code>。</td></tr>
+    <tr><td>9</td><td><code>wayfinder</code></td><td>超大项目（一次 session 装不下）规划成 <strong>调查票地图</strong>。</td></tr>
+  </tbody>
+</table>
+
+<h4>🟩 Model-invoked（9 个——agent 自动用）</h4>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Skill</th><th>解决什么</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td><code>prototype</code></td><td>临时跑通一个设计问题（terminal 答状态/逻辑，多套 UI 路由切换）。</td></tr>
+    <tr><td>2</td><td><code>diagnosing-bugs</code></td><td><strong>reproduce → minimize → hypothesise → instrument → fix → regression</strong>。</td></tr>
+    <tr><td>3</td><td><code>research</code></td><td>后台 agent 查一手源 → 写带引用的 markdown。</td></tr>
+    <tr><td>4</td><td><code>tdd</code></td><td>严格 red → green → refactor，<strong>vertical slice</strong> 增量。</td></tr>
+    <tr><td>5</td><td><code>domain-modeling</code></td><td>挑战术语，边角案例压力测试，更新 <code>CONTEXT.md</code>。</td></tr>
+    <tr><td>6</td><td><code>codebase-design</code></td><td>深度模块设计：<strong>小接口、大行为</strong>。词汇：module / interface / depth / seam / adapter。</td></tr>
+    <tr><td>7</td><td><code>code-review</code></td><td><strong>2 轴 review</strong>：Standards（Fowler 异味）+ Spec（对齐 issue/PRD）。</td></tr>
+    <tr><td>8</td><td><code>resolving-merge-conflicts</code></td><td>git merge/rebase 冲突。按 <strong>两边意图</strong> 逐 hunk 解。禁 <code>--abort</code>。</td></tr>
+  </tbody>
+</table>
+
+<h3>Productivity 5 个</h3>
+
+<h4>🟦 User-invoked（4 个）</h4>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Skill</th><th>解决什么</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td><code>grill-me</code></td><td>无情审问你直到决策树所有分支都有答案。<strong>5 行</strong>——指到 <code>grilling</code>。</td></tr>
+    <tr><td>2</td><td><code>handoff</code></td><td>压缩当前对话成 handoff 文档给下一个 agent。<strong>11 行</strong>。强调 reference 而非 duplicate。</td></tr>
+    <tr><td>3</td><td><code>teach</code></td><td>多会话教学。当前目录当工作区。100+ 行。<strong>长篇</strong> 是因为它是 teach workspace 设计。</td></tr>
+    <tr><td>4</td><td><code>writing-great-skills</code></td><td><strong>meta skill</strong>——关于"如何写 skill"的 200+ 行参考。教原则不教具体步骤。</td></tr>
+  </tbody>
+</table>
+
+<h4>🟩 Model-invoked（1 个）</h4>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Skill</th><th>解决什么</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td><code>grilling</code></td><td><code>grill-me</code> 和 <code>grill-with-docs</code> 共享的执行核心。10 行，5 原则。</td></tr>
+  </tbody>
+</table>
+
+<div class="verdict">
+<h4>心智模型</h4>
+<p>Matt 的 <strong>复用</strong> 思路很清晰：<code>grill-me</code>（user-invoked, 5 行）只是 <code>grilling</code>（model-invoked, 10 行）的人肉入口。<code>grill-with-docs</code>（user-invoked）只是 <code>grilling</code> + <code>domain-modeling</code> 的组合。<strong>单点真相</strong>，多处复用——所以整个 repo 不到 1500 行 markdown。</p>
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2>第 4 节：第二个核心机制——leading words</h2>
+
+<p>这是 Matt 写 skill 跟别人拉开差距的第二个关键点：</p>
+
+<blockquote>A leading word is <strong>a compact concept already living in the model's pretraining</strong>.</blockquote>
+
+<p>翻译：leading word = 模型已经会的概念 + 你反复用 = 行为稳定。</p>
+
+<h3>3 个真实例子</h3>
+
+<table>
+  <thead>
+    <tr><th>❌ 啰嗦版</th><th>✅ leading word 版</th><th>为什么</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>"fast, deterministic, low-overhead loop"</td><td><strong>tight loop</strong></td><td>模型对 "tight loop" 有 pretraining 概念</td></tr>
+    <tr><td>"a loop you believe in"</td><td><strong>red</strong></td><td>测试=红→绿是 TDD 共同语言</td></tr>
+    <tr><td>"be thorough"</td><td><strong>relentless</strong></td><td>模型对 "relentless" 反应更具体</td></tr>
+  </tbody>
+</table>
+
+<h3>为什么 leading word 工作</h3>
+
+<ul>
+  <li><strong>少 token</strong>。"relentless interview" 比 "keep asking until satisfied" 少一半字符。</li>
+  <li><strong>更准确</strong>。模型对 pretrained 概念反应比临时造的短语更稳定。</li>
+  <li><strong>前后一致</strong>。description / body / docs 用同词，agent 不会困惑。</li>
+</ul>
+
+<p>Matt 整个 repo 的 leading words 我列了一下：<strong>relentless, red, green, vertical, tracer-bullet, deep, seam, grill, fact, decision, scope, ship, blocking, frontier, depth, leverage, locality</strong>。注意他不是 <em>造词</em>——他是从软件工程几十年的共同语汇里挑出来的。</p>
+
+<div class="verdict">
+<h4>心智模型</h4>
+<p>写 skill 时花 10 分钟想 leading word，比你写 5 段详细说明更有效。leading word 像 <strong>用整个行业的共识替换你自己的啰嗦</strong>。如果你发现自己在 SKILL.md 里堆形容词，那是 leading word 还没选对的信号。</p>
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2>第 5 节：5 个标志性 SKILL.md 拆解</h2>
+
+<p>这一节把 22 个 skill 里的 <strong>极简派和长篇派</strong> 摆在一起，让你看到他的文风跨度。</p>
+
+<h3>1. <code>grill-me</code>（5 行）—— 极简派</h3>
+
+<pre><code>---
+name: grill-me
+description: A relentless interview to sharpen a plan or design.
+disable-model-invocation: true
+---
+Run a `/grilling` session.</code></pre>
+
+<p>特点：</p>
+<ul>
+  <li>5 行完事</li>
+  <li>一句话指到 <code>grilling</code>，<strong>复用</strong> 不是重复</li>
+  <li><code>disable-model-invocation: true</code>——不占 context</li>
+  <li>没有任何 step——它 <em>就是</em> 路由</li>
+</ul>
+
+<h3>2. <code>grilling</code>（10 行）—— 执行核心</h3>
+
+<pre><code>Interview me relentlessly about every aspect of this until
+we reach a shared understanding.
+
+Walk down each branch of the decision tree, resolving
+dependencies between decisions one-by-one.
+
+For each question, provide your recommended answer.
+
+Ask the questions one at a time, waiting for feedback
+on each question before continuing.
+Asking multiple questions at once is bewildering.
+
+If a *fact* can be found by exploring the environment
+(filesystem, tools, etc.), look it up rather than asking me.
+The *decisions*, though, are mine — put each one to me
+and wait for my answer.
+
+Do not act on it until I confirm we have reached a
+shared understanding.</code></pre>
+
+<p>5 原则：</p>
+<ol>
+  <li><strong>Relentless</strong>——别客气</li>
+  <li><strong>Decision tree</strong>——一次走一条分支</li>
+  <li><strong>One at a time</strong>——一次一个问题，多个 = bewildering</li>
+  <li><strong>Fact vs Decision</strong>——事实自己查，决策交给你</li>
+  <li><strong>No premature action</strong>——不确认不行动</li>
+</ol>
+
+<p><strong>Fact vs Decision 是 Matt 的核心洞察</strong>。大多数人（包括我）会问"用户的预算范围是多少？"，但其实"用户的预算"是 fact（可以从行业数据查），"预算 <em>够不够买</em>" 才是 decision（必须用户回答）。把这两类混在一起问，agent 问出来的就是噪音。</p>
+
+<h3>3. <code>handoff</code>（11 行）—— 极简派 + 引用原则</h3>
+
+<pre><code>---
+name: handoff
+description: Compact the current conversation into a handoff
+  document for another agent to pick up.
+argument-hint: "What will the next session be used for?"
+disable-model-invocation: true
+---
+Write a handoff document summarising the current conversation
+so a fresh agent can continue the work. Save to the temporary
+directory of the user's OS - not the current workspace.
+
+Include a "suggested skills" section in the document, which
+suggests skills that the agent should invoke.
+
+Do not duplicate content already captured in other artifacts
+(specs, plans, ADRs, issues, commits, diffs). Reference them
+by path or URL instead.
+
+Redact any sensitive information...</code></pre>
+
+<p>注意最后那行：<strong>"Do not duplicate content already captured in other artifacts. Reference them by path or URL instead."</strong> 这是 <em>单一来源真相</em> 原则的直接体现。如果 handoff 文档里复制了 spec 的内容，spec 改了 handoff 不会改——重复就是债务。</p>
+
+<h3>4. <code>teach</code>（100+ 行）—— 详细派</h3>
+
+<p>跟 grill-me 5 行完全相反。原因是它要做的事完全不同——多会话教学，需要完整的 workspace 设计：</p>
+
+<ul>
+  <li><strong>文件结构</strong>：<code>MISSION.md</code> · <code>RESOURCES.md</code> · <code>learning-records/</code> · <code>lessons/</code> · <code>assets/</code></li>
+  <li><strong>哲学</strong>：Knowledge / Skills / Wisdom 三分</li>
+  <li><strong>心理学</strong>：提醒"fluency vs storage strength"（流利度 vs 存储强度）</li>
+  <li><strong>状态化</strong>：<code>NOTES.md</code> 记录用户偏好</li>
+</ul>
+
+<p><strong>grill-me vs teach 的对比</strong> 就是 Matt 写 skill 的两个极端：</p>
+
+<table>
+  <thead>
+    <tr><th></th><th>grill-me</th><th>teach</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>行数</td><td>5</td><td>100+</td></tr>
+    <tr><td>状态</td><td>无状态</td><td>多 session 状态</td></tr>
+    <tr><td>目的</td><td>问问题</td><td>建工作流</td></tr>
+    <tr><td>复用</td><td>指到 grilling</td><td>指到 RESOURCES.md / NOTES.md</td></tr>
+  </tbody>
+</table>
+
+<h3>5. <code>writing-great-skills</code>（200+ 行）—— meta skill</h3>
+
+<p>整篇就是"如何写 skill 的 skill"。</p>
+
+<ul>
+  <li>有 <code>GLOSSARY.md</code>——所有 <strong>bold 词</strong> 在那定义</li>
+  <li>是 <strong>reference</strong>——全程无 step</li>
+  <li>教 <strong>原则</strong>——不教具体做法</li>
+</ul>
+
+<p>它本身就是 <em>它教的东西的样板</em>：用 leading words、用 GLOSSARY、用 information hierarchy。</p>
+
+<div class="verdict">
+<h4>心智模型</h4>
+<p>Matt 的 skill 长度 <strong>不是写出来的，是设计出来的</strong>。5 行是因为它该 5 行（路由）；200 行是因为它该 200 行（meta 参考）。强行短会丢失信息，强行长会 no-op 堆积。<strong>先想"这个 skill 想让 agent 做什么动作"，再决定长度。</strong></p>
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2>第 6 节：第三、第四个核心机制——Information Hierarchy & No-op 检测</h2>
+
+<h3>Information Hierarchy（信息层级）</h3>
+
+<p>Matt 把信息分成 3 层：</p>
+
+<ol>
+  <li><strong>In-skill step（步骤）</strong>——主要 SKILL.md</li>
+  <li><strong>In-skill reference（参考）</strong>——也放 SKILL.md</li>
+  <li><strong>External reference（外部）</strong>——单独 .md 文件</li>
+</ol>
+
+<p>怎么用：</p>
+
+<table>
+  <thead>
+    <tr><th>内容类型</th><th>放哪</th><th>例子</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>步骤</td><td>SKILL.md</td><td>"1. 读 spec 2. 拆 tickets 3. 实施"</td></tr>
+    <tr><td>定义 / 规则</td><td>SKILL.md</td><td>"domain modeling: 挑战术语"</td></tr>
+    <tr><td>大段细节</td><td>外部 .md</td><td>GLOSSARY.md / FORMAT.md</td></tr>
+  </tbody>
+</table>
+
+<p>核心原则：</p>
+<ul>
+  <li><strong>完成准则可检查</strong>——"每条规则都应用了"，不是"给个清单"</li>
+  <li><strong>过度模糊</strong> → <strong>premature completion</strong>（agent 跳到"做完了"）</li>
+  <li><strong>过度分裂</strong> → <strong>隐藏 agent 真正需要的信息</strong></li>
+</ul>
+
+<h3>5 个失败模式</h3>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>失败</th><th>症状</th><th>防御</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td><strong>Premature completion</strong></td><td>agent 跳到"做完了"，实际没做完</td><td>锐化完成准则</td></tr>
+    <tr><td>2</td><td><strong>Duplication</strong></td><td>同一意思在多处出现</td><td>单一来源真相</td></tr>
+    <tr><td>3</td><td><strong>Sediment</strong>（沉淀）</td><td>陈旧层堆积</td><td>定期修剪</td></tr>
+    <tr><td>4</td><td><strong>Sprawl</strong>（蔓延）</td><td>skill 太长，即使每行都"活着"</td><td>拆 skill</td></tr>
+    <tr><td>5</td><td><strong>No-op</strong></td><td>那句话 agent 默认就遵守</td><td>句子级 no-op 测试</td></tr>
+  </tbody>
+</table>
+
+<h3>No-op 检测（核心实操）</h3>
+
+<blockquote>拿掉这一句，行为变了吗？没变 = no-op，删，不是改写。</blockquote>
+
+<p>这一条是 Matt 的"减肥"工具。SKILL.md 写到 50 行的时候回头看一遍，每一行问自己：拿掉它，agent 行为会变吗？答案如果是否，删。重复这个过程直到每一行都 <em>有作用</em>。</p>
+
+<h3>Negation（额外陷阱）</h3>
+
+<blockquote>用禁止来引导 = 反效果（"不要想大象"会让你想大象）。</blockquote>
+
+<p>说 <strong>正向行为</strong>——"做 X"，而不是"不要做 Y"。<code>grilling</code> 里说"Ask the questions one at a time"，不说"Don't ask multiple questions at once"。这是同一个反 no-op 工具的延伸。</p>
+
+<div class="verdict">
+<h4>心智模型</h4>
+<p>Matt 写 skill 不是"写"——是 <strong>剪</strong>。先写一个 200 行的详尽版，然后 no-op 检测、leading word 替换、duplicate 合并，最终保留 30-50 行。"长"不是目标，"每一行都有效"是目标。</p>
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2>第 7 节：两条工作流——Plan-then-Build & Domain-Driven</h2>
+
+<p>22 个 skill 拼起来支持 2 个核心工作流：</p>
+
+<h3>工作流 1：Plan-then-Build（计划 + 实施）</h3>
+
+<pre><code>grill-me / grill-with-docs
+        ↓
+     to-spec         ← 把对话合成 spec，发布到 issue tracker
+        ↓
+     to-tickets      ← 拆成 vertical slice，标 blocker
+        ↓
+     implement       ← 在预约定 seam 触发 /tdd，提交前 /code-review
+        ↓
+     code-review     ← Standards + Spec 双轴</code></pre>
+
+<p>关键点：<strong>每一步之间都显式停下来</strong>，不连跑。你跑完 <code>to-spec</code> 之后确认 spec 写得对，才开始 <code>to-tickets</code>。这跟 superpowers 的 "writing-plans → executing-plans" 单线 pipeline 不同——Matt 的链条里每一步都可以 <code>grill</code> 重新对齐。</p>
+
+<h3>工作流 2：Domain-Driven（领域驱动）</h3>
+
+<pre><code>grill-with-docs
+        ↓
+   CONTEXT.md 持续更新
+        ↓
+   ADR 记录决策
+        ↓
+   domain-modeling 持续完善
+        ↓
+   shared language 在 agent + dev + 团队里通用</code></pre>
+
+<p>Matt 反复强调：<strong>shared language 是这个 repo 最 cool 的技术</strong>。原因——</p>
+
+<ol>
+  <li><strong>变量 / 函数 / 文件命名一致</strong>，代码库更易导航（agent 导航）</li>
+  <li><strong>更少 token 思考</strong>——agent 看到 "materialization cascade" 比看到"a lesson inside a section of a course is made 'real'" 消耗 token 少 10×</li>
+  <li><strong>变量名 = 测试名 = 文件名 = commit message</strong>，整个 repo 是一致的</li>
+</ol>
+
+<p>他在 <code>course-video-manager</code> 仓库里给过一个真实例子：</p>
+
+<ul>
+  <li><strong>Before</strong>："There's a problem when a lesson inside a section of a course is made 'real' (i.e. given a spot in the file system)"</li>
+  <li><strong>After</strong>："There's a problem with the materialization cascade"</li>
+</ul>
+
+<p>后者读起来 <em>几乎像代码</em>。这就是 shared language 的力量。</p>
+
+<div class="divider">· · ·</div>
+
+<h2>第 8 节：Matt vs superpowers（obra）—— 两种风格的对比</h2>
+
+<p>我跟过两个 repo 的笔记。同一类问题，两个解法：</p>
+
+<table>
+  <thead>
+    <tr><th>维度</th><th>Matt Pocock</th><th>obra/superpowers</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>风格</strong></td><td>极简、聚焦</td><td>完整方法论</td></tr>
+    <tr><td><strong>SKILL.md 行数</strong></td><td>5-30 行</td><td>30-200 行</td></tr>
+    <tr><td><strong>核心机制</strong></td><td>facts vs decisions</td><td>TDD Iron Law</td></tr>
+    <tr><td><strong>重点 1</strong></td><td>需求澄清</td><td>编码纪律</td></tr>
+    <tr><td><strong>重点 2</strong></td><td>领域建模</td><td>系统化调试</td></tr>
+    <tr><td><strong>重点 3</strong></td><td>信息层级</td><td>反思</td></tr>
+    <tr><td><strong>典型 leading word</strong></td><td>"relentless"</td><td>"test-driven"</td></tr>
+    <tr><td><strong>哲学来源</strong></td><td>Pragmatic Programmer + DDD</td><td>Kent Beck + Pragmatic</td></tr>
+    <tr><td><strong>支持 host</strong></td><td>Claude Code / Codex（主要）</td><td>11+ host（含 Cursor / Gemini / Copilot）</td></tr>
+    <tr><td><strong>被 marketplace 收录</strong></td><td>Claude Code 官方</td><td>Claude Code 官方</td></tr>
+    <tr><td><strong>Stars</strong></td><td>200K</td><td>259K</td></tr>
+  </tbody>
+</table>
+
+<p>两个 repo <strong>不互斥</strong>——superpowers 偏纪律（"你必须 TDD"），Matt 偏对齐（"先确认我们说的是同一件事"）。纪律在执行层最重要（避免退步），对齐在规划层最重要（避免建错）。我自己的 Hermes 工作流里两个都装了——superpowers 做底座，Matt 的 4 个核心（<code>grill-me</code> / <code>tdd</code> / <code>codebase-design</code> / <code>writing-great-skills</code>）做顶层。</p>
+
+<div class="verdict">
+<h4>心智模型</h4>
+<p>把 Matt 跟 superpowers 看作 <strong>光谱的两端</strong>：对齐 ←→ 纪律、沟通 ←→ 编码、Pragmatic ←→ XP。大多数工作流问题同时需要两边，但 <em>哪一端先做</em> 取决于项目的阶段——0 → 1 时对齐为主（你还没建对东西呢，别着急 TDD），1 → 10 时纪律为主（你已经在执行了，别让代码库烂掉）。</p>
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2>第 9 节：怎么用他的思路写自己的 skill</h2>
+
+<p>我读完他的 repo 之后，把自己的 skill 写作流程归纳成 5 步：</p>
+
+<h3>Step 1：决定 user-invoked vs model-invoked</h3>
+
+<p>只手动用 → user-invoked（省 context）。AI 自动用 → model-invoked（写好 description）。</p>
+
+<h3>Step 2：写 description（1 行 trigger）</h3>
+
+<p>用 leading word。"Use when X — strict Y loop" 的句式。一个 trigger 一个分支。不要堆同义词。</p>
+
+<h3>Step 3：写 body</h3>
+
+<p>前面 3-5 行说原则。中间是 step 或 reference（用 leading word 替换啰嗦）。最后是完成准则（可检查）。</p>
+
+<h3>Step 4：no-op 测试</h3>
+
+<p>把每一行拿掉，agent 行为会变吗？不会变 = 删。</p>
+
+<h3>Step 5：leading word 替换</h3>
+
+<p>把啰嗦变简洁。"be very thorough" → "relentless"。"make sure the code is right" → "vertical slice"。</p>
+
+<p>我自己用这 5 步写了 3 个新 skill：</p>
+
+<ul>
+  <li><code>multi-agent-case-study</code>：用来分析多 agent 协作的失败案例（user-invoked）</li>
+  <li><code>finishing-a-development-branch</code>：从 PR 到合到主分支的 6 步清单（model-invoked）</li>
+  <li><code>chrome-headless-pdf</code>：用 Chrome headless 生成中文 PDF，避过字体坑（model-invoked）</li>
+</ul>
+
+<p>每个写完都 30-50 行。再长我就回头做 no-op 检测。</p>
+
+<div class="divider">· · ·</div>
+
+<h2>第 10 节：完整索引</h2>
+
+<p>22 个 skill 加上 3 个关键 reference 文件。我做了一个表方便查：</p>
+
+<table>
+  <thead>
+    <tr><th>Skill</th><th>类</th><th>行数</th><th>核心 leading word</th></tr>
+  </thead>
+  <tbody>
+    <tr><td colspan="4"><strong>Engineering · User-invoked</strong></td></tr>
+    <tr><td><code>ask-matt</code></td><td>user</td><td>~20</td><td>router</td></tr>
+    <tr><td><code>grill-with-docs</code></td><td>user</td><td>~5</td><td>domain</td></tr>
+    <tr><td><code>triage</code></td><td>user</td><td>~30</td><td>state machine</td></tr>
+    <tr><td><code>improve-codebase-architecture</code></td><td>user</td><td>~100</td><td>deepening</td></tr>
+    <tr><td><code>setup-matt-pocock-skills</code></td><td>user</td><td>~40</td><td>configure</td></tr>
+    <tr><td><code>to-spec</code></td><td>user</td><td>~50</td><td>spec</td></tr>
+    <tr><td><code>to-tickets</code></td><td>user</td><td>~80</td><td>tracer-bullet, blocking</td></tr>
+    <tr><td><code>implement</code></td><td>user</td><td>~10</td><td>seam</td></tr>
+    <tr><td><code>wayfinder</code></td><td>user</td><td>~120</td><td>frontier, fog of war</td></tr>
+    <tr><td colspan="4"><strong>Engineering · Model-invoked</strong></td></tr>
+    <tr><td><code>prototype</code></td><td>model</td><td>~40</td><td>throwaway</td></tr>
+    <tr><td><code>diagnosing-bugs</code></td><td>model</td><td>~50</td><td>reproduce, minimise</td></tr>
+    <tr><td><code>research</code></td><td>model</td><td>~40</td><td>primary source, cited</td></tr>
+    <tr><td><code>tdd</code></td><td>model</td><td>~80</td><td>red, green, vertical slice</td></tr>
+    <tr><td><code>domain-modeling</code></td><td>model</td><td>~60</td><td>glossary, edge case</td></tr>
+    <tr><td><code>codebase-design</code></td><td>model</td><td>~100</td><td>deep, seam, leverage, locality</td></tr>
+    <tr><td><code>code-review</code></td><td>model</td><td>~80</td><td>standards, spec</td></tr>
+    <tr><td><code>resolving-merge-conflicts</code></td><td>model</td><td>~30</td><td>intent, hunk</td></tr>
+    <tr><td colspan="4"><strong>Productivity · User-invoked</strong></td></tr>
+    <tr><td><code>grill-me</code></td><td>user</td><td>5</td><td>relentless</td></tr>
+    <tr><td><code>handoff</code></td><td>user</td><td>11</td><td>reference not duplicate</td></tr>
+    <tr><td><code>teach</code></td><td>user</td><td>100+</td><td>fluency, mission</td></tr>
+    <tr><td><code>writing-great-skills</code></td><td>user</td><td>200+</td><td>no-op, leading word</td></tr>
+    <tr><td colspan="4"><strong>Productivity · Model-invoked</strong></td></tr>
+    <tr><td><code>grilling</code></td><td>model</td><td>10</td><td>fact vs decision, relentless</td></tr>
+  </tbody>
+</table>
+
+<p>22 个 skill，加上 4 个 user-invoked + 1 个 model-invoked 的 productivity 子集。</p>
+
+<div class="divider">· · ·</div>
+
+<h2>收尾</h2>
+
+<p>这一篇我花了大概 2 个小时写完——不是"读"，是"读 + 在自己工作流里跑一遍 + 写"。如果你只读不跑，读完你可能觉得"嗯有道理"，但你写不出自己的 skill。</p>
+
+<p>我建议这么读：</p>
+<ol>
+  <li>先看 Matt 的 README（10 分钟）——理解他为什么写 22 个而不是 100 个</li>
+  <li>挑 1 个 skill 装到你的 Claude Code / Codex（30 分钟）——<code>grill-me</code> 最容易起效</li>
+  <li>找一个你最近在做的项目，用 <code>grill-me</code> 跑 1 轮（30 分钟）</li>
+  <li>看 <code>writing-great-skills</code>（30 分钟）——然后写自己的 1 个 skill</li>
+</ol>
+
+<p>如果你只想抄一份结论：<strong>leading word + 复用 + no-op 检测</strong>。这三个工具单独用都有价值，组合起来就是 Matt 的整个 repo。</p>
+
+<p>—— 写完于 2026-08-03 的周日下午。上海下暴雨。</p>
+
+</article>
+
+<!-- FOOTER -->
+<footer>
+  <p><a href="../index.html#essays">← Back to essays</a> · Javis · 2026-08-03</p>
+</footer>
+
+</body>
+</html>
