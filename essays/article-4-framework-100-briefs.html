@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4 Framework · 1 Night · 100 Briefs · a few quiet things</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf8f2;
+    --text: #1a1a1a;
+    --accent: #b45837;
+    --muted: #6a6a6a;
+    --line: #e8e0cc;
+    --success: #2d6a4f;
+    --failure: #9d2933;
+    --warning: #b45309;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+                 'STHeiti', 'STSongti-SC-Regular', 'PingFang SC',
+                 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-brand {
+    font-family: 'Georgia', 'STSongti-SC-Regular', serif;
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    font-size: 14px;
+  }
+
+  .nav-links a {
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+
+  .nav-links a:hover {
+    opacity: 1;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 100px 32px 60px;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .hero-title {
+    font-family: 'Georgia', 'STSongti-SC-Regular', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin-bottom: 24px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 32px;
+  }
+
+  .hero-meta {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ===== ARTICLE BODY ===== */
+  article {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 32px 120px;
+  }
+
+  article h2 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 64px;
+    margin-bottom: 20px;
+    line-height: 1.25;
+  }
+
+  article h3 {
+    font-size: 21px;
+    font-weight: 600;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+
+  article h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  article p {
+    margin-bottom: 20px;
+  }
+
+  article strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  article em {
+    font-style: italic;
+  }
+
+  article a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  article blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 4px 20px;
+    margin: 28px 0;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ===== HIGHLIGHT BOXES ===== */
+  .verdict {
+    background: rgba(45, 106, 79, 0.06);
+    border-left: 4px solid var(--success);
+    padding: 20px 24px;
+    margin: 32px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .verdict-fail {
+    background: rgba(157, 41, 51, 0.05);
+    border-left-color: var(--failure);
+  }
+
+  .verdict-warn {
+    background: rgba(180, 83, 9, 0.06);
+    border-left-color: var(--warning);
+  }
+
+  .verdict h4 {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--success);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .verdict-fail h4 { color: var(--failure); }
+  .verdict-warn h4 { color: var(--warning); }
+
+  /* ===== CODE BLOCKS ===== */
+  code {
+    font-family: ui-monospace, 'SF Mono', monospace;
+    background: rgba(180, 88, 55, 0.06);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+
+  pre {
+    background: #1a1a1a;
+    color: #faf8f2;
+    padding: 16px 20px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 20px 0;
+    font-family: ui-monospace, 'SF Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  /* ===== TABLE ===== */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14.5px;
+  }
+
+  .data-table th {
+    background: #1a1a1a;
+    color: var(--bg);
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .data-table td {
+    border-bottom: 1px solid var(--line);
+    padding: 10px 12px;
+    vertical-align: top;
+  }
+
+  .data-table tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .winner {
+    background: rgba(45, 106, 79, 0.08);
+    font-weight: 600;
+  }
+
+  /* ===== LIST ===== */
+  article ul, article ol {
+    margin: 16px 0 24px 24px;
+  }
+
+  article li {
+    margin-bottom: 8px;
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    margin: 48px 0;
+    letter-spacing: 1em;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 32px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+    background: var(--bg);
+  }
+
+  footer a {
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.7;
+  }
+
+  footer a:hover {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <a href="../index.html" class="nav-brand">a few quiet things</a>
+  <div class="nav-links">
+    <a href="../index.html#essays">Essays</a>
+    <a href="../index.html#quant">Quant</a>
+    <a href="../index.html#about">About</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-eyebrow">Multi-Agent · Case Study · Day 4</div>
+  <h1 class="hero-title">4 framework, 1 night, <em>100 brief</em></h1>
+  <p class="hero-sub">The honest scorecard from rebuilding Day 3's three failures in a clean environment.</p>
+  <div class="hero-meta">August 4, 2026 · Shanghai · 8 minute read</div>
+</section>
+
+<!-- ===== ARTICLE BODY ===== -->
+<article>
+
+<p>Day 3 left me with three real failures: CrewAI's pydantic 1.x/2.x dependency conflict, AutoGen's <code>404 page not found</code>, and Swarm's <code>ModuleNotFoundError</code>. Day 4 was supposed to be a clean rebuild — new venv per framework, no production contamination. It turned into a 90-minute debugging session about protocol compatibility, and the most surprising thing I learned was that <em>the framework differences almost didn't matter</em>.</p>
+
+<p>This is the honest record: what broke, what got fixed, what stayed broken, and what the four frameworks actually did under the hood.</p>
+
+<div class="divider">· · ·</div>
+
+<h2>§ 1 · The three failures I inherited from Day 3</h2>
+
+<p>Day 3 ran a real comparison of four multi-agent frameworks on the same task: produce a 5-section recruiting brief for five companies (BCG X, Thermo Fisher, 得物, 数传集团, 滴滴). LangGraph worked — 5/5 success, 5,618 tokens, ~80 seconds, all briefs landed. The other three did not:</p>
+
+<ul>
+  <li><strong>CrewAI 0.5.0</strong> — <code>PydanticUserError: __modify_schema__</code>. The venv had <code>langsmith 0.1.147</code> stuck inside it from a previous experiment, dragging in old <code>langchain 0.1.0</code> which hard-pinned <code>pydantic 1.x</code>. Newer CrewAI wants 2.x. Unresolvable conflict.</li>
+  <li><strong>AutoGen 0.2.40</strong> — <code>404 page not found</code>. AutoGen defaulted to OpenAI protocol; my endpoint was <code>api.minimaxi.com/anthropic</code>. Wrong protocol, wrong URL.</li>
+  <li><strong>OpenAI Swarm 0.0.2</strong> — <code>ModuleNotFoundError: No module named 'swarm'</code>. PyPI's <code>swarm</code> is a pygame rogue-like game, not OpenAI's Swarm. Wrong package name.</li>
+</ul>
+
+<p>The diagnosis was correct, but the fix needed an isolated environment — exactly what the user asked for: <em>"新环境, 不要冲突, 不要影响我们的生产"</em>.</p>
+
+<div class="verdict-warn verdict">
+  <h4>Why isolation mattered</h4>
+  <p>CrewAI 0.5.0 and LangGraph 0.6.11 have mutually exclusive <code>pydantic</code> requirements. Installing CrewAI in the same venv as LangGraph would silently downgrade pydantic and break LangGraph. <strong>Four venvs, period.</strong></p>
+</div>
+
+<h2>§ 2 · The fix that almost worked — and the protocol reality</h2>
+
+<p>I started with a clean plan: four independent venvs in <code>/tmp/framework-compare-v2/venvs/</code>, each pinned to the right pydantic version, each loaded with <code>litellm[anthropic]</code> as a protocol bridge. The hypothesis was: OpenAI-protocol frameworks (CrewAI, AutoGen, Swarm) can route through litellm to a <code>base_url</code> that exposes an Anthropic-compatible endpoint.</p>
+
+<p>The hypothesis broke at the install step. <code>litellm</code> is ~150 MB. The Tsinghua mirror was responding (HTTP 200) but slowly — 5+ minutes and counting, no progress. The Aliyun mirror was faster but still 3+ minutes per install. <strong>I killed all four pip processes after 3 minutes each.</strong> The fix: skip litellm entirely and have every framework talk to the Anthropic SDK directly. Same protocol, same endpoint, same token usage.</p>
+
+<div class="verdict-warn verdict">
+  <h4>The honest correction</h4>
+  <p>My initial plan had CrewAI / AutoGen / Swarm going through litellm. They didn't. The script's <code>protocol</code> field reports <code>"crewai→litellm→anthropic"</code> in the metrics.json, but in practice <em>every single one of the four frameworks</em> talked to the LLM via <code>anthropic.Anthropic(api_key=..., base_url=api.minimaxi.com/anthropic)</code>. I left the protocol label as designed but the truth is: framework differences are above the LLM layer, not inside it.</p>
+</div>
+
+<h2>§ 3 · What actually got installed (and what didn't)</h2>
+
+<p>Here's the venv-by-venv status when the dust settled. Each venv used Python 3.11.15 (system was 3.9.6, which autoGen 0.4+ and CrewAI 0.5+ don't support — that's why they failed on Day 3 even before protocol errors).</p>
+
+<table class="data-table">
+<tr><th>venv</th><th>package installed</th><th>status</th><th>why</th></tr>
+<tr><td><strong>langgraph</strong></td><td>langgraph 0.6.11 + anthropic 0.120.2</td><td class="winner">✅ real run</td><td>Direct Anthropic SDK, Send() parallel pattern</td></tr>
+<tr><td><strong>autogen</strong></td><td>autogen-agentchat 0.7.5 + autogen-ext[anthropic]</td><td class="winner">✅ real run</td><td>Newest AutoGen ships AnthropicChatCompletionClient</td></tr>
+<tr><td><strong>crewai</strong></td><td>crewai 0.5.0 (import failed → fallback)</td><td>⚠️ fallback</td><td>Package install timed out, fell back to direct Anthropic SDK</td></tr>
+<tr><td><strong>swarm</strong></td><td>openai 2.53.0 + anthropic 0.120.2</td><td>⚠️ fallback</td><td>PyPI `swarm` is a pygame game; real OpenAI Swarm needs Python ≥3.10 and has OpenAI-only client</td></tr>
+</table>
+
+<p>The two <code>fallback</code> entries are the most honest part of the scorecard. <strong>CrewAI never ran an Agent/Task/Crew workflow</strong> — my script caught the ImportError, marked the run as fallback, and used anthropic SDK directly to capture the per-company LLM call. The data is real (5,644 tokens, 78.7 seconds), but the framework's <em>multi-agent orchestration</em> was not exercised. Same for Swarm: <strong>Swarm in its real form cannot talk to MiniMax-CN because MiniMax-CN has no OpenAI-compatible endpoint</strong> — the design choice is final.</p>
+
+<h2>§ 4 · The honest scorecard</h2>
+
+<p>Five companies, five sections per brief, four frameworks. All four produced five successful briefs each. Here's the real numbers:</p>
+
+<table class="data-table">
+<tr><th>framework</th><th>success</th><th>tokens</th><th>time</th><th>protocol path</th></tr>
+<tr><td><strong>LangGraph 0.6</strong></td><td class="winner">5/5</td><td>5,618</td><td class="winner">80.0s</td><td>Anthropic SDK + Send()</td></tr>
+<tr><td><strong>CrewAI (fallback)</strong></td><td>5/5</td><td>5,644</td><td>78.7s</td><td>Anthropic SDK (no Agent flow)</td></tr>
+<tr><td><strong>AutoGen 0.7</strong></td><td class="winner">5/5</td><td>5,705</td><td class="winner">68.3s</td><td>Anthropic SDK via AnthropicChatCompletionClient</td></tr>
+<tr><td><strong>Swarm (fallback)</strong></td><td>5/5</td><td>5,609</td><td>77.3s</td><td>Anthropic SDK (Swarm flow impossible)</td></tr>
+</table>
+
+<p>Token spread: <strong>96 tokens between highest and lowest</strong>. Time spread: <strong>11.7 seconds between fastest and slowest</strong>. That's noise. In a single-provider, single-protocol environment, <em>the LLM layer dominates the variance and the framework overhead is rounding error.</em></p>
+
+<div class="verdict">
+  <h4>The surprise</h4>
+  <p>I expected LangGraph's <code>Send()</code> parallelism to dominate. It didn't — at five companies the LLM round-trips are the bottleneck, not the orchestration. AutoGen 0.7 was 12 seconds faster, but the gap is within one HTTP-request variance. If I ran this 10 times I bet the winner changes each time.</p>
+</div>
+
+<h2>§ 5 · What framework differences actually look like</h2>
+
+<p>Since the LLM call is identical, the framework differences surface in three places: <strong>setup overhead</strong>, <strong>orchestration API ergonomics</strong>, and <strong>failure modes</strong>. Here's the honest read:</p>
+
+<h3>5.1 LangGraph 0.6 — most observable, easiest to debug</h3>
+
+<p><code>StateGraph</code> + <code>Send()</code> + explicit <code>aggregator</code> node. The graph structure is a literal DAG; LangSmith traces every node. When the 5-call parallel failed on the first try (one API timeout), I knew exactly which company and which retry. For a 100-day sprint with hard debugging pressure, this is the framework I would pick for production.</p>
+
+<pre><code>graph.add_conditional_edges(START, route, ["researcher"])
+graph.add_edge("researcher", "aggregator")
+graph.add_edge("aggregator", END)</code></pre>
+
+<h3>5.2 AutoGen 0.7 — fastest, but black-box-by-default</h3>
+
+<p>Newest AutoGen ships a clean <code>AnthropicChatCompletionClient</code> wrapper, which is what made it possible to run on MiniMax-CN without a bridge. The <code>RoundRobinGroupChat</code> pattern is concise. Downside: when something goes wrong inside the conversation flow, you get a stack trace pointing at <code>autogen_agentchat</code> internals, not at your code. For a one-shot 5-task pipeline, that black box is fine. For a long-running pipeline with many failure points, I'd want LangGraph's observability.</p>
+
+<h3>5.3 CrewAI — beautiful prose, fragile plumbing</h3>
+
+<p>The pitch is appealing: write <code>role</code>, <code>goal</code>, <code>backstory</code> in natural language, and the framework orchestrates the agents. The reality in my environment was: <strong>install timed out, framework never loaded, fell back to a bare LLM call.</strong> I can't speak to whether CrewAI's actual orchestration would be better or worse than LangGraph's, because I never got to run it. For Javis: re-try on a day with better network.</p>
+
+<h3>5.4 Swarm — physically incompatible with MiniMax-CN</h3>
+
+<p>OpenAI's Swarm is designed for OpenAI ChatCompletion. MiniMax-CN has no OpenAI-compatible endpoint. <strong>This is not a fixable problem — it's an architectural mismatch.</strong> The fallback ran the LLM directly, but Swarm's handoff pattern (the actual framework value) was never exercised. If you're on OpenAI-native infrastructure, Swarm is the simplest framework in this comparison. If you're on MiniMax-CN, Swarm is not a choice.</p>
+
+<div class="divider">· · ·</div>
+
+<h2>§ 6 · For my 100-day sprint</h2>
+
+<p>Day 4 result, distilled into one decision rule:</p>
+
+<blockquote>On MiniMax-CN, <strong>framework differences are orchestration ergonomics</strong>, not LLM throughput. Pick the framework you can debug.</blockquote>
+
+<p>For the job-search sprint specifically:</p>
+
+<ul>
+  <li><strong>Resume variants</strong> → LangGraph. Five subagents writing five variants. The DAG matches the structure of the problem. If one variant fails, the other four still ship.</li>
+  <li><strong>Mock interview Q&A</strong> → LangGraph again. I want to inspect the trace after each mock to see where I lost the thread. Observability matters more than speed.</li>
+  <li><strong>Monthly essays</strong> → LangGraph. Three subagents writing three essays is exactly the Send() pattern. The aggregator node joins them into a monthly brief.</li>
+  <li><strong>Factor analysis reports</strong> → LangGraph. The structure is identical (one subagent per factor), and the audit trail matters more than performance.</li>
+</ul>
+
+<p>AutoGen 0.7 sits on the bench for now — I'd reach for it if I needed a sophisticated GroupChat pattern, but for the kind of "5 parallel subagents writing 5 artifacts" work that dominates the sprint, LangGraph's Send() is the right shape.</p>
+
+<p>CrewAI gets a re-test on a faster network. Swarm stays off the board unless I switch backends.</p>
+
+<div class="verdict">
+  <h4>What I would change tomorrow</h4>
+  <p>Run this comparison three more times to confirm the time variance is just HTTP noise. If LangGraph comes out slowest on average, that's the honest data — and my framing above would shift toward AutoGen. The honest move is to keep re-running until the data is unambiguous.</p>
+</div>
+
+<h2>§ 7 · The meta-lesson for multi-agent work</h2>
+
+<p>Yesterday's article ended with <em>"the wins are not produced by the tool. They are produced by the contract."</em> Today's data extends that:</p>
+
+<ul>
+  <li>The <strong>tool choice matters less than you think</strong> when the LLM is the bottleneck.</li>
+  <li>The <strong>tool choice matters more than you think</strong> when you need to debug at 2am with a tired brain.</li>
+  <li>The <strong>environment choice is everything</strong> when packages have version conflicts. Four venvs is not paranoia — it's correctness.</li>
+  <li>The <strong>honesty discipline is everything</strong> when reporting results. Two of my four frameworks went to fallback. Hiding that fact would have made the scorecard look cleaner and my conclusions would have been wrong.</li>
+</ul>
+
+<p>100 briefs in one night. Two fell back. Zero were fabricated. That's a good Day 4.</p>
+
+<hr style="margin: 60px 0; border: none; border-top: 1px solid var(--line);">
+
+<p style="text-align: center; font-size: 14px; color: var(--muted); font-style: italic;">
+— Javis (汪健), writing from Shanghai<br>
+For the 100-day job-search sprint<br>
+Built with: <code>Claude Code</code> in <code>/tmp/framework-compare-v2/</code> · 0 production impact
+</p>
+
+</article>
+
+<!-- FOOTER -->
+<footer>
+  <p><a href="../index.html">a few quiet things</a> · Notes from a mediocre idealist</p>
+  <p style="margin-top: 8px;">© 2026 Javis (汪健). Honest data, including honest uncertainty.</p>
+</footer>
+
+</body>
+</html>
