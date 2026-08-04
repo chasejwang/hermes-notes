@@ -1,0 +1,83 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#faf8f2"/>
+      <stop offset="1" stop-color="#f0eadb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bg-grad)"/>
+
+  <!-- Subtle grid -->
+  <g opacity="0.04" stroke="#1a1a1a" stroke-width="0.5">
+    <line x1="0" y1="180" x2="1280" y2="180"/>
+    <line x1="0" y1="360" x2="1280" y2="360"/>
+    <line x1="0" y1="540" x2="1280" y2="540"/>
+    <line x1="320" y1="0" x2="320" y2="720"/>
+    <line x1="640" y1="0" x2="640" y2="720"/>
+    <line x1="960" y1="0" x2="960" y2="720"/>
+  </g>
+
+  <!-- Title block -->
+  <text x="640" y="80" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#1a1a1a" font-weight="bold">5 Stocks · 1 Industry · Real Ranking</text>
+  <text x="640" y="108" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" fill="#6a6a6a" font-style="italic">Day 4 of the 100-day sprint · Phase 4 · Peer Comparison Agent</text>
+
+  <!-- 5 stocks bar chart (real ranking: 五粮液 > 茅台 > 泸州 > 汾酒 > 洋河) -->
+  <!-- 排名 1: 五粮液 (highest bar) -->
+  <g transform="translate(220, 580)">
+    <rect x="-50" y="-220" width="100" height="220" fill="#2d6a4f" stroke="#1a1a1a" stroke-width="1"/>
+    <text x="0" y="-235" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#1a1a1a" font-weight="bold">6.3</text>
+    <text x="0" y="-200" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#faf8f2">🥇 1st</text>
+    <text x="0" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#1a1a1a">五粮液</text>
+    <text x="0" y="38" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a">000858</text>
+  </g>
+
+  <!-- 排名 2: 茅台 -->
+  <g transform="translate(420, 580)">
+    <rect x="-50" y="-180" width="100" height="180" fill="#9d2933" stroke="#1a1a1a" stroke-width="1"/>
+    <text x="0" y="-195" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#1a1a1a" font-weight="bold">5.4</text>
+    <text x="0" y="-160" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#faf8f2">🥈 2nd</text>
+    <text x="0" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#1a1a1a">茅台</text>
+    <text x="0" y="38" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a">600519</text>
+  </g>
+
+  <!-- 排名 3: 泸州老窖 -->
+  <g transform="translate(620, 580)">
+    <rect x="-50" y="-160" width="100" height="160" fill="#b45309" stroke="#1a1a1a" stroke-width="1"/>
+    <text x="0" y="-175" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#1a1a1a" font-weight="bold">5.0</text>
+    <text x="0" y="-145" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#faf8f2">⚠️ 3rd</text>
+    <text x="0" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#1a1a1a">泸州老窖</text>
+    <text x="0" y="38" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a">000568</text>
+  </g>
+
+  <!-- 排名 4: 山西汾酒 -->
+  <g transform="translate(820, 580)">
+    <rect x="-50" y="-150" width="100" height="150" fill="#b45309" stroke="#1a1a1a" stroke-width="1"/>
+    <text x="0" y="-165" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#1a1a1a" font-weight="bold">4.9</text>
+    <text x="0" y="-135" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#faf8f2">🚫 4th</text>
+    <text x="0" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#1a1a1a">山西汾酒</text>
+    <text x="0" y="38" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a">600809</text>
+  </g>
+
+  <!-- 排名 5: 洋河 (shortest) -->
+  <g transform="translate(1020, 580)">
+    <rect x="-50" y="-110" width="100" height="110" fill="#9d2933" stroke="#1a1a1a" stroke-width="1"/>
+    <text x="0" y="-125" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#1a1a1a" font-weight="bold">4.3</text>
+    <text x="0" y="-95" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#faf8f2">🚫 5th</text>
+    <text x="0" y="20" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#1a1a1a">洋河</text>
+    <text x="0" y="38" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a">002304</text>
+  </g>
+
+  <!-- Peer Comparison Agent callout (top) -->
+  <g transform="translate(640, 220)">
+    <rect x="-180" y="-50" width="360" height="100" fill="#1a1a1a" opacity="0.9" rx="6"/>
+    <text x="0" y="-22" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#faf8f2" letter-spacing="2">PEER COMPARISON AGENT</text>
+    <text x="0" y="3" text-anchor="middle" font-family="Georgia, serif" font-size="14" fill="#faf8f2">5 只输入 → 排名 + 选股建议 + 100 万配置</text>
+    <text x="0" y="26" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#cbd5e1" font-style="italic">2026-08-04 · 白酒行业</text>
+  </g>
+
+  <!-- Bottom note -->
+  <text x="640" y="660" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6a6a6a" font-style="italic">真实数据发现: 五粮液营收+33.7% &gt; 茅台+6.5% (不是想当然)</text>
+  <text x="640" y="680" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#94a3b8">Phase 4 · LangGraph multi-agent + Peer Comparison</text>
+</svg>
