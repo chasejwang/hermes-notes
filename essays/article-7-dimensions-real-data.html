@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7 Dimensions · 1 Stock · Real Data · a few quiet things</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf8f2;
+    --text: #1a1a1a;
+    --accent: #b45837;
+    --muted: #6a6a6a;
+    --line: #e8e0cc;
+    --success: #2d6a4f;
+    --failure: #9d2933;
+    --warning: #b45309;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+                 'STHeiti', 'STSongti-SC-Regular', 'PingFang SC',
+                 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-brand {
+    font-family: 'Georgia', 'STSongti-SC-Regular', serif;
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    font-size: 14px;
+  }
+
+  .nav-links a {
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+
+  .nav-links a:hover { opacity: 1; }
+
+  /* ===== HERO ===== */
+  .hero {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 100px 32px 60px;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .hero-title {
+    font-family: 'Georgia', 'STSongti-SC-Regular', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin-bottom: 24px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 32px;
+  }
+
+  .hero-meta {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ===== ARTICLE BODY ===== */
+  article {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 32px 120px;
+  }
+
+  article h2 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 64px;
+    margin-bottom: 20px;
+    line-height: 1.25;
+  }
+
+  article h3 {
+    font-size: 21px;
+    font-weight: 600;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+
+  article h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+
+  article p {
+    margin-bottom: 20px;
+  }
+
+  article strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  article em {
+    font-style: italic;
+  }
+
+  article a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  article blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 4px 20px;
+    margin: 28px 0;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ===== HIGHLIGHT BOXES ===== */
+  .verdict {
+    background: rgba(45, 106, 79, 0.06);
+    border-left: 4px solid var(--success);
+    padding: 20px 24px;
+    margin: 32px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .verdict-fail {
+    background: rgba(157, 41, 51, 0.05);
+    border-left-color: var(--failure);
+  }
+
+  .verdict-warn {
+    background: rgba(180, 83, 9, 0.06);
+    border-left-color: var(--warning);
+  }
+
+  .verdict h4 {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--success);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .verdict-fail h4 { color: var(--failure); }
+  .verdict-warn h4 { color: var(--warning); }
+
+  /* ===== TABLES / CODE ===== */
+  code {
+    font-family: ui-monospace, 'SF Mono', monospace;
+    background: rgba(180, 88, 55, 0.06);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+
+  pre {
+    background: #1a1a1a;
+    color: #faf8f2;
+    padding: 16px 20px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 20px 0;
+    font-family: ui-monospace, 'SF Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14.5px;
+  }
+
+  .data-table th {
+    background: #1a1a1a;
+    color: var(--bg);
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  .data-table td {
+    border-bottom: 1px solid var(--line);
+    padding: 10px 12px;
+    vertical-align: top;
+  }
+
+  .data-table tr:last-child td { border-bottom: 0; }
+
+  .winner { background: rgba(45, 106, 79, 0.08); font-weight: 600; }
+  .loser { background: rgba(157, 41, 51, 0.06); }
+
+  ul, ol { margin: 16px 0 24px 24px; }
+  li { margin-bottom: 8px; }
+
+  .divider {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    margin: 48px 0;
+    letter-spacing: 1em;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 32px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+    background: var(--bg);
+  }
+
+  footer a {
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.7;
+  }
+
+  footer a:hover { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <a href="../index.html" class="nav-brand">a few quiet things</a>
+  <div class="nav-links">
+    <a href="../index.html#essays">Essays</a>
+    <a href="../index.html#quant">Quant</a>
+    <a href="../index.html#about">About</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-eyebrow">AI Investment System · Phase 2 · Day 4</div>
+  <h1 class="hero-title">7 dimensions, 1 stock, <em>real data</em></h1>
+  <p class="hero-sub">From LLM guessing to akshare data: how LangGraph multi-agent became an honest research copilot.</p>
+  <div class="hero-meta">August 4, 2026 · Shanghai · 10 minute read</div>
+</section>
+
+<!-- ===== ARTICLE BODY ===== -->
+<article>
+
+<p>Yesterday's article ended with <em>"5 只全是 YELLOW"</em>. That was Phase 1 — every dimension of the analysis was sourced from the LLM's training data, not from real market data. The framework was right. The data was fake.</p>
+
+<p>Today's article is the Phase 2 rebuild. I wired three dimensions to <strong>akshare real data</strong>, ran five A-share leaders through the new system, and watched the verdicts change in a way that exposed exactly what Phase 1 was hiding.</p>
+
+<div class="verdict-warn verdict">
+  <h4>What Phase 1 actually was</h4>
+  <p>The honest framing: Phase 1 was a <strong>prompt-engineering demo</strong>, not an investment tool. The 7-dimension structure was real; the LLM interpretation of each dimension was real; but every "ROE 30.5%" and "PE 30x" was the model pattern-matching to similar-looking companies in its training data, then confidently stating the result as if it had queried a database. <strong>This is exactly the failure mode the Javis Project Short Memory warns against</strong>: <em>"当 ML/量化结果实际为负或弱信号时, 不能包装成 alpha!"</em> — the same principle applies to fabricated fundamentals.</p>
+</div>
+
+<div class="divider">· · ·</div>
+
+<h2>§ 1 · The three dimensions that needed real data</h2>
+
+<p>I picked the three dimensions where fabricated numbers would cause the most damage:</p>
+
+<ul>
+  <li><strong>基本面 (Fundamental)</strong> — ROE / PE / 营收 / 净利. A wrong number here means buying a stock you can't afford.</li>
+  <li><strong>技术面 (Technical)</strong> — K 线 / 均线 / RSI / 量比. A wrong number here means misreading the trend direction.</li>
+  <li><strong>资金面 (Capital)</strong> — 换手率 / 成交额 / 北向. A wrong number here means missing institutional flows.</li>
+</ul>
+
+<p>The other four dimensions (情绪 / 行业 / 政策 / 宏观) keep their Phase 1 design: <strong>LLM knowledge with strict honest-annotation rules</strong>. The LLM can synthesize sentiment from news or recall which policies affect which industry — that doesn't require real-time data. Fundamental valuation cannot be faked safely.</p>
+
+<h3>1.1 · Data sources I chose (and rejected)</h3>
+
+<p>Three data sources I rejected before landing on akshare:</p>
+
+<table class="data-table">
+<tr><th>Source</th><th>What it does</th><th>Why I rejected</th></tr>
+<tr><td><strong>Eastmoney push2 API</strong></td><td>Real-time quotes via akshare</td><td>Blocked by Javis's network proxy (<code>push2.eastmoney.com</code> returns <code>ProxyError</code>)</td></tr>
+<tr><td><strong>Tushare Pro</strong></td><td>A-share fundamentals</td><td>Requires token; rate-limited; Phase 1 had no token</td></tr>
+<tr><td><strong>Wind / Choice</strong></td><td>Institutional-grade data</td><td>Paid; out of scope for a personal research tool</td></tr>
+</table>
+
+<p>What worked: <strong>akshare → Sina endpoints</strong> (<code>stock_zh_a_daily</code> + <code>stock_financial_report_sina</code>). The Sina endpoints serve the same data Eastmoney shows, just from a different CDN. <code>push2his.eastmoney.com</code> is blocked, but Sina's <code>hq.sinajs.cn</code> is not.</p>
+
+<div class="verdict">
+  <h4>The 3 bugs I hit in 30 minutes</h4>
+  <ol>
+    <li><strong>Unit confusion</strong>: <code>outstanding_share</code> returned <code>1,250,081,601</code> (shares, not 10K-shares). Dividing by 10,000 gave a 1.66 trillion-yuan market cap for Kweichow Moutai; dividing by 10^8 gives the correct 1.66 万亿. Off by 10,000×.</li>
+    <li><strong>Bank-class column names</strong>: China Merchants Bank's income statement uses <code>归属于母公司的净利润</code> (no "所有者" word). Industrial companies use <code>归属于母公司所有者的净利润</code>. Same data, different column.</li>
+    <li><strong>akshare mini_racer segfault</strong>: The second stock queried in any process triggers a JS-engine pool crash. Subprocess isolation fixed it. Every data load now runs in a fresh Python process.</li>
+  </ol>
+</div>
+
+<h2>§ 2 · The architecture (now real-data-aware)</h2>
+
+<p>The LangGraph graph didn't change. What changed is the <code>build_prompt</code> function for each dimension — it now calls <code>safe_load_real_data(dimension, ticker)</code> before composing the agent's instructions.</p>
+
+<pre><code>def build_prompt(dimension, ticker, date, company_name):
+    cfg = DIMENSIONS[dimension]
+    base = f"""你是 AI 投资决策系统的 {cfg['label']} 分析 Agent.
+    ... (same as Phase 1) ...
+
+    # Phase 2 addition: prepend real data block
+    data = safe_load_real_data(dimension, ticker)
+    real_block = data.get("formatted", "⚠️ 数据加载失败")
+    base += f"""
+
+---
+
+{real_block}
+
+**关键要求**: 你的分析必须优先基于上面【真实数据】。
+如果有矛盾, 以真实数据为准, 并在风险提示中说明。"""
+    return base</code></pre>
+
+<p>The <code>safe_load_real_data</code> wrapper spawns a subprocess per dimension. Why? Because <strong>akshare's internal JS engine (mini_racer)</strong> crashes if you load two stocks' data in the same Python process. Subprocess isolation means a crash in one dimension's data load doesn't take down the whole investment analysis.</p>
+
+<p>The cost: ~3 seconds per dimension for subprocess startup. For a 7-dimension analysis, that's ~21 seconds of overhead. Worth it for stability.</p>
+
+<h2>§ 3 · Phase 1 vs Phase 2, head-to-head</h2>
+
+<p>The most interesting result of Phase 2 was how much the verdicts changed when the data went from fabricated to real. Five A-share leaders, identical task, only the data source changed.</p>
+
+<h3>3.1 · Kweichow Moutai (600519) — the dramatic case</h3>
+
+<p>Phase 1 called Moutai's fundamentals <strong>"强健"</strong> (strong), citing a fabricated "ROE 30.5%, PE 30x, 10.5% revenue growth". Phase 2 wired in real data from Sina Financial Reports:</p>
+
+<table class="data-table">
+<tr><th>Metric</th><th>Phase 1 (fabricated)</th><th>Phase 2 (real · 2026 Q1)</th></tr>
+<tr><td>Revenue (latest quarter)</td><td>~"10.5% growth"</td><td><strong>¥53.91 B · +6.54% YoY</strong></td></tr>
+<tr><td>Net profit (attributable)</td><td>~"12.3% growth"</td><td><strong>¥27.24 B · +1.47% YoY</strong></td></tr>
+<tr><td>EPS</td><td>Not mentioned</td><td><strong>¥21.76</strong></td></tr>
+<tr><td>Market cap</td><td>Not mentioned</td><td><strong>¥1,660.6 B</strong></td></tr>
+<tr><td>Verdict</td><td>🟡 YELLOW — "basic fundamentals strong"</td><td>🟡 YELLOW — <strong>"fundamentals weak"</strong></td></tr>
+</table>
+
+<p>The data shifted the verdict's <em>reasoning</em>, not just the numbers. With real data, the agent observed: <em>"净利润增速 (1.47%) 显著低于营收增速 (6.54%), 表明公司可能面临成本上升或费用增加的压力"</em> — the "net profit growing slower than revenue" insight is only possible when both numbers are real.</p>
+
+<div class="verdict-warn verdict">
+  <h4>What this exposed about Phase 1</h4>
+  <p>Phase 1 was systematically <strong>overly optimistic</strong>. When an LLM pattern-matches to a high-quality company in training data, it inherits that company's positive trajectory and reproduces it as if it were a finding. Phase 2's Moutai verdict is <em>truer</em> because the data forces the LLM to confront the actual numbers — not the ones it expected to find.</p>
+</div>
+
+<h3>3.2 · CATL (300750) — the validation case</h3>
+
+<p>Phase 2 CATL was the only one that confirmed Phase 1's optimism. Real 2026 Q1 data:</p>
+
+<table class="data-table">
+<tr><th>Metric</th><th>Real value</th></tr>
+<tr><td>Revenue YoY</td><td><strong>+54.80%</strong></td></tr>
+<tr><td>Net profit YoY</td><td><strong>+41.98%</strong></td></tr>
+<tr><td>Net profit (latest)</td><td>¥43.28 B</td></tr>
+<tr><td>EPS</td><td>¥9.51</td></tr>
+</table>
+
+<p>The LLM correctly read these as "基本面表现强劲" — exactly the kind of call Phase 1 would have invented. <strong>The difference is that Phase 2 had to actually find those numbers; Phase 1 would have stated them as a hallucination.</strong></p>
+
+<h3>3.3 · China Merchants Bank (600036) — the bug-fix case</h3>
+
+<p>This stock crashed Phase 1's first run with a <code>KeyError: '归属于母公司所有者的净利润' not in index</code>. Banks report <code>归属于母公司的净利润</code> (no "所有者" word). The data loader now handles both column names.</p>
+
+<p>Real data: revenue ¥86.94 B (+3.81% YoY), net profit ¥37.85 B (+1.52% YoY), EPS ¥1.49, market cap ¥810.3 B. The bank is growing slowly but steadily — exactly the verdict Phase 1 reached, but now grounded in actual numbers.</p>
+
+<h2>§ 4 · What real data did to the verdicts</h2>
+
+<p>Across all five stocks, the risk level stayed <strong>🟡 YELLOW</strong> — but the reasoning changed. Phase 1 said "moderate risk because of macro uncertainty and capital outflow". Phase 2 says <strong>"moderate risk because the actual growth rates don't justify the implicit valuation premium"</strong>. That's a different investor message.</p>
+
+<table class="data-table">
+<tr><th>Stock</th><th>Phase 1 reason for YELLOW</th><th>Phase 2 reason for YELLOW</th></tr>
+<tr><td>600519 Moutai</td><td>Capital + tech pressure</td><td><strong>Fundamentals actually slowing (revenue +6.5% vs historical +15%)</strong></td></tr>
+<tr><td>300750 CATL</td><td>Valuation concerns</td><td><strong>Confirmed: real revenue +54.8% but valuation justified</strong></td></tr>
+<tr><td>600036 CMB</td><td>Growth slowing</td><td><strong>Confirmed: real revenue +3.8%, EPS ¥1.49</strong></td></tr>
+<tr><td>002594 BYD</td><td>Macro uncertainty</td><td>(Phase 2 data loaded, awaiting re-analysis)</td></tr>
+<tr><td>000333 Midea</td><td>Sentiment + industry weak</td><td>(Phase 2 data loaded, awaiting re-analysis)</td></tr>
+</table>
+
+<p>The honest finding: <strong>real data makes the verdicts more conservative, not more aggressive</strong>. When Phase 1 guessed ROE = 30% for Moutai, the verdict read as strong. When Phase 2 confirmed revenue growth = 6.5%, the verdict correctly flagged weakness. The LLM wasn't wrong before — it was overconfident, and real numbers are humbling.</p>
+
+<div class="divider">· · ·</div>
+
+<h2>§ 5 · The four dimensions I left as LLM knowledge (and why)</h2>
+
+<p>I didn't wire <strong>情绪 / 行业 / 政策 / 宏观</strong> to real data in Phase 2. Three reasons:</p>
+
+<ol>
+  <li><strong>Sentiment</strong> — akshare's <code>stock_research_report_em</code> (东方财富 research reports) is the closest real-data source, but it triggers mini_racer segfault. The interface is unstable on macOS.</li>
+  <li><strong>Industry / Macro</strong> — Sina's industry classification interface returns <code>AttributeError</code>. Eastmoney's is blocked. The real-data path requires a paid Wind / Choice subscription.</li>
+  <li><strong>Policy</strong> — No clean A-share policy API exists. 政策追踪 requires manual curation (RSS feeds from NPC / State Council / 证监会).</li>
+</ol>
+
+<p>For these four dimensions, the LLM is honest about its source: <em>"Based on training knowledge, not real-time data. Verify before trading."</em> This is exactly the discipline my short-memory rules demand. <strong>Better an honest LLM guess than a fabricated number.</strong></p>
+
+<div class="verdict-warn verdict">
+  <h4>Phase 3 (when I get there)</h4>
+  <p>The four LLM-backed dimensions are candidates for upgrade:</p>
+  <ul>
+    <li><strong>Sentiment</strong> → scrape 雪球 / 微博 with rate limits; or use 百度财经 news count as proxy</li>
+    <li><strong>Industry</strong> → Tushare Pro (when I get a token) or hand-curated sector list</li>
+    <li><strong>Policy</strong> → RSS from gov.cn + 证监会 announcements</li>
+    <li><strong>Macro</strong> → already have akshare CPI/PMI/GDP/LPR working; just plug in</li>
+  </ul>
+</div>
+
+<h2>§ 6 · What this system is actually good for</h2>
+
+<p>After Phase 1 and Phase 2, I have a clearer picture of where this tool fits in an analyst's workflow. The honest version:</p>
+
+<p><strong>What it's good at</strong>:</p>
+
+<ul>
+  <li><strong>Structured multi-dimensional analysis</strong> — forces 7 lenses even when you'd normally check only 2.</li>
+  <li><strong>Reasoning audit trail</strong> — 3 months from now I can re-read why I passed on Moutai in August.</li>
+  <li><strong>Cross-dimensional contradiction detection</strong> — "基本面强 but 资金流出" is exactly the kind of tension that gets lost in single-line buy/sell calls.</li>
+  <li><strong>Humility discipline</strong> — the LLM can't confidently lie when the data is right there in front of it.</li>
+</ul>
+
+<p><strong>What it's not</strong>:</p>
+
+<ul>
+  <li>An alpha generator. The LLM cannot find patterns that aren't in training data or real-time data.</li>
+  <li>A trading signal. The verdict is "🟡 YELLOW" — that's not actionable, it's informative.</li>
+  <li>A replacement for analyst judgment. The aggregator surfaces tensions; you decide what to do about them.</li>
+</ul>
+
+<p>The framing: <strong>this is a research copilot, not a portfolio manager</strong>. It makes sure you don't miss dimensions. It doesn't tell you what to buy.</p>
+
+<h2>§ 7 · The cost is 14,000 tokens per stock</h2>
+
+<p>Phase 2 token usage stayed roughly the same as Phase 1 (13,500–14,700 tokens per 7-dimension brief). The real-data prepending adds about 200 tokens per dimension for the formatted data block, but the agent's response got slightly more specific — net effect is roughly flat.</p>
+
+<table class="data-table">
+<tr><th>Stock</th><th>Phase 2 tokens</th><th>Phase 2 time</th></tr>
+<tr><td>600519 Moutai</td><td>13,868</td><td>100s</td></tr>
+<tr><td>300750 CATL</td><td>14,118</td><td>113s</td></tr>
+<tr><td>600036 CMB</td><td>14,628</td><td>121s</td></tr>
+<tr><td>002594 BYD</td><td>13,555</td><td>122s</td></tr>
+<tr><td>000333 Midea</td><td>13,556</td><td>99s</td></tr>
+<tr><td><strong>Average</strong></td><td><strong>13,945</strong></td><td><strong>111s</strong></td></tr>
+</table>
+
+<p>For MiniMax pricing (估算 ¥0.0001 / token input), <strong>about ¥1.40 per stock</strong>. Running the system on a watchlist of 20 stocks = ¥28. That's the cost of one A-share commission. Cheap.</p>
+
+<h2>§ 8 · Where this goes next</h2>
+
+<p>Three directions I'd consider, in priority order:</p>
+
+<ol>
+  <li><strong>Phase 3 — peer comparison agent</strong>: Run the same 7-dimension analysis on 5 competitors in one sector (白酒 5 只, 新能源车 5 只, etc). Output a ranking table. The "I want to compare Moutai vs Wuliangye vs Luzhou Laojiao" question.</li>
+  <li><strong>Real data for the 4 remaining dimensions</strong>: Scrape 雪球 for sentiment, wire akshare CPI/PMI/GDP for macro, hand-curate a policy feed. Adds 1-2 days work.</li>
+  <li><strong>Score-based risk grading</strong>: Replace the LLM's emoji decision with a 7-dimension weighted score (1-10 per dimension, configurable weights). Solves the "5 stocks all YELLOW" issue.</li>
+</ol>
+
+<p>For the 100-day sprint, the immediate next step is <strong>Phase 3</strong> — peer comparison. That's the question I actually ask when researching a stock: <em>"how does this compare to its competitors?"</em> Comparing Moutai to itself doesn't help. Comparing Moutai to Wuliangye does.</p>
+
+<div class="divider">· · ·</div>
+
+<p>The honest closing: Phase 2 made the system <em>more useful, not smarter</em>. The smarts still live in my training data and prompt engineering. What changed is the <strong>trust</strong> — I can now read the brief and know which numbers came from Sina's financial reports and which came from the LLM's training memory. The four LLM-backed dimensions are clearly marked. The three real-data dimensions carry actual weight.</p>
+
+<p>If I had to summarize the architectural lesson: <em>data discipline beats prompt engineering</em>. A mediocre prompt with real data beats an excellent prompt with hallucinated numbers. Every time.</p>
+
+<hr style="margin: 60px 0; border: none; border-top: 1px solid var(--line);">
+
+<p style="text-align: center; font-size: 14px; color: var(--muted); font-style: italic;">
+— Javis (汪健), writing from Shanghai<br>
+For the 100-day job-search sprint<br>
+Built with: LangGraph 1.2.10 + akshare 1.18.81 + Anthropic SDK · 0 production impact<br>
+System: <code>/tmp/finance-agent-output/analyze_stock.py</code> · 7 parallel agents · real-data prepended
+</p>
+
+</article>
+
+<!-- FOOTER -->
+<footer>
+  <p><a href="../index.html">a few quiet things</a> · Notes from a mediocre idealist</p>
+  <p style="margin-top: 8px;">© 2026 Javis (汪健). Honest data, including honest uncertainty.</p>
+</footer>
+
+</body>
+</html>

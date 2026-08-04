@@ -1,0 +1,105 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#faf8f2"/>
+      <stop offset="1" stop-color="#f0eadb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bg-grad)"/>
+
+  <!-- Subtle grid -->
+  <g opacity="0.04" stroke="#1a1a1a" stroke-width="0.5">
+    <line x1="0" y1="180" x2="1280" y2="180"/>
+    <line x1="0" y1="360" x2="1280" y2="360"/>
+    <line x1="0" y1="540" x2="1280" y2="540"/>
+    <line x1="320" y1="0" x2="320" y2="720"/>
+    <line x1="640" y1="0" x2="640" y2="720"/>
+    <line x1="960" y1="0" x2="960" y2="720"/>
+  </g>
+
+  <!-- Title block -->
+  <text x="640" y="80" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#1a1a1a" font-weight="bold">7 Dimensions · 1 Stock · Real Data</text>
+  <text x="640" y="108" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" fill="#6a6a6a" font-style="italic">Day 4 of the 100-day sprint · LangGraph multi-agent · akshare integration</text>
+
+  <!-- Center: 1 stock (茅台) -->
+  <g transform="translate(640, 360)">
+    <circle cx="0" cy="0" r="62" fill="#1a1a1a"/>
+    <text x="0" y="-8" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#faf8f2" font-weight="bold">600519</text>
+    <text x="0" y="18" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" fill="#faf8f2">贵州茅台</text>
+    <text x="0" y="-90" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6a6a6a" letter-spacing="2">ANALYZE</text>
+  </g>
+
+  <!-- 7 dimension nodes (radial) -->
+  <dimensions>
+  <!-- Top: 7 dimensions in clockwise order -->
+  <!-- 1. fundamental (top-left) -->
+  <g transform="translate(260, 200)">
+    <text x="0" y="-50" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a" letter-spacing="2">FUNDAMENTAL</text>
+    <circle cx="0" cy="0" r="38" fill="none" stroke="#2d6a4f" stroke-width="2.5"/>
+    <text x="0" y="-2" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#2d6a4f" font-weight="bold">基本面</text>
+    <text x="0" y="14" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#2d6a4f">REAL</text>
+  </g>
+  <!-- 2. technical (top-right) -->
+  <g transform="translate(1020, 200)">
+    <text x="0" y="-50" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a" letter-spacing="2">TECHNICAL</text>
+    <circle cx="0" cy="0" r="38" fill="none" stroke="#2d6a4f" stroke-width="2.5"/>
+    <text x="0" y="-2" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#2d6a4f" font-weight="bold">技术面</text>
+    <text x="0" y="14" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#2d6a4f">REAL</text>
+  </g>
+  <!-- 3. capital (left-middle) -->
+  <g transform="translate(160, 360)">
+    <text x="0" y="-50" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a" letter-spacing="2">CAPITAL</text>
+    <circle cx="0" cy="0" r="38" fill="none" stroke="#2d6a4f" stroke-width="2.5"/>
+    <text x="0" y="-2" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#2d6a4f" font-weight="bold">资金面</text>
+    <text x="0" y="14" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#2d6a4f">REAL</text>
+  </g>
+  <!-- 4. sentiment (right-middle) -->
+  <g transform="translate(1120, 360)">
+    <text x="0" y="-50" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a" letter-spacing="2">SENTIMENT</text>
+    <circle cx="0" cy="0" r="38" fill="none" stroke="#9d2933" stroke-width="2.5" stroke-dasharray="5,4"/>
+    <text x="0" y="-2" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#9d2933" font-weight="bold">情绪面</text>
+    <text x="0" y="14" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#9d2933">LLM</text>
+  </g>
+  <!-- 5. industry (bottom-left) -->
+  <g transform="translate(260, 520)">
+    <text x="0" y="60" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a" letter-spacing="2">INDUSTRY</text>
+    <circle cx="0" cy="0" r="38" fill="none" stroke="#9d2933" stroke-width="2.5" stroke-dasharray="5,4"/>
+    <text x="0" y="-2" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#9d2933" font-weight="bold">行业面</text>
+    <text x="0" y="14" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#9d2933">LLM</text>
+  </g>
+  <!-- 6. policy (bottom-right) -->
+  <g transform="translate(1020, 520)">
+    <text x="0" y="60" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a" letter-spacing="2">POLICY</text>
+    <circle cx="0" cy="0" r="38" fill="none" stroke="#9d2933" stroke-width="2.5" stroke-dasharray="5,4"/>
+    <text x="0" y="-2" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#9d2933" font-weight="bold">政策面</text>
+    <text x="0" y="14" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#9d2933">LLM</text>
+  </g>
+  <!-- 7. macro (bottom) -->
+  <g transform="translate(640, 600)">
+    <text x="0" y="60" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#6a6a6a" letter-spacing="2">MACRO</text>
+    <circle cx="0" cy="0" r="38" fill="none" stroke="#9d2933" stroke-width="2.5" stroke-dasharray="5,4"/>
+    <text x="0" y="-2" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#9d2933" font-weight="bold">宏观面</text>
+    <text x="0" y="14" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" fill="#9d2933">LLM</text>
+  </g>
+
+  <!-- Connection lines from center to 7 dimensions -->
+  <g stroke="#1a1a1a" stroke-width="1" opacity="0.3">
+    <line x1="260" y1="200" x2="640" y2="360"/>
+    <line x1="1020" y1="200" x2="640" y2="360"/>
+    <line x1="160" y1="360" x2="640" y2="360"/>
+    <line x1="1120" y1="360" x2="640" y2="360"/>
+    <line x1="260" y1="520" x2="640" y2="360"/>
+    <line x1="1020" y1="520" x2="640" y2="360"/>
+    <line x1="640" y1="600" x2="640" y2="360"/>
+  </g>
+
+  <!-- Legend bottom -->
+  <g transform="translate(640, 690)">
+    <circle cx="-120" cy="0" r="6" fill="none" stroke="#2d6a4f" stroke-width="2"/>
+    <text x="-105" y="4" font-family="-apple-system, sans-serif" font-size="11" fill="#1a1a1a">REAL (akshare)</text>
+    <circle cx="0" cy="0" r="6" fill="none" stroke="#9d2933" stroke-width="2" stroke-dasharray="3,2"/>
+    <text x="15" y="4" font-family="-apple-system, sans-serif" font-size="11" fill="#1a1a1a">LLM (Phase 1)</text>
+  </g>
+</svg>
