@@ -329,6 +329,68 @@
     border-bottom-color: var(--accent);
   }
 
+  /* ===== About · poem layout ===== */
+  .about-body.about-poem p {
+    line-height: 1.55;
+    margin-bottom: 20px;
+  }
+
+  .about-body .poem-title {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic;
+    font-size: 19px;
+    color: var(--text);
+    margin-bottom: 28px;
+    letter-spacing: 0.01em;
+  }
+
+  .about-body .poem-indent {
+    margin-left: 14px;
+    color: var(--text);
+    font-style: italic;
+  }
+
+  .about-body .about-signoff {
+    margin-top: 36px;
+    font-size: 14px;
+    color: var(--text-muted);
+    text-align: right;
+    opacity: 0.85;
+  }
+
+  /* ===== Quiet Note (bottom-right brand whisper) ===== */
+  .quiet-note {
+    position: fixed;
+    bottom: 22px;
+    right: 26px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-muted);
+    opacity: 0.55;
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .quiet-note:hover {
+    opacity: 0.85;
+  }
+
+  .quiet-mark {
+    font-size: 12px;
+    letter-spacing: 0;
+    color: var(--accent);
+  }
+
+  .quiet-text {
+    letter-spacing: 0.02em;
+  }
+
   /* ===== Footer — minimal ===== */
   footer {
     text-align: center;
@@ -344,71 +406,7 @@
     color: var(--accent);
   }
 
-  /* ===== Floating QR — kept from original, simple ===== */
-  .qr-float {
-    position: fixed;
-    right: 24px;
-    bottom: 24px;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .qr-float-button {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.25s;
-    color: var(--text-muted);
-    font-family: 'PP Editorial New', Georgia, serif;
-    font-size: 18px;
-    font-weight: 400;
-    font-style: italic;
-  }
-
-  .qr-float-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 24px rgba(180, 88, 55, 0.18);
-    color: var(--accent);
-  }
-
-  .qr-float-card {
-    width: 140px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-muted);
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.25s, transform 0.25s;
-    pointer-events: none;
-  }
-
-  .qr-float-card.show {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-
-  .qr-float-card img {
-    width: 100%;
-    height: auto;
-    display: block;
-    margin-bottom: 6px;
-  }
-
+  /* ===== Quiet Note (bottom-right brand whisper) ===== */
   /* ===== Responsive ===== */
   @media (max-width: 900px) {
     .about-grid {
@@ -437,7 +435,7 @@
     <li><a href="#essays">Essays</a></li>
     <li><a href="#quant">Quant</a></li>
     <li><a href="#about">About</a></li>
-    <li><a href="https://github.com/chasejwang" target="_blank">GitHub</a></li>
+    <li><a href="#" aria-label="A quiet place">GitHub</a></li>
   </ul>
 </nav>
 
@@ -789,12 +787,51 @@
 <section id="about">
   <div class="container">
     <div class="about-grid">
-      <h2 class="about-title">About the writer</h2>
-      <div class="about-body">
-        <p>7+ years in data + AI. Previously at PwC, currently building decision intelligence at Payoneer. Before that: a securities broker, an insurance underwriter, and a real-estate analyst. The threads are pricing, probability, and the long arc of how decisions compound.</p>
-        <p>这个站是一个实验: 用最少的噪音, 写能站得住脚的东西。每月 1 篇, 偶尔 Quant Research, 不接广告, 不卖课, 不教人做菜。</p>
-        <p>如果你也在做类似的事, 欢迎写信给我: <a href="mailto:chase.jwang@outlook.com">chase.jwang@outlook.com</a></p>
-        <p>GitHub: <a href="https://github.com/chasejwang" target="_blank">github.com/chasejwang</a> · 公众号: <a href="#">a few quiet things</a></p>
+      <h2 class="about-title">A few quiet things</h2>
+      <div class="about-body about-poem">
+        <p class="poem-title"><em>The Space Between Ordinary Things</em></p>
+
+        <p>There is a kind of quiet that lives<br>
+        in the gap between one Tuesday and the next —<br>
+        not the silence of an empty room,<br>
+        but the silence of a cup, half-full, still warm.</p>
+
+        <p>I used to wait for the extraordinary.<br>
+        A door. A sign. A meteor over the river.<br>
+        What arrived instead was smaller,<br>
+        and almost always on time:</p>
+
+        <p class="poem-indent">the way light lands on a kitchen wall at 6:14 a.m.<br>
+        the exact angle of a stranger's kindness at the post office<br>
+        the second cup of tea, drunk slowly, doing nothing.</p>
+
+        <p>Space is not the stars.<br>
+        Space is the inch between your shoulder and the doorframe<br>
+        when you finally stop hurrying.<br>
+        It is the breath you didn't know you were holding<br>
+        until you let it go.</p>
+
+        <p>The extraordinary, I've learned,<br>
+        is almost never announced.<br>
+        It prefers to arrive<br>
+        in the middle of an unremarkable day,<br>
+        disguised as the ordinary —<br>
+        the bus on time,<br>
+        the call from an old friend,<br>
+        the rain that stops exactly when you need it to.</p>
+
+        <p>So I no longer search for the brilliant.<br>
+        I keep my hands open.<br>
+        I leave the lamp on a little longer than necessary.<br>
+        I let the silence keep its own schedule.</p>
+
+        <p>And in that space —<br>
+        that ordinary, unmeasured, un-improved space —<br>
+        something quietly,<br>
+        without asking permission,<br>
+        begins to shine.</p>
+
+        <p class="about-signoff"><em>— a mediocre idealist, writing in the margins</em></p>
       </div>
     </div>
   </div>
@@ -804,13 +841,10 @@
   <p>© 2026 <em>made by a mediocre idealist</em> · deployed on the edge, somehow</p>
 </footer>
 
-<!-- ===== Floating Public Account QR Code ===== -->
-<div class="qr-float">
-  <div class="qr-float-card" id="qrCard">
-    <img src="images/qrcode-publicaccount.png" alt="Public Account QR Code" />
-    <span>a few quiet things</span>
-  </div>
-  <div class="qr-float-button" id="qrButton" title="微信公众号">w</div>
+<!-- ===== Quiet Note (was: floating QR code — removed for privacy) ===== -->
+<div class="quiet-note" aria-hidden="true">
+  <span class="quiet-mark">✦</span>
+  <span class="quiet-text">a few quiet things</span>
 </div>
 
 <script>
