@@ -101,6 +101,38 @@
   footer { padding: 32px 0; text-align: center; font-size: 13px; color: var(--text-dim); }
   footer em { font-family: 'PP Editorial New', Georgia, serif;
     font-style: italic; color: var(--accent); }
+
+  /* ═══════════════════════ Overflow fix (universal) ═══════════════════════ */
+  .article, .article > *,
+  .content, .content > * {
+    max-width: 100%;
+    min-width: 0;
+  }
+  .content table, .data-table, table.data-table {
+    table-layout: fixed;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    width: 100% !important;
+    max-width: 100%;
+  }
+  .content pre, .content code, pre, code {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .content pre, pre {
+    overflow-x: auto;
+  }
+  .content img, .content svg, .content figure, .article img, .article svg, .article figure {
+    max-width: 100%;
+    height: auto;
+  }
+  .content table th, .content table td, .data-table th, .data-table td {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
 </style>
 </head>
 <body>
