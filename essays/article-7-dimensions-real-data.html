@@ -205,6 +205,61 @@
   .verdict-fail h4 { color: var(--failure); }
   .verdict-warn h4 { color: var(--warning); }
 
+  /* ═══════════════════════ Lieflat figure ═══════════════════════ */
+  figure.lieflat-figure {
+    margin: 32px 0 24px;
+    padding: 22px 24px 18px;
+    background: #F0EFEB;
+    border-radius: 18px;
+    border: 1px solid #DEDDD6;
+  }
+  figure.lieflat-figure figcaption {
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  figure.lieflat-figure figcaption strong {
+    display: block;
+    font-family: var(--serif, 'Noto Serif SC', Georgia, serif);
+    font-size: 16px;
+    font-weight: 700;
+    margin: 4px 0 4px;
+    color: #1C1C1A;
+  }
+  figure.lieflat-figure .badge-lieflat {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: #1C1C1A;
+    color: #F0EFEB;
+    font-family: var(--sans, 'Inter', sans-serif);
+  }
+  figure.lieflat-figure .sub {
+    display: block;
+    font-size: 11.5px;
+    color: #8F8E88;
+  }
+  figure.lieflat-figure svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+  figure.lieflat-figure .figure-honest {
+    margin-top: 12px;
+    font-size: 10.5px;
+    color: #8F8E88;
+    line-height: 1.6;
+    padding-left: 10px;
+    border-left: 2px solid #8F8E88;
+  }
+  figure.lieflat-figure .figure-honest a {
+    color: #1C1C1A;
+    border-bottom: 1px solid #8F8E88;
+  }
+
   /* ===== TABLES / CODE ===== */
   code {
     font-family: ui-monospace, 'SF Mono', monospace;
@@ -427,6 +482,91 @@
 <p>Real data: revenue ¥86.94 B (+3.81% YoY), net profit ¥37.85 B (+1.52% YoY), EPS ¥1.49, market cap ¥810.3 B. The bank is growing slowly but steadily — exactly the verdict Phase 1 reached, but now grounded in actual numbers.</p>
 
 <h2>§ 4 · What real data did to the verdicts</h2>
+
+<!-- ═══════════════════════ Lieflat Mono · 3 case YoY 对比 ═══════════════════════ -->
+<figure class="lieflat-figure">
+  <figcaption>
+    <span class="badge-lieflat">LIEFLAT · C2 PAIRED RUNGS · MONO</span>
+    <strong>3 case · Phase 2 实测 YoY · 营收 vs 净利</strong>
+    <span class="sub">one dot = 1 percent · CATL 是真的强,Moutai 在减速,CMB 跟通胀赛跑</span>
+  </figcaption>
+
+  <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="3 case Phase 2 YoY 对比">
+    <style>
+      .lf2-bg     { fill: #F0EFEB; }
+      .lf2-grid   { stroke: #DEDDD6; fill: none; }
+      .lf2-axis   { stroke: #1C1C1A; fill: none; stroke-width: 1.4; }
+      .lf2-sub    { font-family: 'Inter','PingFang SC',sans-serif; font-weight: 500; fill: #8F8E88; }
+      .lf2-text   { font-family: 'Inter','PingFang SC',sans-serif; font-weight: 700; }
+      .lf2-bar    { transition: opacity .25s; }
+      .lf2-bar:hover { opacity: .8; }
+    </style>
+
+    <rect class="lf2-bg" x="0" y="0" width="720" height="240"/>
+
+    <!-- grid: 0% mid, ±20% ±40% -->
+    <g class="lf2-grid" stroke-dasharray="2 4">
+      <line x1="60" y1="40"  x2="700" y2="40"  />
+      <line x1="60" y1="100" x2="700" y2="100" />
+      <line x1="60" y1="180" x2="700" y2="180" />
+    </g>
+    <line class="lf2-axis" x1="60" y1="140" x2="700" y2="140" stroke-width="1.4"/>
+    <line class="lf2-axis" x1="60" y1="40"  x2="60"  y2="220" stroke-width="1.4"/>
+
+    <!-- y labels: -40, -20, 0, +20, +40 (scale 8px/%) -->
+    <g class="lf2-sub" font-size="9" text-anchor="end">
+      <text x="54" y="44">+60%</text>
+      <text x="54" y="104">+30%</text>
+      <text x="54" y="144">0</text>
+      <text x="54" y="184">−30%</text>
+    </g>
+
+    <!-- scale: 0% = 360, +60% = 700, -60% = 20 (8px/%) -->
+
+    <!-- CATL (300750) — the validation case: 营收 +54.8, 净利 +42.0 -->
+    <g>
+      <rect class="lf2-bar" x="360" y="58" width="438.4" height="10" fill="#1C1C1A"/>
+      <rect class="lf2-bar" x="360" y="71" width="336"   height="6"  fill="#8F8E88"/>
+      <text class="lf2-text" x="365" y="52" font-size="9.5" fill="#1C1C1A">+54.8%</text>
+      <text class="lf2-text" x="700" y="65" font-size="8.5" fill="#1C1C1A" text-anchor="end">+42.0%</text>
+    </g>
+    <text class="lf2-sub" x="700" y="80" font-size="9.5" text-anchor="end">300750 · CATL 宁德时代</text>
+
+    <!-- Moutai (600519) — the dramatic case: 营收 +6.5, 净利 +1.5 -->
+    <g>
+      <rect class="lf2-bar" x="360" y="118" width="52"   height="10" fill="#4A4944"/>
+      <rect class="lf2-bar" x="360" y="131" width="12"   height="6"  fill="#B0AFA9"/>
+      <text class="lf2-text" x="365" y="112" font-size="9.5" fill="#1C1C1A">+6.5%</text>
+      <text class="lf2-text" x="365" y="125" font-size="8.5" fill="#8F8E88">+1.5%</text>
+    </g>
+    <text class="lf2-sub" x="700" y="140" font-size="9.5" text-anchor="end">600519 · Moutai 贵州茅台</text>
+
+    <!-- CMB (600036) — the bug-fix case: 营收 +3.8, 净利 +1.5 -->
+    <g>
+      <rect class="lf2-bar" x="360" y="178" width="30.4" height="10" fill="#6A6963"/>
+      <rect class="lf2-bar" x="360" y="191" width="12"   height="6"  fill="#D8D7D1"/>
+      <text class="lf2-text" x="365" y="172" font-size="9.5" fill="#1C1C1A">+3.8%</text>
+      <text class="lf2-text" x="365" y="185" font-size="8.5" fill="#8F8E88">+1.5%</text>
+    </g>
+    <text class="lf2-sub" x="700" y="200" font-size="9.5" text-anchor="end">600036 · CMB 招商银行</text>
+
+    <!-- legend -->
+    <g class="lf2-sub" font-size="9">
+      <rect x="60"  y="225" width="14" height="6" fill="#1C1C1A"/>
+      <text x="80"  y="231">营收 YoY %</text>
+      <rect x="200" y="225" width="14" height="6" fill="#B0AFA9"/>
+      <text x="220" y="231">净利 YoY %</text>
+    </g>
+    <text class="lf2-sub" x="700" y="231" text-anchor="end" font-size="8">source · akshare · Sina Financial · 2026 Q1</text>
+  </svg>
+
+  <p class="figure-honest">
+    Honest: CATL 数据是 +54.8% / +42.0%(我四舍五入),原文 "54.80% / 41.98%"。
+    柱长严格按 YoY% 比例绘制,不断轴。
+    风格来自 <a href="https://github.com/larashero3-dotcom/lieflat-charts">★556 lieflat-charts</a>,
+    沿用 §2 白酒那图的 C2 Paired Rungs 模板。
+  </p>
+</figure>
 
 <p>Across all five stocks, the risk level stayed <strong>🟡 YELLOW</strong> — but the reasoning changed. Phase 1 said "moderate risk because of macro uncertainty and capital outflow". Phase 2 says <strong>"moderate risk because the actual growth rates don't justify the implicit valuation premium"</strong>. That's a different investor message.</p>
 
