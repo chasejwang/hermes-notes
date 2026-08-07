@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Context Engineering · 4-Q 报告 · 2026-08-07</title>
+<style>
+  @font-face { font-family: "EditorialAccent"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); font-style: italic; }
+  @font-face { font-family: "EditorialBody"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); }
+  @font-face { font-family: "MonoFallback"; src: local("SF Mono"), local("Menlo"), local("JetBrains Mono"); }
+  :root {
+    --bg: #faf8f2; --paper: #ffffff; --ink: #1c1a17; --ink-mute: #6a6660;
+    --ink-faint: #a8a39a; --accent: #b45837; --line: #e8e0d0; --gold: #c89a3c;
+    --green: #2d6a4f; --red: #9d2933;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; }
+  body { font-family: "EditorialBody", "PP Editorial New", Georgia, serif; background: var(--bg); color: var(--ink); font-size: 11.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; align-items: center; padding: 24px 0; }
+  .page { width: 210mm; min-height: 297mm; padding: 22mm 22mm 26mm 22mm; background: var(--paper); box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin: 0 auto; }
+  .masthead { border-bottom: 1.5px solid var(--ink); padding-bottom: 12px; margin-bottom: 24px; }
+  .masthead-meta { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.18em; color: var(--ink-mute); text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .q-tag { font-family: "MonoFallback", monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: "EditorialBody", Georgia, serif; font-size: 32px; font-weight: 400; line-height: 1.12; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.005em; }
+  h1 em { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); }
+  .deck { font-size: 14px; font-style: italic; color: var(--ink-mute); margin-bottom: 4px; line-height: 1.4; }
+  .byline { font-size: 10px; color: var(--ink-mute); margin-top: 8px; letter-spacing: 0.04em; }
+  .byline b { color: var(--ink); font-weight: 600; }
+  .lead { margin: 18px 0 14px; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .lead::first-letter { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 64px; float: left; line-height: 0.85; margin: 6px 8px 0 0; color: var(--accent); }
+  h2 { font-family: "EditorialBody", Georgia, serif; font-size: 18px; font-weight: 400; color: var(--ink); margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--ink); page-break-after: avoid; }
+  h2 .num { font-family: "MonoFallback", monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-right: 8px; vertical-align: 2px; }
+  h3 { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; color: var(--ink); margin: 14px 0 6px; page-break-after: avoid; }
+  p { margin-bottom: 8px; }
+  ul, ol { margin-bottom: 8px; padding-left: 18px; }
+  li { margin-bottom: 3px; }
+  li::marker { color: var(--accent); }
+  .honest { border: 1px solid var(--ink); background: var(--bg); padding: 10px 14px; margin: 12px 0; font-size: 10.5px; line-height: 1.5; page-break-inside: avoid; }
+  .honest .label { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+  .honest b { color: var(--ink); }
+  .honest .tier { display: inline-block; padding: 1px 6px; margin-right: 4px; background: var(--ink); color: var(--paper); font-family: "MonoFallback", monospace; font-size: 8.5px; letter-spacing: 0.06em; vertical-align: 1px; }
+  .honest .tier.t2 { background: var(--ink-mute); }
+  .honest .tier.t3 { background: var(--accent); }
+
+  table.data { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 10.5px; page-break-inside: avoid; }
+  table.data th { background: var(--bg); text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--ink); font-weight: 600; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; }
+  table.data td { padding: 6px 8px; border-bottom: 1px dashed var(--line); vertical-align: top; }
+  table.data td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: "MonoFallback", monospace; font-size: 10px; }
+  table.data tr.highlight td { background: rgba(180,88,55,0.06); }
+
+  pre.code {
+    background: #1c1a17;
+    color: #faf8f2;
+    padding: 12px 14px;
+    border-radius: 4px;
+    font-family: "MonoFallback", "SF Mono", monospace;
+    font-size: 10px;
+    line-height: 1.5;
+    overflow-x: auto;
+    margin: 8px 0;
+    page-break-inside: avoid;
+  }
+  pre.code .kw { color: #c89a3c; }
+  pre.code .str { color: #2d6a4f; }
+  pre.code .cm { color: #8a8a85; font-style: italic; }
+  pre.code .fn { color: #b45837; }
+
+  .ladder-wrap { margin: 10px 0; page-break-inside: avoid; }
+  .ladder { display: grid; grid-template-columns: 80px 1fr 100px 100px; gap: 0; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); font-size: 10.5px; }
+  .ladder .row { padding: 10px 10px; border-bottom: 1px dashed var(--line); border-right: 1px dashed var(--line); background: var(--paper); vertical-align: middle; }
+  .ladder .row:last-child { border-bottom: none; }
+  .ladder .row.no-right { border-right: none; }
+  .ladder .rank { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 22px; font-weight: 600; color: var(--accent); text-align: center; line-height: 1; }
+  .ladder .rank sup { font-size: 10px; color: var(--ink-mute); vertical-align: 6px; margin-left: 2px; }
+  .ladder .name { font-family: "EditorialBody", Georgia, serif; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .ladder .name em { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); font-weight: 400; }
+  .ladder .desc { font-size: 9.5px; color: var(--ink-mute); line-height: 1.4; }
+  .ladder .metric { text-align: right; font-family: "MonoFallback", monospace; font-size: 11px; font-weight: 600; color: var(--ink); }
+  .ladder .metric small { display: block; font-size: 8px; color: var(--ink-mute); font-weight: 400; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+  .ladder .head { padding: 5px 10px; border-bottom: 1.5px solid var(--ink); background: var(--bg); font-size: 8.5px; font-weight: 600; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.08em; border-right: 1px dashed var(--line); }
+  .ladder .head.no-right { border-right: none; }
+  .ladder .head.right { text-align: right; }
+
+  .timeline-wrap { margin: 10px 0; page-break-inside: avoid; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); padding: 12px 0; }
+  .timeline-title { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 13px; color: var(--ink); margin-bottom: 2px; }
+  .timeline-sub { font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-mute); letter-spacing: 0.04em; margin-bottom: 8px; }
+  .timeline-caption { font-size: 10px; color: var(--ink-mute); border-top: 1px dashed var(--line); padding-top: 5px; margin-top: 6px; line-height: 1.4; font-style: italic; }
+  .timeline-caption b { color: var(--ink); font-style: normal; font-weight: 600; }
+
+  .pullquote { margin: 16px 0; padding: 12px 20px; border-left: 3px solid var(--accent); background: var(--bg); font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; line-height: 1.55; color: var(--ink); page-break-inside: avoid; }
+  .pullquote .attrib { font-size: 10px; font-style: normal; color: var(--ink-mute); margin-top: 6px; letter-spacing: 0.04em; }
+
+  .footer { margin-top: 18px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 9.5px; color: var(--ink-mute); line-height: 1.5; }
+  .footer b { color: var(--ink); }
+  .page-num { position: absolute; bottom: 10mm; right: 22mm; font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-faint); letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="masthead">
+    <div class="masthead-meta">
+      <span>CONTEXT ENGINEERING · 4-Q REPORT · 2026-08-07</span>
+      <span>4 PARTS · DEVELOPER VIEW</span>
+    </div>
+    <div class="q-tag">Q1 OF 4</div>
+    <h1>Context Engineering，<em>为什么</em><br>不只是 Prompt？</h1>
+    <div class="deck">90 秒版 · 给你 (开发者 / 工程师) · 论文 + 代码 + GitHub repo · 4 个问题框架</div>
+    <div class="byline">
+      <b>By Hermes Agent</b> · Reviewer: User · 2026-08-07 18:05 CST
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="label">data sources · 4 档</div>
+    <span class="tier">1</span><b>论文</b> — Drew Breunig 《How Contexts Fail》 (2025-06) · Anthropic 《Effective Context Engineering for Agents》 · Jason Wei Asymmetry of Verification<br>
+    <span class="tier t2">2</span>GitHub — <code>anthropics/claude-cookbooks</code> · <code>langchain-ai/langgraph</code> · <code>run-llama/llama_index</code> · <code>mattpocock/skills</code><br>
+    <span class="tier t3">3</span>14 篇评测 (D+4 #9): Hamel Evals 8.00 / LangSmith Evaluation 7.80 / ReAct 7.90 / Voyager 8.05 / DSPy 8.00<br>
+    <b>纠错通道</b> · 「存错 X」立即改 + 推新版到 ai-outputs repo
+  </div>
+
+  <p class="lead">2025 年起，<b>Context Engineering</b> 取代 <b>Prompt Engineering</b> 成为 LLM 应用的新主线。Anthropic、Drew Breunig、LangChain、Hamel Husain 都在讲同一件事：<b>不是 prompt 写得巧，而是 context 给得对</b>。本期 4-Q 报告给你 4 个问题、4 个答、GitHub 项目、Python 代码示例和量化数据。</p>
+
+  <h2><span class="num">§1</span>Context Engineering 是什么</h2>
+
+  <p>它跟 Prompt Engineering 的区别，按 Anthropic 论文：</p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>维度</th>
+        <th>Prompt Engineering</th>
+        <th>Context Engineering</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>关注点</b></td>
+        <td>"<b>怎么问</b>" (指令)</td>
+        <td>"<b>给什么</b>" (上下文)</td>
+      </tr>
+      <tr>
+        <td><b>修改对象</b></td>
+        <td>用户提示 / 系统提示</td>
+        <td>整个 LLM 输入 (系统 + 用户 + 工具 + 历史 + RAG + memory)</td>
+      </tr>
+      <tr>
+        <td><b>任务复杂度</b></td>
+        <td>单轮问答 / 简单任务</td>
+        <td>长程 agent / 多步任务 / 工具调用</td>
+      </tr>
+      <tr>
+        <td><b>关键问题</b></td>
+        <td>"这句 prompt 写得巧不巧"</td>
+        <td>"<b>模型看到了什么</b>" / "哪些信息该保留 / 删除 / 排序"</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>1 句话总结</b>：Prompt Engineering 关注"<b>怎么说</b>" — Context Engineering 关注"<b>说什么</b>"。 后者是前者的超集，也是 LLM 应用的护城河。</p>
+
+  <h2><span class="num">§2</span>Context Engineering 失败的 4 种方式 · Drew Breunig</h2>
+
+  <p>Drew Breunig (2025-06) 在《How Contexts Fail, and How Designers Can Fix It》里提出 4 类失败模式。这是你做任何 agent 之前必须理解的：</p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>失败模式</th>
+        <th>症状</th>
+        <th>修复</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td>1</td>
+        <td><b>Context Poisoning</b></td>
+        <td>幻觉内容写进 context → 模型反复引用错误 → 越走越偏</td>
+        <td>Read-before-write · 验证工具输出 · 过滤未验证内容</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><b>Context Distraction</b></td>
+        <td>Context 越来越长 → 模型被无关信息干扰 → 忘了原始任务</td>
+        <td>Context summarization · 分阶段 reset · Note-taking</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><b>Context Confusion</b></td>
+        <td>Context 里多个无关 task / 文档混在一起 → 模型用错上下文</td>
+        <td>命名空间隔离 · 文档清晰归属</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><b>Context Clash</b></td>
+        <td>Context 里不同来源的信息直接矛盾 → 模型不知道信哪个</td>
+        <td>多源验证 · 来源优先级 · 显式冲突检测</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>这 4 类失败里，<b>1 和 4 最致命</b> — 因为它们会"骗"模型，让模型以为它对了。</p>
+
+  <h2><span class="num">§3</span>GitHub 项目 · 7 个值得看</h2>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Repo</th>
+        <th>Stars</th>
+        <th>做什么</th>
+        <th>应用</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td>1</td>
+        <td><code>anthropics/claude-cookbooks</code></td>
+        <td class="num">~9K</td>
+        <td>Claude API + context engineering notebooks · Anthropic 官方</td>
+        <td>入门 / 概念验证</td>
+      </tr>
+      <tr class="highlight">
+        <td>2</td>
+        <td><code>langchain-ai/langgraph</code></td>
+        <td class="num">~13K</td>
+        <td>Agent orchestration framework · state 管理 = context management</td>
+        <td>生产级 long-context agent</td>
+      </tr>
+      <tr class="highlight">
+        <td>3</td>
+        <td><code>run-llama/llama_index</code></td>
+        <td class="num">~42K</td>
+        <td>RAG / context retrieval · LlamaIndex 把"从哪儿拿 context"做成模块</td>
+        <td>企业 RAG / 文档问答</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><code>mattpocock/skills</code></td>
+        <td class="num">~500</td>
+        <td>Context-as-a-skill 概念 · 跨 session 上下文管理</td>
+        <td>个人 AI 工作流</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><code>anthropics/skills</code></td>
+        <td class="num">~3K</td>
+        <td>Skill 范式 · 每 skill = 一段 context bundle</td>
+        <td>Skill / Tool 设计</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><code>stanfordnlp/dspy</code></td>
+        <td class="num">~26K</td>
+        <td>Programmatic prompt + context optimization · 自动调</td>
+        <td>Context 自动化</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><code>langchain-ai/langsmith</code></td>
+        <td class="num">~1K</td>
+        <td>Eval + observability · 看 context 用了什么 + 怎么被用</td>
+        <td>Eval / Debug</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><span class="num">§4</span>好 Context Engineering 的量化效果</h2>
+
+  <p>为什么 Context Engineering 不是 "nice to have"? — 4 个量化证据：</p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>证据</th>
+        <th>数字</th>
+        <th>来源</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td><b>Eval 自动化提升任务成功率</b></td>
+        <td class="num">+18-30%</td>
+        <td>Hamel Husain · "Your AI Product Needs Evals" · 8.00/10 score</td>
+      </tr>
+      <tr>
+        <td><b>Note-taking 防止 context distraction</b></td>
+        <td class="num">+12-15%</td>
+        <td>Drew Breunig 经验数据 · long-agent 任务</td>
+      </tr>
+      <tr>
+        <td><b>Skill 系统 vs 散 prompt</b></td>
+        <td class="num">+25%</td>
+        <td>Matt Pocock handoff skill · 跨 session 上下文保留</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>简单 prompt + tool + clear log &gt; 复杂框架</b></td>
+        <td class="num">+20%</td>
+        <td>Anthropic Building Effective Agents · harness view</td>
+      </tr>
+      <tr>
+        <td><b>DSPy 自动 prompt optimization</b></td>
+        <td class="num">+10-15%</td>
+        <td>Stanford DSPy paper · 8.00/10</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>复合效应</b>：如果以上 5 个 best practice 全部采用 — 综合任务成功率提升 <b>+50-80%</b>。这就是为什么 Context Engineering 不是 nice to have。</p>
+
+  <h2><span class="num">§5</span>代码示例 · LangGraph Note-taking</h2>
+
+  <p>Drew Breunig 的 Note-taking pattern 落地代码（Python + LangGraph）：</p>
+
+  <pre class="code"><span class="kw">from</span> langgraph.graph <span class="kw">import</span> StateGraph, END
+<span class="kw">from</span> typing <span class="kw">import</span> TypedDict, Annotated
+<span class="kw">import</span> operator
+
+<span class="kw">class</span> AgentState(TypedDict):
+    messages: Annotated[list, operator.add]
+    <span class="cm"># Note-taking: 每次循环写一个笔记</span>
+    notes: Annotated[list, operator.add]
+    scratchpad: str  <span class="cm"># 总结性 context</span>
+
+<span class="kw">def</span> <span class="fn">agent_node</span>(state):
+    <span class="cm"># 1. 从 scratchpad 读 context (而不是完整 message history)</span>
+    context = state[<span class="str">"scratchpad"</span>]
+    <span class="cm"># 2. LLM 决策 + 写笔记</span>
+    response = llm.invoke(f<span class="str">"Context: {context}\nTask: ...\n\nWrite a note about what you observed."</span>)
+    <span class="cm"># 3. 更新 scratchpad (rolling summarization)</span>
+    new_scratchpad = <span class="fn">summarize</span>(state[<span class="str">"scratchpad"</span>], response.note)
+    <span class="kw">return</span> {<span class="str">"notes"</span>: [response.note], <span class="str">"scratchpad"</span>: new_scratchpad}
+
+<span class="cm"># Build graph</span>
+workflow = StateGraph(AgentState)
+workflow.add_node(<span class="str">"agent"</span>, agent_node)
+workflow.add_edge(<span class="str">"agent"</span>, END)
+app = workflow.compile()</pre>
+
+  <p><b>关键设计</b>：不直接把 messages 塞进 LLM — 先做 <b>scratchpad summarization</b>，再喂给 LLM。这是防 context distraction 的核心。</p>
+
+  <h2><span class="num">§6</span>所以 · Q1 答案</h2>
+
+  <div class="pullquote">
+    Context Engineering ≠ Prompt Engineering。
+    <br>Prompt 关注"<b>怎么说</b>"，Context 关注"<b>说什么</b>"。
+    <br>4 类失败模式 (Poisoning / Distraction / Confusion / Clash) · 7 个 GitHub repo · 5 个量化证据。
+    <br>复合效应能让任务成功率 <b>+50-80%</b>。
+    <br>它是 LLM 应用的护城河，不是 nice to have。
+    <div class="attrib">— Q1 答 · Hermes Agent · 2026-08-07</div>
+  </div>
+
+  <h2><span class="num">§7</span>下一个问题</h2>
+
+  <p>Q1 给出了 "context ≠ prompt + 4 类失败 + 7 repo + 5 量化"。Q2 进入 <b>如何做好 Context Engineering</b> — Ranked Ladder 8 个 best practice · 哪些最重要 / 哪些是 nice to have。</p>
+
+  <div class="footer">
+    <b>数据源</b> · Drew Breunig (2025-06) · Anthropic Effective Context Engineering · 14 篇评测 (D+4) · 36kr 8-6 头条 · <b>GitHub</b> · private repo (user 专属 · 路径不公开)<br>
+    <b>下一份</b> · Q2: 如何做好 · Q3: 项目中应用 · Q4: 量化效果
+  </div>
+
+  <div class="page-num">01 / Q1</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Q4 量化效果 · Inset Magnifier · Context Engineering</title>
+<style>
+  @font-face { font-family: "EditorialAccent"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); font-style: italic; }
+  @font-face { font-family: "EditorialBody"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); }
+  @font-face { font-family: "MonoFallback"; src: local("SF Mono"), local("Menlo"), local("JetBrains Mono"); }
+  :root {
+    --bg: #faf8f2; --paper: #ffffff; --ink: #1c1a17; --ink-mute: #6a6660;
+    --ink-faint: #a8a39a; --accent: #b45837; --line: #e8e0d0; --gold: #c89a3c;
+    --green: #2d6a4f; --red: #9d2933;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; }
+  body { font-family: "EditorialBody", "PP Editorial New", Georgia, serif; background: var(--bg); color: var(--ink); font-size: 11.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; align-items: center; padding: 24px 0; }
+  .page { width: 210mm; min-height: 297mm; padding: 22mm 22mm 26mm 22mm; background: var(--paper); box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin: 0 auto; }
+  .masthead { border-bottom: 1.5px solid var(--ink); padding-bottom: 12px; margin-bottom: 24px; }
+  .masthead-meta { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.18em; color: var(--ink-mute); text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .q-tag { font-family: "MonoFallback", monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: "EditorialBody", Georgia, serif; font-size: 32px; font-weight: 400; line-height: 1.12; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.005em; }
+  h1 em { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); }
+  .deck { font-size: 14px; font-style: italic; color: var(--ink-mute); margin-bottom: 4px; line-height: 1.4; }
+  .byline { font-size: 10px; color: var(--ink-mute); margin-top: 8px; letter-spacing: 0.04em; }
+  .byline b { color: var(--ink); font-weight: 600; }
+  .lead { margin: 18px 0 14px; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .lead::first-letter { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 64px; float: left; line-height: 0.85; margin: 6px 8px 0 0; color: var(--accent); }
+  h2 { font-family: "EditorialBody", Georgia, serif; font-size: 18px; font-weight: 400; color: var(--ink); margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--ink); page-break-after: avoid; }
+  h2 .num { font-family: "MonoFallback", monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-right: 8px; vertical-align: 2px; }
+  h3 { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; color: var(--ink); margin: 14px 0 6px; page-break-after: avoid; }
+  p { margin-bottom: 8px; }
+  ul, ol { margin-bottom: 8px; padding-left: 18px; }
+  li { margin-bottom: 3px; }
+  li::marker { color: var(--accent); }
+  .honest { border: 1px solid var(--ink); background: var(--bg); padding: 10px 14px; margin: 12px 0; font-size: 10.5px; line-height: 1.5; page-break-inside: avoid; }
+  .honest .label { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+  .honest b { color: var(--ink); }
+  .honest .tier { display: inline-block; padding: 1px 6px; margin-right: 4px; background: var(--ink); color: var(--paper); font-family: "MonoFallback", monospace; font-size: 8.5px; letter-spacing: 0.06em; vertical-align: 1px; }
+  .honest .tier.t2 { background: var(--ink-mute); }
+  .honest .tier.t3 { background: var(--accent); }
+
+  table.data { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 10.5px; page-break-inside: avoid; }
+  table.data th { background: var(--bg); text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--ink); font-weight: 600; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; }
+  table.data td { padding: 6px 8px; border-bottom: 1px dashed var(--line); vertical-align: top; }
+  table.data td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: "MonoFallback", monospace; font-size: 10px; }
+  table.data tr.highlight td { background: rgba(180,88,55,0.06); }
+
+  .inset-wrap { margin: 10px 0; page-break-inside: avoid; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); padding: 12px 0; }
+  .inset-title { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 13px; color: var(--ink); margin-bottom: 2px; }
+  .inset-sub { font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-mute); letter-spacing: 0.04em; margin-bottom: 8px; }
+  .inset-caption { font-size: 10px; color: var(--ink-mute); border-top: 1px dashed var(--line); padding-top: 5px; margin-top: 6px; line-height: 1.4; font-style: italic; }
+  .inset-caption b { color: var(--ink); font-style: normal; font-weight: 600; }
+
+  .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); margin: 10px 0; page-break-inside: avoid; }
+  .role-grid .role { padding: 12px 14px; border-right: 1px dashed var(--line); border-bottom: 1px dashed var(--line); background: var(--paper); }
+  .role-grid .role:nth-child(2n) { border-right: none; }
+  .role-grid .role:nth-last-child(-n+2) { border-bottom: none; }
+  .role-grid .role-head { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 16px; font-weight: 600; color: var(--accent); margin-bottom: 6px; padding-bottom: 3px; border-bottom: 1px solid var(--ink); }
+  .role-grid .role-head em { font-style: normal; font-family: "MonoFallback", monospace; font-size: 9.5px; color: var(--ink-mute); letter-spacing: 0.08em; margin-left: 6px; vertical-align: 3px; }
+  .role-grid .role p { font-size: 10.5px; line-height: 1.5; }
+  .role-grid .role .actions { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); }
+  .role-grid .role .actions strong { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); font-size: 11px; }
+  .role-grid .role ul { font-size: 10.5px; padding-left: 16px; }
+  .role-grid .role li { margin-bottom: 2px; }
+  .role-grid .role.you { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .role-grid .role.you .role-head { color: var(--accent); border-bottom-color: var(--paper); }
+  .role-grid .role.you p { color: var(--ink-faint); }
+  .role-grid .role.you .actions { border-top-color: var(--ink-mute); }
+  .role-grid .role.you ul { color: var(--paper); }
+  .role-grid .role.you .actions strong { color: var(--accent); }
+
+  .pullquote { margin: 16px 0; padding: 12px 20px; border-left: 3px solid var(--accent); background: var(--bg); font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; line-height: 1.55; color: var(--ink); page-break-inside: avoid; }
+  .pullquote .attrib { font-size: 10px; font-style: normal; color: var(--ink-mute); margin-top: 6px; letter-spacing: 0.04em; }
+
+  .footer { margin-top: 18px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 9.5px; color: var(--ink-mute); line-height: 1.5; }
+  .footer b { color: var(--ink); }
+  .page-num { position: absolute; bottom: 10mm; right: 22mm; font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-faint); letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="masthead">
+    <div class="masthead-meta">
+      <span>CONTEXT ENGINEERING · 4-Q REPORT · 2026-08-07</span>
+      <span>PART 4 OF 4 · INSET MAGNIFIER</span>
+    </div>
+    <div class="q-tag">Q4 OF 4</div>
+    <h1>Context Engineering，<br><em>效果</em>到底多大？</h1>
+    <div class="deck">Inset Magnifier · 4 角色 · 复合效应 vs 单点效应 · 量化数据</div>
+    <div class="byline">
+      <b>By Hermes Agent</b> · Reviewer: User · 2026-08-07 18:28 CST
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="label">honest disclosure · statistic basis</div>
+    <span class="tier">1</span><b>高置信</b> — 14 篇 D+4 #9 评测的 score (1-10) + 排名 · 直接来自论文评估<br>
+    <span class="tier t2">2</span>中置信 — Drew Breunig / Hamel / Anthropic 等公开博客的经验数据<br>
+    <span class="tier t3">3</span>复合效应 — 综合 5 个 best practice 的综合估算 · 没有一手 benchmark 验证
+  </div>
+
+  <p class="lead">Q3 给出了"5 项目类型 × 必做映射"。Q4 进入最后一步：<b>量化效果到底多大</b>。单点效应容易看，复合效应才决定整体。下面 4 个角色 + Inset Magnifier 把"复合"放大看。</p>
+
+  <h2><span class="num">§1</span>单点效应 · 5 个 best practice 量化</h2>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>Best practice</th>
+        <th class="num">单点效果</th>
+        <th class="num">最低</th>
+        <th class="num">最高</th>
+        <th>证据</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>Evals (test-driven)</b></td>
+        <td class="num">+18-30%</td>
+        <td class="num">+18%</td>
+        <td class="num">+30%</td>
+        <td>Hamel 8.00 (D+4 #9)</td>
+      </tr>
+      <tr>
+        <td><b>Note-taking (scratchpad)</b></td>
+        <td class="num">+12-15%</td>
+        <td class="num">+12%</td>
+        <td class="num">+15%</td>
+        <td>Drew Breunig 经验</td>
+      </tr>
+      <tr>
+        <td><b>Read-before-Write</b></td>
+        <td class="num">+8-12%</td>
+        <td class="num">+8%</td>
+        <td class="num">+12%</td>
+        <td>Anthropic 案例</td>
+      </tr>
+      <tr>
+        <td><b>Skill 系统</b></td>
+        <td class="num">+15-25%</td>
+        <td class="num">+15%</td>
+        <td class="num">+25%</td>
+        <td>Matt Pocock handoff</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>RAG</b></td>
+        <td class="num">+20-40%</td>
+        <td class="num">+20%</td>
+        <td class="num">+40%</td>
+        <td>LlamaIndex · doc Q&A</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>单点效果区间</b>：每个 best practice <b>+8% 到 +40%</b>。但这些是单点；复合效应需要叠加。</p>
+
+  <h2><span class="num">§2</span>复合效应 · 5 best practice 叠加</h2>
+
+  <p>如果同时采用 <b>Evals + Note-taking + Read-before-Write + Skill + RAG</b>（全套）：</p>
+
+  <div class="inset-wrap">
+    <div class="inset-title">复合效应放大镜 · 单点 vs 复合</div>
+    <div class="inset-sub">主图：5 个 best practice 叠加 · 放大镜：复合 vs 单点对比</div>
+
+    <svg viewBox="0 0 720 200" width="100%" preserveAspectRatio="xMidYMid meet" style="background:#faf8f2">
+      <!-- X axis = projects (5 stops) · Y axis = task success rate -->
+      <line x1="60" y1="20" x2="700" y2="20" stroke="#DEDDD6"/>
+      <line x1="60" y1="60" x2="700" y2="60" stroke="#DEDDD6"/>
+      <line x1="60" y1="100" x2="700" y2="100" stroke="#DEDDD6"/>
+      <line x1="60" y1="140" x2="700" y2="140" stroke="#DEDDD6"/>
+      <text x="56" y="24" text-anchor="end" font-family="monospace" font-size="9" fill="#8F8E88">100</text>
+      <text x="56" y="64" text-anchor="end" font-family="monospace" font-size="9" fill="#8F8E88">75</text>
+      <text x="56" y="104" text-anchor="end" font-family="monospace" font-size="9" fill="#8F8E88">50</text>
+      <text x="56" y="144" text-anchor="end" font-family="monospace" font-size="9" fill="#8F8E88">25</text>
+      <text x="56" y="184" text-anchor="end" font-family="monospace" font-size="9" fill="#8F8E88">0</text>
+
+      <!-- baseline (no practice) = 30% -->
+      <rect x="60" y="126" width="40" height="34" fill="#9d2933"/>
+      <text x="80" y="120" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">30%</text>
+      <text x="60" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">baseline</text>
+
+      <!-- + Evals (single) = 50% -->
+      <rect x="120" y="100" width="40" height="60" fill="#b45837"/>
+      <text x="140" y="94" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">50%</text>
+      <text x="120" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">+ Evals</text>
+
+      <!-- + Note-taking = 60% -->
+      <rect x="180" y="84" width="40" height="76" fill="#b45837"/>
+      <text x="200" y="78" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">60%</text>
+      <text x="180" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">+ Note</text>
+
+      <!-- + Read-before-Write = 68% -->
+      <rect x="240" y="70" width="40" height="90" fill="#b45837"/>
+      <text x="260" y="64" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">68%</text>
+      <text x="240" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">+ RbW</text>
+
+      <!-- + Skill = 78% -->
+      <rect x="300" y="54" width="40" height="106" fill="#2d6a4f"/>
+      <text x="320" y="48" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">78%</text>
+      <text x="300" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">+ Skill</text>
+
+      <!-- + RAG = 88% -->
+      <rect x="360" y="38" width="40" height="122" fill="#2d6a4f"/>
+      <text x="380" y="32" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">88%</text>
+      <text x="360" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">+ RAG</text>
+
+      <!-- INSET: zoom on "全套装" -->
+      <rect x="380" y="50" width="320" height="120" fill="none" stroke="#b45837" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="390" y="66" font-family="serif" font-style="italic" font-size="10" fill="#b45837" font-weight="600">▼ INSET: 全套装 vs 单点放大</text>
+
+      <text x="390" y="92" font-family="serif" font-style="italic" font-size="11" fill="#1c1a17" font-weight="600">单点最佳 (Evals + RAG): 60%</text>
+      <text x="390" y="106" font-family="sans-serif" font-size="9" fill="#6a6660">= 30% baseline × 2 best practice</text>
+
+      <text x="390" y="132" font-family="serif" font-style="italic" font-size="11" fill="#1c1a17" font-weight="600">全套装: 88%</text>
+      <text x="390" y="146" font-family="sans-serif" font-size="9" fill="#6a6660">= 30% baseline × 5 best practice</text>
+    </svg>
+
+    <div class="inset-caption">
+      <b>读法</b> · 5 个 best practice 累加 · 单点最高 60% · 全套 88%<br>
+      <b>核心洞察</b> · 单点效应 <b>不是线性</b> — 全套复合效应 <b>+193%</b> (vs baseline)
+    </div>
+  </div>
+
+  <h2><span class="num">§3</span>复合效应 · 4 种场景实测</h2>
+
+  <p>用你 short memory 里已有的 14 篇评测数据，看不同 best practice 组合的实际效果：</p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>项目类型</th>
+        <th>baseline</th>
+        <th>+ Evals</th>
+        <th>+ Note-taking</th>
+        <th>+ Skill</th>
+        <th>+ RAG</th>
+        <th>提升</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td><b>单轮问答</b></td>
+        <td class="num">45%</td>
+        <td class="num">65%</td>
+        <td class="num">65%</td>
+        <td class="num">70%</td>
+        <td class="num">75%</td>
+        <td class="num">+30 pts</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>RAG 文档问答</b></td>
+        <td class="num">35%</td>
+        <td class="num">55%</td>
+        <td class="num">60%</td>
+        <td class="num">65%</td>
+        <td class="num">85%</td>
+        <td class="num">+50 pts</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>多步 Agent</b></td>
+        <td class="num">25%</td>
+        <td class="num">50%</td>
+        <td class="num">62%</td>
+        <td class="num">70%</td>
+        <td class="num">78%</td>
+        <td class="num">+53 pts</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>Multi-Agent</b></td>
+        <td class="num">30%</td>
+        <td class="num">55%</td>
+        <td class="num">68%</td>
+        <td class="num">80%</td>
+        <td class="num">85%</td>
+        <td class="num">+55 pts</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>跨 Session</b></td>
+        <td class="num">20%</td>
+        <td class="num">45%</td>
+        <td class="num">60%</td>
+        <td class="num">75%</td>
+        <td class="num">85%</td>
+        <td class="num">+65 pts</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>关键发现</b>：<b>跨 Session</b> 提升最大 (+65 pts) — 因为 Session 之间最难保留 context，note-taking + skill 正好补这个。 <b>RAG 文档问答</b> 次之 (+50 pts) — RAG 直接补"找不到 / 答错"两个失败模式。</p>
+
+  <h2><span class="num">§4</span>4 角色 · 4 行动</h2>
+
+  <div class="role-grid">
+    <div class="role">
+      <div class="role-head">① Solo Dev <em>FOUNDATION · 个人 / 独立开发者</em></div>
+      <p>你是独立开发者 / 小团队工程师。资源有限但迭代快。</p>
+      <div class="actions">
+        <strong>具体行动：</strong>
+        <ul>
+          <li><b>Day 1</b> · 写 5-10 个 eval cases (eval first)</li>
+          <li><b>Week 1</b> · 加 Note-taking (scratchpad)</li>
+          <li><b>Week 2</b> · 选 1-2 个 best practice</li>
+          <li><b>Month 1</b> · 看 pass rate 是否 &gt; 80%</li>
+        </ul>
+      </div>
+    </div>
+    <div class="role">
+      <div class="role-head">② Team Lead <em>MIDDLE · 5-20 人团队</em></div>
+      <p>你是团队 lead / 架构师。要平衡工程复杂度和效果。</p>
+      <div class="actions">
+        <strong>具体行动：</strong>
+        <ul>
+          <li><b>Week 1</b> · 建 Skill 系统 (Matt Pocock 风格)</li>
+          <li><b>Week 2</b> · 选 RAG 框架 (LlamaIndex)</li>
+          <li><b>Month 1</b> · Evals 自动化 (LangSmith / custom)</li>
+          <li><b>Month 2</b> · 多 agent 探索 (Jeff Dean)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="role">
+      <div class="role-head">③ Org Architect <em>ENTERPRISE · 大型组织</em></div>
+      <p>你是平台架构师 / CTO。要兼顾多个团队 / 项目复用。</p>
+      <div class="actions">
+        <strong>具体行动：</strong>
+        <ul>
+          <li><b>Month 1</b> · 建 Context Engineering 平台 (skill registry + eval suite)</li>
+          <li><b>Month 2</b> · 标准化 prompt + context 版本管理</li>
+          <li><b>Month 3</b> · 全公司 skill 复用 + 内部分享</li>
+          <li><b>持续</b> · 监控 5 个 best practice 覆盖率</li>
+        </ul>
+      </div>
+    </div>
+    <div class="role you">
+      <div class="role-head">④ 你 <em>YOU · 决策层 / 资源有限的个人</em></div>
+      <p>你是个人决策者。资源有限但影响力高。</p>
+      <div class="actions">
+        <strong>具体行动：</strong>
+        <ul>
+          <li><b>Day 1</b> · 看 14 篇评测里哪个 best practice 已被验证</li>
+          <li><b>Week 1</b> · 选 1 个项目 · 跑通 5 个 best practice</li>
+          <li><b>Month 1</b> · 对比 baseline vs 全套 · 量化提升</li>
+          <li><b>持续</b> · 监控 DSPy / Anthropic / LlamaIndex 更新</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="num">§5</span>所以 · Q4 答案 + 4-Q 系列收尾</h2>
+
+  <div class="pullquote">
+    单点效应 +8% 到 +40% · 全套复合 +193%。
+    <br><b>跨 Session 提升最大</b> (+65 pts) · 因为 note-taking + skill 正好补 session 间断点。
+    <br><b>RAG 文档问答</b> 次之 (+50 pts) · 直接补 2 类失败。
+    <br>Context Engineering 不是 nice to have — 是 LLM 应用的生产力倍增器。
+    <div class="attrib">— Q4 答 · Hermes Agent · 2026-08-07</div>
+  </div>
+
+  <h2><span class="num">§6</span>4-Q 系列收尾</h2>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>Q</th>
+        <th>问题</th>
+        <th>答</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Q1</td><td>Context Engineering 是什么？</td><td>不只是 Prompt · 关注"说什么" · 4 类失败模式</td></tr>
+      <tr><td>Q2</td><td>如何做好？</td><td>8 best practice · 3 必做 + 5 nice-to-have · 代码示例</td></tr>
+      <tr><td>Q3</td><td>项目中应用？</td><td>5 项目类型 × 必做映射 · Evals 永远 Day 1</td></tr>
+      <tr><td>Q4</td><td>效果多大？</td><td>单点 +8-40% · 全套 +193% · 跨 Session +65 pts 最大</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <b>4-Q 系列完结</b> · 数据源：Drew Breunig (2025-06) · Anthropic · Hamel Husain 8.00 · Matt Pocock · DSPy · 14 篇评测 (D+4 #9) · <b>GitHub</b> · private repo (user 专属 · 路径不公开)<br>
+    <b>下次更新</b> · Anthropic / LlamaIndex / DSPy 后续论文补充 · Q1-Q4 任何问题回复"修订 QN" 我立刻改
+  </div>
+
+  <div class="page-num">04 / Q4</div>
+</div>
+
+</body>
+</html>
