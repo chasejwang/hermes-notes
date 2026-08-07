@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investment · Hermes Notes</title>
+<meta name="description" content="Quant research and market analysis — Storage Supply-Demand 4-Q series, A-share sentiment index, semi-sector ML factor.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 70% 100%, var(--bg-2) 0%, transparent 50%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+  }
+
+  /* ===== Nav ===== */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px; max-width: 1100px; margin: 0 auto; padding: 0 32px;
+  }
+  .nav-brand {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic; font-weight: 400;
+    color: var(--text); text-decoration: none; font-size: 18px;
+    letter-spacing: -0.01em;
+  }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a {
+    color: var(--text-muted); text-decoration: none; font-size: 14px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a.active { color: var(--accent); font-weight: 500; }
+
+  /* ===== Container ===== */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+  /* ===== Hero ===== */
+  .hero {
+    min-height: 60vh;
+    display: flex; align-items: center;
+    padding: 80px 0 60px;
+  }
+  .hero-tag {
+    font-size: 12px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--accent); margin-bottom: 24px;
+  }
+  .hero-headline {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    max-width: 18ch;
+    margin-bottom: 32px;
+  }
+  .hero-headline em { font-style: italic; color: var(--accent); }
+  .hero-sub {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 56ch;
+    margin-bottom: 8px;
+  }
+  .hero-meta {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ===== Section ===== */
+  section { padding: 64px 0; border-top: 1px solid var(--border); }
+  .section-title {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(28px, 3.5vw, 40px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .section-intro {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin-bottom: 48px;
+    max-width: 64ch;
+  }
+
+  /* ===== Report Grid ===== */
+  .report-group { margin-bottom: 80px; }
+  .report-group-head {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 8px;
+  }
+  .report-group-head .num {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .report-group-head .title {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .report-group-head .count {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+  .report-group-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    max-width: 60ch;
+    line-height: 1.5;
+  }
+
+  .report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 20px;
+  }
+  .report-card {
+    background: var(--surface);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 24px 22px;
+    display: flex; flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 4px 16px rgba(180, 88, 55, 0.04);
+  }
+  .report-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 8px 28px rgba(180, 88, 55, 0.10);
+  }
+  .report-card .label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .report-card .label.quant { color: var(--text-muted); }
+  .report-card h3 {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.3;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: -0.005em;
+  }
+  .report-card h3 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .report-card .summary {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    flex: 1;
+  }
+  .report-card .meta {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+  .report-card .actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+  .report-card .actions a {
+    font-size: 12.5px;
+    color: var(--text);
+    text-decoration: none;
+    padding: 5px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--bg);
+    transition: all 0.2s;
+  }
+  .report-card .actions a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .report-card .actions a.primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .report-card .actions a.primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: var(--bg);
+  }
+
+  /* ===== About Section ===== */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-top: 24px;
+  }
+  .about-grid p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .about-grid h3 {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  /* ===== Footer ===== */
+  footer {
+    padding: 64px 0 48px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+  footer .signature {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .nav-inner { padding: 0 20px; }
+    .nav-links { gap: 18px; }
+    .container { padding: 0 20px; }
+    .hero { min-height: 50vh; padding: 60px 0 40px; }
+    section { padding: 48px 0; }
+    .about-grid { grid-template-columns: 1fr; gap: 32px; }
+    .report-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../" class="nav-brand">Hermes Notes</a>
+    <ul class="nav-links">
+      <li><a href="../">Home</a></li>
+      <li><a href="../#essays">Essays</a></li>
+      <li><a href="../#quant">Quant</a></li>
+      <li><a href="./" class="active">Investment</a></li>
+      <li><a href="../#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+
+  <section class="hero">
+    <div>
+      <div class="hero-tag">Investment Research</div>
+      <h1 class="hero-headline">
+        Quantitative <em>research</em><br>
+        and <em>market</em> analysis.
+      </h1>
+      <p class="hero-sub">
+        Quant factor work on A-share market and supply-chain analysis on global storage — published as standalone HTML reports with full data tables and visualisations. Open the report inline or download the HTML to read offline.
+      </p>
+      <p class="hero-meta">
+        2 series · 9 reports · last updated 2026-08-07
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Reports</h2>
+    <p class="section-intro">
+      报告分两类 — Quant (A-share 量化研究) 与 Analysis (产业链 / 主题分析)。点击 <b>Read</b> 在线阅读，<b>Download</b> 拉取 HTML 离线版本。
+    </p>
+
+    <!-- ============== Group 1: Storage Supply-Demand Analysis ============== -->
+    <div class="report-group">
+      <div class="report-group-head">
+        <span class="num">§A</span>
+        <span class="title">Storage Supply-Demand 4-Q</span>
+        <span class="count">· 4 reports · 2026-08-07</span>
+      </div>
+      <p class="report-group-sub">
+        AI 链存储供需缺口的完整图景 — 4 个问题 / 4 个 Lieflat 视觉语法 / 4 段 takeaway。从「是不是真瓶颈」到「我现在该做什么」。数据源：36kr 8-6 ABF 专题 + CNBC 8-6 头条 + 行业常识。
+      </p>
+      <div class="report-grid">
+
+        <!-- Q1 -->
+        <a class="report-card" href="reports/storage-q1-is-it-real.html">
+          <div class="label">Analysis · 01</div>
+          <h3>AI 链「缺」存储，<br>但<em>缺</em>在哪里？</h3>
+          <p class="summary">
+            90 秒版 4 测试 → 3 yes + 1 no · 真瓶颈不在晶圆而在材料端单点供应商。<br>
+            §3.1 产品 · §3.2 地域 · §3.3 增长趋势。
+          </p>
+          <div class="meta">2026-08-07 · 1 page · Lieflat Hundred Field</div>
+          <div class="actions">
+            <span class="primary">Read</span>
+            <span>Download HTML</span>
+          </div>
+        </a>
+
+        <!-- Q2 -->
+        <a class="report-card" href="reports/storage-q2-ranked-ladder.html">
+          <div class="label">Analysis · 02</div>
+          <h3>5 子件，按<em>最紧</em><br>排序</h3>
+          <p class="summary">
+            T-glass > ABF > HBM4 > NAND > 1c DRAM。修复周期 + 客户影响 + 替代方案 3 维加权。客户优先级矩阵。
+          </p>
+          <div class="meta">2026-08-07 · 1 page · Ranked Ladder</div>
+          <div class="actions">
+            <span class="primary">Read</span>
+            <span>Download HTML</span>
+          </div>
+        </a>
+
+        <!-- Q3 -->
+        <a class="report-card" href="reports/storage-q3-when-fix.html">
+          <div class="label">Analysis · 03</div>
+          <h3>什么时候<em>补齐</em>？<br>3 条时间线</h3>
+          <p class="summary">
+            乐观 2027 H1 / 基准 2028 中 / 悲观 2029。你是供应商、客户、风险侧就看哪条线 + 6 个 RAG 监控信号。
+          </p>
+          <div class="meta">2026-08-07 · 1 page · Hairline Area</div>
+          <div class="actions">
+            <span class="primary">Read</span>
+            <span>Download HTML</span>
+          </div>
+        </a>
+
+        <!-- Q4 -->
+        <a class="report-card" href="reports/storage-q4-do-now.html">
+          <div class="label">Analysis · 04</div>
+          <h3>现在<em>做什么</em>？<br>4 角色 × 4 行动</h3>
+          <p class="summary">
+            Big Co 锁 LTA · Mid Co 抢定制 · Startup 等自托管 · 个人 监控 + 调度。你是哪一层？Inset Magnifier 视觉。
+          </p>
+          <div class="meta">2026-08-07 · 1 page · Inset Magnifier</div>
+          <div class="actions">
+            <span class="primary">Read</span>
+            <span>Download HTML</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- ============== Group 2: A-Share Quant Research ============== -->
+    <div class="report-group">
+      <div class="report-group-head">
+        <span class="num">§B</span>
+        <span class="title">A-Share Quant Research</span>
+        <span class="count">· 5 reports · 2026-07</span>
+      </div>
+      <p class="report-group-sub">
+        A 股量化研究合集 — 情绪指数 + 行业轮动 + 截面 ML 因子 + 5 流派回测。每个报告含完整代码、信号可视化、回测对比。
+      </p>
+      <div class="report-grid">
+
+        <a class="report-card" href="../quant/quant-semi-14-ml.html">
+          <div class="label quant">Quant · ML</div>
+          <h3>Semi 14 ML — 14 龙截面机器学习因子</h3>
+          <p class="summary">
+            在 14 个半导体龙头股票上跑 ML 因子 — 跨截面特征 + 时间序列特征 + LightGBM 集成 + 因子衰减测试。
+          </p>
+          <div class="meta">2026-07-31 · Semi sector</div>
+          <div class="actions">
+            <span class="primary">Read</span>
+          </div>
+        </a>
+
+        <a class="report-card" href="../quant/quant-5-schools-backtest.html">
+          <div class="label quant">Quant · Backtest</div>
+          <h3>5 流派回测 — 价值 / 动量 / 质量 / 低波 / 情绪</h3>
+          <p class="summary">
+            5 个量化流派在 A 股的回测对比 — Hit Rate、Max Drawdown、Sharpe、信息比。同基准 / 同时段 / 同股票池。
+          </p>
+          <div class="meta">2026-07-30 · Multi-factor</div>
+          <div class="actions">
+            <span class="primary">Read</span>
+          </div>
+        </a>
+
+        <a class="report-card" href="../quant/quant-asentiment.html">
+          <div class="label quant">Quant · Sentiment</div>
+          <h3>A 股情绪指数 · 恐惧贪婪</h3>
+          <p class="summary">
+            24.4 分触发建仓信号 — 综合 5 类情绪源 + AkShare 数据 + 滚动 P5/P95 标准化 + 沪深 300 benchmark 验证。
+          </p>
+          <div class="meta">2026-07-28 · A-share</div>
+          <div class="actions">
+            <span class="primary">Read</span>
+          </div>
+        </a>
+
+        <a class="report-card" href="../quant/quant-asentiment-sector-v2.html">
+          <div class="label quant">Quant · Sector</div>
+          <h3>行业情绪 v2 — Sector Rotation</h3>
+          <p class="summary">
+            行业级别情绪指数 v2 — 申万一级 31 个行业 · 跨行业相对强度 · 行业轮动信号。
+          </p>
+          <div class="meta">2026-07-28 · A-share</div>
+          <div class="actions">
+            <span class="primary">Read</span>
+          </div>
+        </a>
+
+        <a class="report-card" href="../quant/quant-asentiment-v2-upgrade.html">
+          <div class="label quant">Quant · Sentiment v2</div>
+          <h3>A 股情绪 v2 Upgrade · 量化增强</h3>
+          <p class="summary">
+            v2 升级版 — 跨源加权 + 噪声过滤 + 量化验证。回测对比 v1 / v2 hit rate 提升 12%。
+          </p>
+          <div class="meta">2026-07-28 · A-share</div>
+          <div class="actions">
+            <span class="primary">Read</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============== About ============== -->
+  <section>
+    <h2 class="section-title">About this collection</h2>
+    <div class="about-grid">
+      <div>
+        <h3>Method</h3>
+        <p>Quant 报告用 AkShare 抓数据 + Python 跑回测；Analysis 报告用 Chrome DevTools 抓 36kr / CNBC 头条 + Lieflat 视觉语法呈现。每个报告独立单页 HTML，可直接分享或下载。</p>
+        <p>数据源等级分 3 档：高置信（直接读原文）/ 中置信（头条级）/ 待验证（行业常识 + 未对齐一手 10-Q）— 每份报告含显式「诚实标注」块。</p>
+      </div>
+      <div>
+        <h3>Roadmap</h3>
+        <p>2026 H2: 增加 4-Q Storage 系列的 PDF 版（"如果想要分发风，告诉我"）+ CloudWatch weekly update 自动化 cron。</p>
+        <p>2027 Q1: 中国存储 (长存 + 长鑫) IPO 跟踪 · 美国 HBM5 进展 · AI 链 ETF 行业分析。</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="signature">A few quiet things on memory, money &amp; machines.</div>
+  <div>Cloudflare Pages · last updated 2026-08-07</div>
+</footer>
+
+</body>
+</html>

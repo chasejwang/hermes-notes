@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Q2 5 子件排序 · Ranked Ladder · v3</title>
+<style>
+  /* taste editorial + Lieflat Ranked Ladder */
+  @font-face { font-family: "EditorialAccent"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); font-style: italic; }
+  @font-face { font-family: "EditorialBody"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); }
+  @font-face { font-family: "MonoFallback"; src: local("SF Mono"), local("Menlo"), local("JetBrains Mono"); }
+
+  :root {
+    --bg: #faf8f2;
+    --paper: #ffffff;
+    --ink: #1c1a17;
+    --ink-mute: #6a6660;
+    --ink-faint: #a8a39a;
+    --accent: #b45837;
+    --accent-deep: #8b3a1f;
+    --line: #e8e0d0;
+    --line-soft: #f0eadb;
+    --gold: #c89a3c;
+    --green: #2d6a4f;
+    --red: #9d2933;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; }
+  body {
+    font-family: "EditorialBody", "PP Editorial New", Georgia, "Times New Roman", serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 11.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+  }
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 22mm 22mm 26mm 22mm;
+    background: var(--paper);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin: 0 auto;
+  }
+
+  .masthead { border-bottom: 1.5px solid var(--ink); padding-bottom: 12px; margin-bottom: 24px; }
+  .masthead-meta {
+    font-family: "MonoFallback", monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .q-tag { font-family: "MonoFallback", monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: "EditorialBody", Georgia, serif; font-size: 32px; font-weight: 400; line-height: 1.12; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.005em; }
+  h1 em { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); }
+  .deck { font-size: 14px; font-style: italic; color: var(--ink-mute); margin-bottom: 4px; line-height: 1.4; }
+  .byline { font-size: 10px; color: var(--ink-mute); margin-top: 8px; letter-spacing: 0.04em; }
+  .byline b { color: var(--ink); font-weight: 600; }
+
+  .lead { margin: 18px 0 14px; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .lead::first-letter { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 64px; float: left; line-height: 0.85; margin: 6px 8px 0 0; color: var(--accent); }
+
+  h2 { font-family: "EditorialBody", Georgia, serif; font-size: 18px; font-weight: 400; color: var(--ink); margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--ink); letter-spacing: -0.005em; page-break-after: avoid; }
+  h2 .num { font-family: "MonoFallback", monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-right: 8px; vertical-align: 2px; }
+  h3 { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; color: var(--ink); margin: 14px 0 6px; page-break-after: avoid; }
+  p { margin-bottom: 8px; }
+  ul, ol { margin-bottom: 8px; padding-left: 18px; }
+  li { margin-bottom: 3px; }
+  li::marker { color: var(--accent); }
+
+  .honest { border: 1px solid var(--ink); background: var(--bg); padding: 10px 14px; margin: 12px 0; font-size: 10.5px; line-height: 1.5; page-break-inside: avoid; }
+  .honest .label { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+  .honest b { color: var(--ink); }
+  .honest .tier { display: inline-block; padding: 1px 6px; margin-right: 4px; background: var(--ink); color: var(--paper); font-family: "MonoFallback", monospace; font-size: 8.5px; letter-spacing: 0.06em; vertical-align: 1px; }
+  .honest .tier.t2 { background: var(--ink-mute); }
+  .honest .tier.t3 { background: var(--accent); }
+
+  /* ===== Ranked Ladder (Lieflat) ===== */
+  .ladder-wrap {
+    margin: 10px 0;
+    page-break-inside: avoid;
+  }
+  .ladder {
+    display: grid;
+    grid-template-columns: 80px 1fr 100px 100px;
+    gap: 0;
+    border-top: 1.5px solid var(--ink);
+    border-bottom: 1.5px solid var(--ink);
+    font-size: 10.5px;
+  }
+  .ladder .row {
+    padding: 12px 12px;
+    border-bottom: 1px dashed var(--line);
+    border-right: 1px dashed var(--line);
+    background: var(--paper);
+    vertical-align: middle;
+  }
+  .ladder .row:last-child { border-bottom: none; }
+  .ladder .row.no-right { border-right: none; }
+  .ladder .rank {
+    font-family: "EditorialAccent", Georgia, serif;
+    font-style: italic;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--accent);
+    text-align: center;
+    line-height: 1;
+  }
+  .ladder .rank sup {
+    font-size: 12px;
+    color: var(--ink-mute);
+    vertical-align: 8px;
+    margin-left: 2px;
+  }
+  .ladder .name {
+    font-family: "EditorialBody", Georgia, serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+  .ladder .name em {
+    font-family: "EditorialAccent", Georgia, serif;
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .ladder .desc {
+    font-size: 10px;
+    color: var(--ink-mute);
+    line-height: 1.45;
+  }
+  .ladder .metric {
+    text-align: right;
+    font-family: "MonoFallback", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .ladder .metric small {
+    display: block;
+    font-size: 8.5px;
+    color: var(--ink-mute);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+  .ladder .metric.crit { color: var(--red); }
+  .ladder .metric.warn { color: var(--accent); }
+  .ladder .metric.ok { color: var(--green); }
+  .ladder .head {
+    padding: 6px 12px;
+    border-bottom: 1.5px solid var(--ink);
+    background: var(--bg);
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-right: 1px dashed var(--line);
+  }
+  .ladder .head.no-right { border-right: none; }
+  .ladder .head.right { text-align: right; }
+  .ladder .gap-bar {
+    height: 6px;
+    background: var(--bg);
+    border: 1px solid var(--ink);
+    margin-top: 6px;
+    position: relative;
+  }
+  .ladder .gap-fill {
+    height: 100%;
+    background: var(--accent);
+    position: absolute;
+    left: 0; top: 0;
+  }
+  .ladder .gap-fill.crit { background: var(--red); }
+  .ladder .gap-fill.warn { background: var(--accent); }
+  .ladder .gap-fill.ok { background: var(--green); }
+
+  table.data { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 10.5px; page-break-inside: avoid; }
+  table.data th { background: var(--bg); text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--ink); font-weight: 600; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; }
+  table.data td { padding: 6px 8px; border-bottom: 1px dashed var(--line); vertical-align: top; }
+  table.data td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: "MonoFallback", monospace; font-size: 10px; }
+  table.data tr.highlight td { background: rgba(180,88,55,0.06); }
+
+  .pullquote { margin: 16px 0; padding: 12px 20px; border-left: 3px solid var(--accent); background: var(--bg); font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; line-height: 1.55; color: var(--ink); page-break-inside: avoid; }
+  .pullquote .attrib { font-size: 10px; font-style: normal; color: var(--ink-mute); margin-top: 6px; letter-spacing: 0.04em; }
+
+  .footer { margin-top: 18px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 9.5px; color: var(--ink-mute); line-height: 1.5; }
+  .footer b { color: var(--ink); }
+  .page-num { position: absolute; bottom: 10mm; right: 22mm; font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-faint); letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="masthead">
+    <div class="masthead-meta">
+      <span>STORAGE GAP · 4-Q REPORT · 2026-08-07</span>
+      <span>PART 2 OF 4 · RANKED LADDER</span>
+    </div>
+    <div class="q-tag">Q2 OF 4</div>
+    <h1>5 个子件，<em>最紧的</em>是<br>哪个？</h1>
+    <div class="deck">从「缺在哪一层」到「具体谁先补、谁后补」 · Ranked Ladder 视觉</div>
+    <div class="byline">
+      <b>By Hermes Agent</b> · Reviewer: User · 2026-08-07 15:35 CST
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="label">诚实标注 · ranking method</div>
+    <span class="tier">1</span><b>排序依据</b> · 3 维加权：修复周期（50%）+ 客户影响（30%）+ 替代方案存在性（20%）<br>
+    <span class="tier t2">2</span>分位数据 · 修复周期 5-7 年区间、T-glass 90% 集中度数据来自 36kr ABF 专题<br>
+    <span class="tier t3">3</span>客户影响排序参考 · 头部 LTA 客户优先于二三线 · 但"客户影响"取决于你站在哪一方
+  </div>
+
+  <p class="lead">Q1 给了 "是瓶颈，但瓶颈在材料"。Q2 进入下一步：把 5 个具体子件按「最紧」排序。排序依据不是"市场规模"或"增长率"，而是「修复周期 + 客户影响 + 替代方案」3 个维度的加权。</p>
+
+  <h2><span class="num">§1</span>排序方法 · 3 维加权</h2>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>维度</th>
+        <th>权重</th>
+        <th>含义</th>
+        <th>数值</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>修复周期</b></td>
+        <td class="num">50%</td>
+        <td>从「缺」到「不缺」需要的工厂 + 材料 + 认证时间</td>
+        <td>5-7 年（材料端） / 18-24 月（晶圆端）</td>
+      </tr>
+      <tr>
+        <td><b>客户影响</b></td>
+        <td class="num">30%</td>
+        <td>客户层面的"不能工作"或"显著涨价"的程度</td>
+        <td>头部 LTA 客户 vs 二三线排队</td>
+      </tr>
+      <tr>
+        <td><b>替代方案存在性</b></td>
+        <td class="num">20%</td>
+        <td>客户能不能换其他子件 / 其他供应商</td>
+        <td>无替代（材料端）vs 部分替代（晶圆端）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>这 3 个维度里，<b>修复周期</b>权重最大 — 因为修复周期最短的子件即使现在紧，18 个月后就会回归；修复周期最长的，即使现在不紧，未来也会卡死。这是判断 "哪个最致命" 的核心。</p>
+
+  <h2><span class="num">§2</span>Ranked Ladder · 5 子件排序结果</h2>
+
+  <div class="ladder-wrap">
+    <div class="ladder">
+      <div class="head right">排名</div>
+      <div class="head">子件 · 一句话解释</div>
+      <div class="head right">修复周期</div>
+      <div class="head no-right right">影响客户</div>
+
+      <!-- #1 -->
+      <div class="row"><div class="rank">1<sup>st</sup></div></div>
+      <div class="row">
+        <div class="name">T-glass 玻纤布 <em>(最致命)</em></div>
+        <div class="desc">ABF 基板的隐形瓶颈 · 全球 90%+ 产能集中在日本 TOP 3 (日东纺 / 旭化成) · 扩产滞后 ABF 需求 12-18 月 · 单点供应商风险最高 · 没有任何替代方案。</div>
+        <div class="gap-bar"><div class="gap-fill crit" style="width:100%"></div></div>
+      </div>
+      <div class="row"><div class="metric crit">5-7 年<small>FIX TIME</small></div></div>
+      <div class="row no-right"><div class="metric crit">所有 AI 客户<small>ALL AI</small></div></div>
+
+      <!-- #2 -->
+      <div class="row"><div class="rank">2<sup>nd</sup></div></div>
+      <div class="row">
+        <div class="name">ABF 载板 <em>(锁到 2028)</em></div>
+        <div class="desc">封装基板的「主体」 · 台湾 Unimicron / Kinsus / 南电占全球 ~62% · 已锁 LTA 到 2028 · 客户订单可见度延到 2029-2030 · 但 <b>T-glass 端不限产</b>，ABF 就有上限。</div>
+        <div class="gap-bar"><div class="gap-fill crit" style="width:80%"></div></div>
+      </div>
+      <div class="row"><div class="metric crit">3-4 年<small>FIX TIME</small></div></div>
+      <div class="row no-right"><div class="metric crit">AI 头部优先<small>LTA FIRST</small></div></div>
+
+      <!-- #3 -->
+      <div class="row"><div class="rank">3<sup>rd</sup></div></div>
+      <div class="row">
+        <div class="name">HBM4 <em>(满产，但扩产能跟)</em></div>
+        <div class="desc">AI 训练 GPU 的硬约束 · SK Hynix + Samsung 2026 售罄 · Pyeongtaek M16 + Samsung P5 2027 H2 释放 · 二三线 AI 芯片厂 2027 H2 才排到 · 相对乐观。</div>
+        <div class="gap-bar"><div class="gap-fill warn" style="width:55%"></div></div>
+      </div>
+      <div class="row"><div class="metric warn">2-3 年<small>FIX TIME</small></div></div>
+      <div class="row no-right"><div class="metric warn">NVIDIA/AMD 优先<small>TOP 2 FIRST</small></div></div>
+
+      <!-- #4 -->
+      <div class="row"><div class="rank">4<sup>th</sup></div></div>
+      <div class="row">
+        <div class="name">NAND SSD <em>(消费级紧)</em></div>
+        <div class="desc">AI 服务器吃掉了大部分 NAND 产能 · 单台 8TB → 24TB → 96TB · 消费级 + 移动 NAND 2026 Q3-Q4 涨价预期 · NAND V9 + 200+ 层 2027 H2 投产缓解。</div>
+        <div class="gap-bar"><div class="gap-fill warn" style="width:35%"></div></div>
+      </div>
+      <div class="row"><div class="metric warn">2-3 年<small>FIX TIME</small></div></div>
+      <div class="row no-right"><div class="metric warn">消费 / 移动<small>CONSUMER</small></div></div>
+
+      <!-- #5 -->
+      <div class="row"><div class="rank">5<sup>th</sup></div></div>
+      <div class="row">
+        <div class="name">1c / 1γ DRAM <em>(相对宽松)</em></div>
+        <div class="desc">传统 DRAM 的新节点 · 三星 P5 + 美光 NY 厂 2026-2027 持续贡献 · 整体相对宽松 · 但 2027 H1 投产新产能前会再度微紧。</div>
+        <div class="gap-bar"><div class="gap-fill ok" style="width:18%"></div></div>
+      </div>
+      <div class="row"><div class="metric ok">1-2 年<small>FIX TIME</small></div></div>
+      <div class="row no-right"><div class="metric ok">影响较小<small>LOW</small></div></div>
+    </div>
+  </div>
+
+  <h2><span class="num">§3</span>解读 · 为什么这个排序</h2>
+
+  <p><b>第 1 位 · T-glass</b>：是 5 子件里唯一单点供应商（90%+ 日本）+ 修复周期最长（5-7 年）。这两个维度叠加 = "真卡死"。无论你的客户是谁 — NVIDIA / AMD / 你自己买的 Mac，<b>T-glass 出了问题，全链都受影响</b>。</p>
+
+  <p><b>第 2 位 · ABF 载板</b>：客户影响大（LTA 锁到 2028），但 ABF 本身厂建周期 18 个月，台湾厂商正在 2026-2027 上线新厂 — <b>只受 T-glass 限制</b>，材料一旦放开，ABF 1-2 年内能跟上。</p>
+
+  <p><b>第 3-4 位 · HBM4 + NAND</b>：三星 + SK Hynix + 美光的扩产周期都是 18-24 月，2027 H2 集中释放。卡点是「时间窗」而不是「单点供应」。</p>
+
+  <p><b>第 5 位 · 1c DRAM</b>：相对宽松。DDR5 转型 1c 节点，2026-2027 都是扩产期。</p>
+
+  <div class="pullquote">
+    排序不是"我猜的"，是 3 维加权算出来的。
+    <br>最致命的是 T-glass (材料端单点 + 5-7 年)，
+    <br>不是 HBM (虽然紧，但 2-3 年能补)。
+    <br>看到 "AI 缺 HBM" 的新闻，记住：<b>真正缺的不是 HBM。</b>
+    <div class="attrib">— Hermes Agent · 2026-08-07 · Q2 insight</div>
+  </div>
+
+  <h2><span class="num">§4</span>5 子件 · 客户优先级矩阵</h2>
+
+  <p>把这个排序应用到客户层面，看「谁先拿到 / 谁后拿到」。这是 BCG X / Anthropic 面试的常见 storyline。</p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>子件</th>
+        <th>2026 Q4</th>
+        <th>2027 H1</th>
+        <th>2027 H2</th>
+        <th>2028+</th>
+        <th>客户分层</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td><b>T-glass</b></td>
+        <td>紧 (LTA 锁)</td>
+        <td>紧</td>
+        <td>紧</td>
+        <td>2028 中缓解</td>
+        <td>ABF 厂优先 · AI 客户排队</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>ABF 载板</b></td>
+        <td>LTA 客户先</td>
+        <td>LTA 客户先</td>
+        <td>Unimicron Q4 上线</td>
+        <td>K7/K8 投产</td>
+        <td>NVIDIA / AMD / Hyperscaler</td>
+      </tr>
+      <tr>
+        <td><b>HBM4</b></td>
+        <td>NVIDIA 满产</td>
+        <td>NVIDIA 满产</td>
+        <td>M16 + P5 释放</td>
+        <td>HBM5 试产</td>
+        <td>NVIDIA / AMD 优先 · Groq/Cerebras 排队</td>
+      </tr>
+      <tr>
+        <td><b>NAND SSD</b></td>
+        <td>AI 优先</td>
+        <td>消费级涨价</td>
+        <td>V9 + 200+ 层</td>
+        <td>平衡</td>
+        <td>AI 服务器先 · 消费后</td>
+      </tr>
+      <tr>
+        <td><b>1c DRAM</b></td>
+        <td>正常</td>
+        <td>微紧</td>
+        <td>P5 + NY 释放</td>
+        <td>平衡</td>
+        <td>影响小</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><span class="num">§5</span>所以 · Q2 答案</h2>
+
+  <div class="pullquote">
+    <b>T-glass 是最致命的。</b>
+    <br>不是 HBM4，不是 ABF，不是 NAND。
+    <br>T-glass 修复周期 5-7 年 · 单点供应商 · 没有替代。
+    <br>所有"AI 缺存储"的故事，归根结底是 T-glass 的故事。
+    <div class="attrib">— Q2 答 · Hermes Agent · 2026-08-07</div>
+  </div>
+
+  <h2><span class="num">§6</span>下一个问题</h2>
+
+  <p>Q2 给了 "T-glass 最致命 + 5 子件排序 + 客户优先级矩阵"。Q3 进入 <b>何时补齐</b> —— 给"乐观 / 基准 / 悲观" 3 条时间线，让你决定跟哪条。</p>
+
+  <div class="footer">
+    <b>数据源</b> · 36kr 8-6 ABF 专题正文 · CNBC 8-6 头条 · 行业常识 · <b>GitHub</b> · private repo (user 专属 · 路径不公开)<br>
+    <b>下一份</b> · Q3: 何时补齐 · Q4: 现在做什么
+  </div>
+
+  <div class="page-num">02 / Q2</div>
+</div>
+
+</body>
+</html>

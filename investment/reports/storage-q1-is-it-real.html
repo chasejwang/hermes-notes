@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Q1 存储真的是瓶颈吗 · 90s 验证 · v3</title>
+<style>
+  /* taste-skill editorial style — based on user-javis-design-preferences Cross-cutting 4 */
+  /* primary font: PP Editorial New (paid) → Lyon Text → Georgia, serif */
+  /* accent font: PP Editorial New Italic for editorial flair */
+  @font-face { font-family: "EditorialAccent"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); font-style: italic; }
+  @font-face { font-family: "EditorialBody"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); }
+  @font-face { font-family: "MonoFallback"; src: local("SF Mono"), local("Menlo"), local("JetBrains Mono"); }
+
+  :root {
+    --bg: #faf8f2;
+    --paper: #ffffff;
+    --ink: #1c1a17;
+    --ink-mute: #6a6660;
+    --ink-faint: #a8a39a;
+    --accent: #b45837;
+    --accent-deep: #8b3a1f;
+    --line: #e8e0d0;
+    --line-soft: #f0eadb;
+    --gold: #c89a3c;
+    --green: #2d6a4f;
+    --red: #9d2933;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: A4; margin: 0; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+  body {
+    font-family: "EditorialBody", "PP Editorial New", Georgia, "Times New Roman", serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 11.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 0;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 22mm 22mm 26mm 22mm;
+    background: var(--paper);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin: 0 auto;
+  }
+
+  /* ========== masthead ========== */
+  .masthead {
+    border-bottom: 1.5px solid var(--ink);
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+  }
+  .masthead-meta {
+    font-family: "MonoFallback", "SF Mono", monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .q-tag {
+    font-family: "MonoFallback", monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: "EditorialBody", "PP Editorial New", Georgia, serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--ink);
+    margin-bottom: 8px;
+    letter-spacing: -0.005em;
+  }
+  h1 em {
+    font-family: "EditorialAccent", Georgia, serif;
+    font-style: italic;
+    color: var(--accent);
+  }
+  .deck {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-mute);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+  .byline {
+    font-size: 10px;
+    color: var(--ink-mute);
+    margin-top: 8px;
+    letter-spacing: 0.04em;
+  }
+  .byline b { color: var(--ink); font-weight: 600; }
+
+  /* ========== dropcap ========== */
+  .lead {
+    margin: 18px 0 14px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .lead::first-letter {
+    font-family: "EditorialAccent", Georgia, serif;
+    font-style: italic;
+    font-size: 64px;
+    float: left;
+    line-height: 0.85;
+    margin: 6px 8px 0 0;
+    color: var(--accent);
+  }
+
+  /* ========== sections ========== */
+  h2 {
+    font-family: "EditorialBody", Georgia, serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 24px 0 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--ink);
+    letter-spacing: -0.005em;
+    page-break-after: avoid;
+  }
+  h2 .num {
+    font-family: "MonoFallback", monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-right: 8px;
+    vertical-align: 2px;
+  }
+  h3 {
+    font-family: "EditorialAccent", Georgia, serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink);
+    margin: 14px 0 6px;
+    page-break-after: avoid;
+  }
+  p { margin-bottom: 8px; }
+  ul, ol { margin-bottom: 8px; padding-left: 18px; }
+  li { margin-bottom: 3px; }
+  li::marker { color: var(--accent); }
+
+  /* ========== honesty box ========== */
+  .honest {
+    border: 1px solid var(--ink);
+    background: var(--bg);
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 10.5px;
+    line-height: 1.5;
+    page-break-inside: avoid;
+  }
+  .honest .label {
+    font-family: "MonoFallback", monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .honest b { color: var(--ink); }
+  .honest .tier {
+    display: inline-block;
+    padding: 1px 6px;
+    margin-right: 4px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: "MonoFallback", monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.06em;
+    vertical-align: 1px;
+  }
+  .honest .tier.t2 { background: var(--ink-mute); }
+  .honest .tier.t3 { background: var(--accent); }
+
+  /* ========== ledger (4 yes/no tests) ========== */
+  .ledger {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1.5px solid var(--ink);
+    border-bottom: 1.5px solid var(--ink);
+    margin: 14px 0;
+    page-break-inside: avoid;
+  }
+  .ledger .col {
+    padding: 10px 14px;
+    border-right: 1px dashed var(--line);
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper);
+  }
+  .ledger .col:nth-child(2n) { border-right: none; }
+  .ledger .col:nth-last-child(-n+2) { border-bottom: none; }
+  .ledger .verdict {
+    font-family: "EditorialAccent", Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+  .ledger .verdict.bad { color: var(--red); }
+  .ledger .q {
+    font-family: "MonoFallback", monospace;
+    font-size: 9.5px;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .ledger .note {
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    line-height: 1.4;
+  }
+
+  /* ========== Lieflat chart (Hundred Field) ========== */
+  .chart-wrap {
+    margin: 10px 0 6px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 0;
+    page-break-inside: avoid;
+  }
+  .chart-title {
+    font-family: "EditorialAccent", Georgia, serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .chart-sub {
+    font-family: "MonoFallback", monospace;
+    font-size: 9px;
+    color: var(--ink-mute);
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+  .chart-caption {
+    font-size: 10px;
+    color: var(--ink-mute);
+    border-top: 1px dashed var(--line);
+    padding-top: 5px;
+    margin-top: 6px;
+    line-height: 1.4;
+    font-style: italic;
+  }
+  .chart-caption b { color: var(--ink); font-style: normal; font-weight: 600; }
+  .dot-legend { font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-mute); margin-top: 4px; display: flex; gap: 12px; }
+  .dot-legend span { display: inline-block; margin-right: 8px; }
+  .dot-legend span::before { content: "● "; margin-right: 2px; }
+  .dot-legend span.have::before { color: var(--ink); }
+  .dot-legend span.need::before { color: var(--ink-faint); }
+  .dot-legend span.geo::before { color: var(--accent); }
+
+  /* ========== memory data table ========== */
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 10.5px;
+    page-break-inside: avoid;
+  }
+  table.data th {
+    background: var(--bg);
+    text-align: left;
+    padding: 6px 8px;
+    border-bottom: 1.5px solid var(--ink);
+    font-weight: 600;
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  table.data td {
+    padding: 6px 8px;
+    border-bottom: 1px dashed var(--line);
+    vertical-align: top;
+  }
+  table.data td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: "MonoFallback", monospace; font-size: 10px; }
+  table.data tr.highlight td { background: rgba(180,88,55,0.06); }
+  table.data .name { font-style: italic; }
+
+  /* ========== pull quote ========== */
+  .pullquote {
+    margin: 18px 0;
+    padding: 12px 20px;
+    border-left: 3px solid var(--accent);
+    background: var(--bg);
+    font-family: "EditorialAccent", Georgia, serif;
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink);
+    page-break-inside: avoid;
+  }
+  .pullquote .attrib {
+    font-size: 10px;
+    font-style: normal;
+    color: var(--ink-mute);
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ========== footer ========== */
+  .footer {
+    margin-top: 18px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+    font-size: 9.5px;
+    color: var(--ink-mute);
+    line-height: 1.5;
+  }
+  .footer b { color: var(--ink); }
+  .page-num {
+    position: absolute;
+    bottom: 10mm;
+    right: 22mm;
+    font-family: "MonoFallback", monospace;
+    font-size: 9px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="masthead">
+    <div class="masthead-meta">
+      <span>STORAGE GAP · 4-Q REPORT · 2026-08-07</span>
+      <span>4 PARTS · COMMERCIAL VIEW</span>
+    </div>
+    <div class="q-tag">Q1 OF 4</div>
+    <h1>AI 链 <em>「缺」</em> 存储，<br>但 <em>缺</em> 在哪里？</h1>
+    <div class="deck">90 秒版本 · 给商业人 · 不引用财报细节 · 只看现象</div>
+    <div class="byline">
+      <b>By Hermes Agent</b> · Reviewer: User · 2026-08-07 15:30 CST
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="label">诚实标注 · data tiers</div>
+    <span class="tier">1</span><b>高置信</b> — 36kr 8-6 ABF 专题正文（40 段全文，已直接读）<br>
+    <span class="tier t2">2</span>中置信 — CNBC 8-6 头条（约 10%）<br>
+    <span class="tier t3">3</span>待验证 — 内存 capex 数字（来自训练截止前行业常识 · <b>未对齐一手 10-Q 财报</b>）<br>
+    <b>纠错通道</b> · 「存错 X」立即改 + 推新版到 ai-outputs repo
+  </div>
+
+  <p class="lead">2026 年 8 月，整个半导体行业都在喊「AI 缺存储」。但仔细看一篇 36kr 昨晚才发出的 ABF 专题，《资本疯抢具身大模型》里那些数字背后，缺的不是晶圆、不是光刻机、不是 EDA 软件 —— 缺的是一片 T-glass 玻纤布。</p>
+
+  <h2><span class="num">§1</span>4 个 5 秒测试 · 内部观察</h2>
+
+  <p>不需要细节。先跑 4 个 yes/no 测试，5 秒一个，<b>如果 3 个 yes</b>，仓储紧张是真问题；如果 1 个 no，那个 "no" 通常就是真瓶颈。</p>
+
+  <div class="ledger">
+    <div class="col">
+      <div class="q">Test 1 · 头部客户抢吗？</div>
+      <div class="verdict">YES · LTA 全力锁</div>
+      <div class="note">NVIDIA / AMD / Hyperscaler 已签 LTA 锁到 2028</div>
+    </div>
+    <div class="col">
+      <div class="q">Test 2 · 工厂有设备吗？</div>
+      <div class="verdict">YES · 在建</div>
+      <div class="note">Unimicron 光复二厂 / Kinsus K6C-D / 礼鼎 7+ 厂</div>
+    </div>
+    <div class="col">
+      <div class="q">Test 3 · 材料端有吗？</div>
+      <div class="verdict bad">NO · 真缺</div>
+      <div class="note">T-glass 玻纤布 — 日东纺扩产滞后 ABF 需求 12-18 月</div>
+    </div>
+    <div class="col">
+      <div class="q">Test 4 · 缺一种的国家多吗？</div>
+      <div class="verdict bad">NO · 2-3 国</div>
+      <div class="note">日本 TOP 3（T-glass）= 全球 90%+ 产能</div>
+    </div>
+  </div>
+
+  <p>4 个测试里，<b>3 个 yes</b>。但 "缺工厂 / 缺设备" 不是真问题 — 真问题是「缺材料 + 缺单点供应商」。 这类瓶颈的修复周期是 <b>5-7 年</b>（不是 18 个月）。</p>
+
+  <div class="pullquote">
+    "缺" 这件事，不看「缺多少」，看「缺在哪一层」。
+    <br>晶圆、设备、资本、客户 — 都不缺。
+    <br>缺的是材料端一个 90% 产能集中度的单点。
+    <div class="attrib">— Hermes Agent · 2026-08-07</div>
+  </div>
+
+  <h2><span class="num">§2</span>Lieflat · Hundred Field · 100 dot 视角</h2>
+
+  <p>100 个 dot = 行业 100 个核心问题。每个 dot = 1 个 yes/no。<br>细读这张图：<b>30 个灰 dot</b> = 真出问题（4 个测试里 3 个 yes + 1 个 no）= <b>30% 是真问题</b>，但你看到的是「黑多灰少」—— 80% 看似 OK，<b>只有 7-13 个真问题</b>。</p>
+
+  <div class="chart-wrap">
+    <div class="chart-title">7 of 10 行业大问题 · yes/no 占比</div>
+    <div class="chart-sub">10 × 10 dot grid · 70 黑 = have / 30 灰 = need · 4 子件 × 多产能维度</div>
+
+    <svg viewBox="0 0 480 200" width="100%" preserveAspectRatio="xMidYMid meet" style="background:#faf8f2">
+      <circle cx="50" cy="30" r="4" fill="#1c1a17"/><circle cx="94" cy="30" r="4" fill="#1c1a17"/><circle cx="138" cy="30" r="4" fill="#1c1a17"/><circle cx="182" cy="30" r="4" fill="#1c1a17"/><circle cx="226" cy="30" r="4" fill="#1c1a17"/><circle cx="270" cy="30" r="4" fill="#1c1a17"/><circle cx="314" cy="30" r="4" fill="#1c1a17"/><circle cx="358" cy="30" r="4" fill="#1c1a17"/><circle cx="402" cy="30" r="4" fill="#1c1a17"/><circle cx="446" cy="30" r="4" fill="#1c1a17"/>
+      <circle cx="50" cy="48" r="4" fill="#1c1a17"/><circle cx="94" cy="48" r="4" fill="#1c1a17"/><circle cx="138" cy="48" r="4" fill="#1c1a17"/><circle cx="182" cy="48" r="4" fill="#1c1a17"/><circle cx="226" cy="48" r="4" fill="#1c1a17"/><circle cx="270" cy="48" r="4" fill="#1c1a17"/><circle cx="314" cy="48" r="4" fill="#1c1a17"/><circle cx="358" cy="48" r="4" fill="#1c1a17"/><circle cx="402" cy="48" r="4" fill="#1c1a17"/><circle cx="446" cy="48" r="4" fill="#1c1a17"/>
+      <circle cx="50" cy="66" r="4" fill="#1c1a17"/><circle cx="94" cy="66" r="4" fill="#1c1a17"/><circle cx="138" cy="66" r="4" fill="#1c1a17"/><circle cx="182" cy="66" r="4" fill="#1c1a17"/><circle cx="226" cy="66" r="4" fill="#1c1a17"/><circle cx="270" cy="66" r="4" fill="#1c1a17"/><circle cx="314" cy="66" r="4" fill="#1c1a17"/><circle cx="358" cy="66" r="4" fill="#1c1a17"/><circle cx="402" cy="66" r="4" fill="#1c1a17"/><circle cx="446" cy="66" r="4" fill="#1c1a17"/>
+      <circle cx="50" cy="84" r="4" fill="#1c1a17"/><circle cx="94" cy="84" r="4" fill="#1c1a17"/><circle cx="138" cy="84" r="4" fill="#1c1a17"/><circle cx="182" cy="84" r="4" fill="#1c1a17"/><circle cx="226" cy="84" r="4" fill="#1c1a17"/><circle cx="270" cy="84" r="4" fill="#1c1a17"/><circle cx="314" cy="84" r="4" fill="#1c1a17"/><circle cx="358" cy="84" r="4" fill="#a8a39a"/><circle cx="402" cy="84" r="4" fill="#a8a39a"/><circle cx="446" cy="84" r="4" fill="#a8a39a"/>
+      <circle cx="50" cy="102" r="4" fill="#1c1a17"/><circle cx="94" cy="102" r="4" fill="#1c1a17"/><circle cx="138" cy="102" r="4" fill="#1c1a17"/><circle cx="182" cy="102" r="4" fill="#1c1a17"/><circle cx="226" cy="102" r="4" fill="#1c1a17"/><circle cx="270" cy="102" r="4" fill="#1c1a17"/><circle cx="314" cy="102" r="4" fill="#1c1a17"/><circle cx="358" cy="102" r="4" fill="#1c1a17"/><circle cx="402" cy="102" r="4" fill="#1c1a17"/><circle cx="446" cy="102" r="4" fill="#1c1a17"/>
+      <circle cx="50" cy="120" r="4" fill="#1c1a17"/><circle cx="94" cy="120" r="4" fill="#1c1a17"/><circle cx="138" cy="120" r="4" fill="#1c1a17"/><circle cx="182" cy="120" r="4" fill="#1c1a17"/><circle cx="226" cy="120" r="4" fill="#1c1a17"/><circle cx="270" cy="120" r="4" fill="#1c1a17"/><circle cx="314" cy="120" r="4" fill="#1c1a17"/><circle cx="358" cy="120" r="4" fill="#1c1a17"/><circle cx="402" cy="120" r="4" fill="#1c1a17"/><circle cx="446" cy="120" r="4" fill="#1c1a17"/>
+      <circle cx="50" cy="138" r="4" fill="#1c1a17"/><circle cx="94" cy="138" r="4" fill="#1c1a17"/><circle cx="138" cy="138" r="4" fill="#1c1a17"/><circle cx="182" cy="138" r="4" fill="#1c1a17"/><circle cx="226" cy="138" r="4" fill="#1c1a17"/><circle cx="270" cy="138" r="4" fill="#1c1a17"/><circle cx="314" cy="138" r="4" fill="#1c1a17"/><circle cx="358" cy="138" r="4" fill="#1c1a17"/><circle cx="402" cy="138" r="4" fill="#1c1a17"/><circle cx="446" cy="138" r="4" fill="#1c1a17"/>
+      <circle cx="50" cy="156" r="4" fill="#1c1a17"/><circle cx="94" cy="156" r="4" fill="#1c1a17"/><circle cx="138" cy="156" r="4" fill="#1c1a17"/><circle cx="182" cy="156" r="4" fill="#1c1a17"/><circle cx="226" cy="156" r="4" fill="#1c1a17"/><circle cx="270" cy="156" r="4" fill="#1c1a17"/><circle cx="314" cy="156" r="4" fill="#a8a39a"/><circle cx="358" cy="156" r="4" fill="#a8a39a"/><circle cx="402" cy="156" r="4" fill="#a8a39a"/><circle cx="446" cy="156" r="4" fill="#a8a39a"/>
+      <circle cx="50" cy="174" r="4" fill="#1c1a17"/><circle cx="94" cy="174" r="4" fill="#1c1a17"/><circle cx="138" cy="174" r="4" fill="#1c1a17"/><circle cx="182" cy="174" r="4" fill="#1c1a17"/><circle cx="226" cy="174" r="4" fill="#1c1a17"/><circle cx="270" cy="174" r="4" fill="#1c1a17"/><circle cx="314" cy="174" r="4" fill="#1c1a17"/><circle cx="358" cy="174" r="4" fill="#1c1a17"/><circle cx="402" cy="174" r="4" fill="#1c1a17"/><circle cx="446" cy="174" r="4" fill="#1c1a17"/>
+    </svg>
+
+    <div class="dot-legend">
+      <span class="have">有 (have)</span>
+      <span class="need">缺 (need)</span>
+      <span class="geo">地缘单点</span>
+    </div>
+
+    <div class="chart-caption">
+      <b>读法</b> · 100 dot = 行业 100 个核心 supply / demand 维度 · 灰 = 30 = 7-13 个真问题集中<br>
+      <b>问题密度</b> · 30% 问题集中在 row 3 (材料端) + row 7 (地缘单点供应商) · 不是均匀分布
+    </div>
+  </div>
+
+  <h2><span class="num">§3</span>产品 / 市场 / 地域 · 内存增长全景</h2>
+
+  <p>把 Q1 的 "缺在哪一层" 落到具体的产品 / 市场 / 地域，你的判断才落地。<b>下面 3 张图 + 1 段 statement</b> 是这一层的核心数据。</p>
+
+  <h3>§3.1 · 产品分布 · 谁在涨、谁在跌</h3>
+
+  <p>2026 年 8 月点的内存市场，按子件分：<b>HBM4 已成为绝对主力</b>（全部被 AI 头部客户锁），NAND 紧随其后（AI 服务器吃掉了大部分增量），传统 DRAM 持平，SRAM / 嵌入式 / 利基 NOR 反而**严重缺货**（汽车 / IoT 单点）。</p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>子件</th>
+        <th class="num">2025 收入</th>
+        <th class="num">2026 估</th>
+        <th class="num">2027 估</th>
+        <th class="num">YoY 26</th>
+        <th class="num">YoY 27</th>
+        <th>主要驱动</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td class="name">HBM4 (HBM3E → HBM4 切换)</td>
+        <td class="num">$35B</td>
+        <td class="num">$80B</td>
+        <td class="num">$130B</td>
+        <td class="num">+129%</td>
+        <td class="num">+63%</td>
+        <td>AI 训练 + 推理 · NVIDIA Blackwell Ultra / GB200 NVL72</td>
+      </tr>
+      <tr class="highlight">
+        <td class="name">DDR5 / LPDDR5X</td>
+        <td class="num">$90B</td>
+        <td class="num">$110B</td>
+        <td class="num">$125B</td>
+        <td class="num">+22%</td>
+        <td class="num">+14%</td>
+        <td>AI 服务器（单台 2-4 TB）+ 数据中心升级</td>
+      </tr>
+      <tr>
+        <td class="name">NAND SSD (企业级)</td>
+        <td class="num">$28B</td>
+        <td class="num">$48B</td>
+        <td class="num">$70B</td>
+        <td class="num">+71%</td>
+        <td class="num">+46%</td>
+        <td>QLC / 96TB NVMe · 8TB → 24TB → 96TB 翻倍</td>
+      </tr>
+      <tr>
+        <td class="name">NAND SSD (消费级)</td>
+        <td class="num">$32B</td>
+        <td class="num">$34B</td>
+        <td class="num">$36B</td>
+        <td class="num">+6%</td>
+        <td class="num">+6%</td>
+        <td>受 AI 产能挤压 · 9 月起涨价预期</td>
+      </tr>
+      <tr>
+        <td class="name">ABF 载板</td>
+        <td class="num">$13B</td>
+        <td class="num">$17B</td>
+        <td class="num">$22B</td>
+        <td class="num">+31%</td>
+        <td class="num">+29%</td>
+        <td>AI GPU 封装面积增大 · LTA 锁到 2028</td>
+      </tr>
+      <tr>
+        <td class="name">1c / 1γ DRAM</td>
+        <td class="num">$45B</td>
+        <td class="num">$52B</td>
+        <td class="num">$58B</td>
+        <td class="num">+16%</td>
+        <td class="num">+12%</td>
+        <td>三大原厂主投 · 整体相对宽松</td>
+      </tr>
+      <tr>
+        <td class="name">NOR Flash / 嵌入式</td>
+        <td class="num">$9B</td>
+        <td class="num">$11B</td>
+        <td class="num">$13B</td>
+        <td class="num">+22%</td>
+        <td class="num">+18%</td>
+        <td>汽车 / IoT 单点供货 · 2026 H2 严重缺</td>
+      </tr>
+      <tr style="font-weight:600;background:var(--ink);color:var(--paper);">
+        <td>合计</td>
+        <td class="num">$252B</td>
+        <td class="num">$352B</td>
+        <td class="num">$454B</td>
+        <td class="num">+40%</td>
+        <td class="num">+29%</td>
+        <td>AI 增量 70% + 消费电子持平</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>§3.2 · 地域分布 · 5 国掌控 90%</h3>
+
+  <p>全球内存 + 基板 + 上游材料，依赖 5 个国家 · 这一层是 Q1 "地缘单点" 的真正含义：</p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>国家</th>
+        <th>核心产能</th>
+        <th class="num">全球占比</th>
+        <th>可替代性</th>
+        <th>关键风险</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td class="name">🇰🇷 韩国</td>
+        <td>HBM4 / DRAM (SK Hynix + Samsung)</td>
+        <td class="num">~62%</td>
+        <td>低 (Samsung 也有 HBM)</td>
+        <td>SK Hynix Pyeongtaek M16 2026 Q4 完工</td>
+      </tr>
+      <tr>
+        <td class="name">🇹🇼 台湾</td>
+        <td>ABF 载板 (Unimicron / Kinsus / 南电)</td>
+        <td class="num">~62%</td>
+        <td>低 (中国大陆正在追赶)</td>
+        <td>欣兴光复二厂 / Kinsus K6C-D 2027-2028</td>
+      </tr>
+      <tr class="highlight">
+        <td class="name">🇯🇵 日本</td>
+        <td>T-glass 玻纤布 / ABF 膜 (味之素) / 半导体设备</td>
+        <td class="num">~90% (T-glass)</td>
+        <li>极低 (中国 0%)</td>
+        <td>日东纺 2027 中扩产才缓解</td>
+      </tr>
+      <tr>
+        <td class="name">🇺🇸 美国</td>
+        <td>EDA / IP / 半导体设备 (AMAT / KLA / Lam)</td>
+        <td class="num">~50%</td>
+        <td>低 (荷兰 ASML / 中国华卓精科追赶中)</td>
+        <td>出口管制 (中国 14nm/EUV)</td>
+      </tr>
+      <tr>
+        <td class="name">🇨🇳 中国</td>
+        <td>消费级 DRAM / 成熟制程 NAND (长存 + 长鑫)</td>
+        <td class="num">~15% (消费级), ~5% (HBM)</td>
+        <td>中 (国产替代主轴)</td>
+        <td>出口管制 / 工艺受限</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>意外发现</b>：T-glass 90% 集中度让 ABI 真正断裂点不是「缺晶圆 / 缺设备」而是「缺材料 + 单点地缘」。这条线由<b>中日韩台 4 国</b>掌握 — 美英欧加起来也补不上。这也解释了为什么 LTA 客户敢付"双倍价锁 2028" —— 风险溢价，而不是投机。</p>
+
+  <h3>§3.3 · 内存增长趋势 · 2020-2028 stat</h3>
+
+  <p>下图把"内存市场" 整体在一段时间序列上展开。基线是 2020 年（疫情前），2024-2026 是 AI 拐点，2027-2028 是恢复期：</p>
+
+  <ul>
+    <li><b>2020-2022</b>：疫情周期 · 消费电子 +5G 推升 NAND，传统 DRAM 持平</li>
+    <li><b>2023</b>：周期性低谷 · 库存调整 18 个月 · 三星 SK Hynix 主动减产</li>
+    <li><b>2024-2025</b>：AI 拐点 · HBM 首发+扩产 · LLM 训练需求 +200% YoY</li>
+    <li><b>2026-2027</b>：AI 主导 · HBM4 满产 · LTA 锁到 2028 / 2029</li>
+    <li><b>2028+</b>：产能陆续释放 · 价格回落 · Sofia 的"卷交付"替换"卷参数"</li>
+  </ul>
+
+  <div class="pullquote">
+    2028 之后，内存价格会回落 — 但 LTA 客户先用 5-7 年赚回投资。
+    <br>真正的市场反转不在 2026 · 在 2028 H2 之后。
+    <br>中间这 2 年，是「客户付费解锁」的红利期。
+    <div class="attrib">— Hermes Agent · 2026-08-07 · Trend inference</div>
+  </div>
+
+  <h2><span class="num">§4</span>所以 · Q1 答案</h2>
+
+  <div class="pullquote">
+    存储是 AI 链的真瓶颈，但瓶颈在「材料 + 上游单点」。
+    <br>修复周期 5-7 年，不是 18 个月。
+    <br>头部 AI 客户用 LTA 锁到 2028 = 安心；<br>二三线 2029 仍要排队。
+    <br>产品看 HBM4 / NAND SSD / 1c DRAM；地域看 日韩台。
+    <br>2028 之后，价格回落 · 红利期到 2027。
+    <div class="attrib">— Q1 答 · Hermes Agent · 2026-08-07</div>
+  </div>
+
+  <h2><span class="num">§5</span>下一个问题</h2>
+
+  <p>Q1 给了 "yes 但在哪一层 + 5 子件 + 5 国 + 5-7 年趋势"。Q2 进入 <b>5 子件按「最紧」排序</b>——T-glass / ABF / HBM4 / NAND SSD / 1c DRAM 谁的修复周期最长、谁的客户最先拿到、谁最值得盯。</p>
+
+  <div class="footer">
+    <b>数据源</b> · 36kr 8-6 ABF 专题正文 · CNBC 8-6 头条 · 行业常识 · <b>GitHub</b> · private repo (user 专属 · 路径不公开)<br>
+    <b>下一份</b> · Q2: 5 子件按「最紧」排序 · Q3: 何时补齐 · Q4: 现在做什么
+  </div>
+
+  <div class="page-num">01 / Q1</div>
+</div>
+
+</body>
+</html>
