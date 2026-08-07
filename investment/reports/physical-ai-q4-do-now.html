@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Q4 现在做什么 · Inset Magnifier · Physical AI</title>
+<style>
+  @font-face { font-family: "EditorialAccent"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); font-style: italic; }
+  @font-face { font-family: "EditorialBody"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); }
+  @font-face { font-family: "MonoFallback"; src: local("SF Mono"), local("Menlo"), local("JetBrains Mono"); }
+  :root {
+    --bg: #faf8f2; --paper: #ffffff; --ink: #1c1a17; --ink-mute: #6a6660;
+    --ink-faint: #a8a39a; --accent: #b45837; --line: #e8e0d0; --gold: #c89a3c;
+    --green: #2d6a4f; --red: #9d2933;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; }
+  body { font-family: "EditorialBody", "PP Editorial New", Georgia, serif; background: var(--bg); color: var(--ink); font-size: 11.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; align-items: center; padding: 24px 0; }
+  .page { width: 210mm; min-height: 297mm; padding: 22mm 22mm 26mm 22mm; background: var(--paper); box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin: 0 auto; }
+  .masthead { border-bottom: 1.5px solid var(--ink); padding-bottom: 12px; margin-bottom: 24px; }
+  .masthead-meta { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.18em; color: var(--ink-mute); text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .q-tag { font-family: "MonoFallback", monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: "EditorialBody", Georgia, serif; font-size: 32px; font-weight: 400; line-height: 1.12; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.005em; }
+  h1 em { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); }
+  .deck { font-size: 14px; font-style: italic; color: var(--ink-mute); margin-bottom: 4px; line-height: 1.4; }
+  .byline { font-size: 10px; color: var(--ink-mute); margin-top: 8px; letter-spacing: 0.04em; }
+  .byline b { color: var(--ink); font-weight: 600; }
+  .lead { margin: 18px 0 14px; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .lead::first-letter { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 64px; float: left; line-height: 0.85; margin: 6px 8px 0 0; color: var(--accent); }
+  h2 { font-family: "EditorialBody", Georgia, serif; font-size: 18px; font-weight: 400; color: var(--ink); margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--ink); page-break-after: avoid; }
+  h2 .num { font-family: "MonoFallback", monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-right: 8px; vertical-align: 2px; }
+  h3 { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; color: var(--ink); margin: 14px 0 6px; page-break-after: avoid; }
+  p { margin-bottom: 8px; }
+  ul, ol { margin-bottom: 8px; padding-left: 18px; }
+  li { margin-bottom: 3px; }
+  li::marker { color: var(--accent); }
+  .honest { border: 1px solid var(--ink); background: var(--bg); padding: 10px 14px; margin: 12px 0; font-size: 10.5px; line-height: 1.5; page-break-inside: avoid; }
+  .honest .label { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+  .honest b { color: var(--ink); }
+  .honest .tier { display: inline-block; padding: 1px 6px; margin-right: 4px; background: var(--ink); color: var(--paper); font-family: "MonoFallback", monospace; font-size: 8.5px; letter-spacing: 0.06em; vertical-align: 1px; }
+  .honest .tier.t2 { background: var(--ink-mute); }
+  .honest .tier.t3 { background: var(--accent); }
+
+  .inset-wrap { margin: 10px 0; page-break-inside: avoid; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); padding: 12px 0; }
+  .inset-title { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 13px; color: var(--ink); margin-bottom: 2px; }
+  .inset-sub { font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-mute); letter-spacing: 0.04em; margin-bottom: 8px; }
+  .inset-caption { font-size: 10px; color: var(--ink-mute); border-top: 1px dashed var(--line); padding-top: 5px; margin-top: 6px; line-height: 1.4; font-style: italic; }
+  .inset-caption b { color: var(--ink); font-style: normal; font-weight: 600; }
+
+  .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); margin: 10px 0; page-break-inside: avoid; }
+  .role-grid .role { padding: 12px 14px; border-right: 1px dashed var(--line); border-bottom: 1px dashed var(--line); background: var(--paper); }
+  .role-grid .role:nth-child(2n) { border-right: none; }
+  .role-grid .role:nth-last-child(-n+2) { border-bottom: none; }
+  .role-grid .role-head { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 16px; font-weight: 600; color: var(--accent); margin-bottom: 6px; padding-bottom: 3px; border-bottom: 1px solid var(--ink); }
+  .role-grid .role-head em { font-style: normal; font-family: "MonoFallback", monospace; font-size: 9.5px; color: var(--ink-mute); letter-spacing: 0.08em; margin-left: 6px; vertical-align: 3px; }
+  .role-grid .role p { font-size: 10.5px; line-height: 1.5; }
+  .role-grid .role .actions { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); }
+  .role-grid .role .actions strong { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); font-size: 11px; }
+  .role-grid .role ul { font-size: 10.5px; padding-left: 16px; }
+  .role-grid .role li { margin-bottom: 2px; }
+  .role-grid .role.you { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .role-grid .role.you .role-head { color: var(--accent); border-bottom-color: var(--paper); }
+  .role-grid .role.you p { color: var(--ink-faint); }
+  .role-grid .role.you .actions { border-top-color: var(--ink-mute); }
+  .role-grid .role.you ul { color: var(--paper); }
+  .role-grid .role.you .actions strong { color: var(--accent); }
+
+  table.data { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 10.5px; page-break-inside: avoid; }
+  table.data th { background: var(--bg); text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--ink); font-weight: 600; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; }
+  table.data td { padding: 6px 8px; border-bottom: 1px dashed var(--line); vertical-align: top; }
+  table.data td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: "MonoFallback", monospace; font-size: 10px; }
+  table.data tr.highlight td { background: rgba(180,88,55,0.06); }
+
+  .pullquote { margin: 16px 0; padding: 12px 20px; border-left: 3px solid var(--accent); background: var(--bg); font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; line-height: 1.55; color: var(--ink); page-break-inside: avoid; }
+  .pullquote .attrib { font-size: 10px; font-style: normal; color: var(--ink-mute); margin-top: 6px; letter-spacing: 0.04em; }
+
+  .footer { margin-top: 18px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 9.5px; color: var(--ink-mute); line-height: 1.5; }
+  .footer b { color: var(--ink); }
+  .page-num { position: absolute; bottom: 10mm; right: 22mm; font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-faint); letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="masthead">
+    <div class="masthead-meta">
+      <span>PHYSICAL AI · 4-Q REPORT · 2026-08-07</span>
+      <span>PART 4 OF 4 · INSET MAGNIFIER</span>
+    </div>
+    <div class="q-tag">Q4 OF 4</div>
+    <h1>现在 <em>做什么</em>？<br>4 角色 × 4 行动</h1>
+    <div class="deck">从"知道物理 AI 卡在数据"到"行动" · 头部 / 中部 / Startup / 个人 4 个视角</div>
+    <div class="byline">
+      <b>By Hermes Agent</b> · Reviewer: User · 2026-08-07 17:40 CST
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="label">actions basis</div>
+    <span class="tier">1</span><b>数据闭环派的核心行动</b> · LTA 锁定 + 共同投资 (跟存储 4-Q 同款)<br>
+    <span class="tier t2">2</span>每种角色的 action 来自该角色惯常的供应链定位<br>
+    <span class="tier t3">3</span>「个人」一栏的具体行动 — 我假设你是"决策层 + 资源有限的个人"，如果你角色不同告诉我
+  </div>
+
+  <p class="lead">Q3 给出了"3 条时间线"。Q4 进入最后一步：<b>把信息转化为行动</b>。物理 AI 不是所有"知道这个故事"的人都能动 — 不同角色能动的不一样。下面 4 种角色的 4 种 action。</p>
+
+  <h2><span class="num">§1</span>Lieflat · Inset Magnifier · 4 角色 × 4 行动</h2>
+
+  <p>主图：4 种角色在物理 AI 链中的位置。放大镜：每种角色的具体行动。</p>
+
+  <div class="inset-wrap">
+    <div class="inset-title">物理 AI 链 · 4 角色定位 + 行动</div>
+    <div class="inset-sub">主图：4 角色在数据 / 模型 / 硬件链上的位置 · 放大镜：每角色的具体 action</div>
+
+    <svg viewBox="0 0 720 240" width="100%" preserveAspectRatio="xMidYMid meet" style="background:#faf8f2">
+      <text x="20" y="20" font-family="monospace" font-size="8" fill="#6a6660">DATA → MODEL ↑</text>
+      <text x="20" y="200" font-family="monospace" font-size="8" fill="#6a6660">DEMAND ↓</text>
+
+      <line x1="60" y1="40" x2="660" y2="40" stroke="#1c1a17" stroke-width="1"/>
+      <line x1="60" y1="200" x2="660" y2="200" stroke="#1c1a17" stroke-width="1"/>
+
+      <!-- supply side (data/model/hardware) -->
+      <circle cx="100" cy="40" r="6" fill="#9d2933"/>
+      <text x="100" y="22" font-family="serif" font-style="italic" font-size="9" fill="#1c1a17" text-anchor="middle">真实数据</text>
+      <circle cx="240" cy="40" r="6" fill="#b45837"/>
+      <text x="240" y="22" font-family="serif" font-style="italic" font-size="9" fill="#1c1a17" text-anchor="middle">仿真</text>
+      <circle cx="380" cy="40" r="6" fill="#b45837"/>
+      <text x="380" y="22" font-family="serif" font-style="italic" font-size="9" fill="#1c1a17" text-anchor="middle">大模型</text>
+      <circle cx="520" cy="40" r="6" fill="#1c1a17"/>
+      <text x="520" y="22" font-family="serif" font-style="italic" font-size="9" fill="#1c1a17" text-anchor="middle">本体</text>
+      <circle cx="640" cy="40" r="6" fill="#1c1a17"/>
+      <text x="640" y="22" font-family="serif" font-style="italic" font-size="9" fill="#1c1a17" text-anchor="middle">场景</text>
+
+      <!-- demand side -->
+      <circle cx="100" cy="200" r="5" fill="#1c1a17"/>
+      <text x="100" y="220" font-family="serif" font-style="italic" font-size="9" fill="#1c1a17" text-anchor="middle">① Tier 1</text>
+      <circle cx="280" cy="200" r="5" fill="#1c1a17"/>
+      <text x="280" y="220" font-family="serif" font-style="italic" font-size="9" fill="#1c1a17" text-anchor="middle">② Tier 2</text>
+      <circle cx="460" cy="200" r="5" fill="#1c1a17"/>
+      <text x="460" y="220" font-family="serif" font-style="italic" font-size="9" fill="#1c1a17" text-anchor="middle">③ Tier 3</text>
+      <circle cx="620" cy="200" r="5" fill="#1c1a17"/>
+      <text x="620" y="220" font-family="serif" font-style="italic" font-size="9" fill="#1c1a17" text-anchor="middle">④ 个人</text>
+
+      <line x1="100" y1="46" x2="100" y2="194" stroke="#1c1a17" stroke-width="0.5" stroke-dasharray="2,3"/>
+      <line x1="240" y1="46" x2="280" y2="194" stroke="#1c1a17" stroke-width="0.5" stroke-dasharray="2,3"/>
+      <line x1="380" y1="46" x2="460" y2="194" stroke="#1c1a17" stroke-width="0.5" stroke-dasharray="2,3"/>
+      <line x1="520" y1="46" x2="620" y2="194" stroke="#1c1a17" stroke-width="0.5" stroke-dasharray="2,3"/>
+
+      <rect x="40" y="100" width="640" height="80" fill="none" stroke="#b45837" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="50" y="116" font-family="serif" font-style="italic" font-size="10" fill="#b45837" font-weight="600">▼ INSET: 4 角色 · 4 行动 (放大)</text>
+
+      <text x="100" y="142" font-family="serif" font-style="italic" font-size="10" fill="#1c1a17" font-weight="600">① Tier 1</text>
+      <text x="100" y="156" font-family="sans-serif" font-size="9" fill="#6a6660">共同投资 + LTA</text>
+
+      <text x="280" y="142" font-family="serif" font-style="italic" font-size="10" fill="#1c1a17" font-weight="600">② Tier 2</text>
+      <text x="280" y="156" font-family="sans-serif" font-size="9" fill="#6a6660">抢数据源 + 合作</text>
+
+      <text x="460" y="142" font-family="serif" font-style="italic" font-size="10" fill="#1c1a17" font-weight="600">③ Tier 3</text>
+      <text x="460" y="156" font-family="sans-serif" font-size="9" fill="#6a6660">等 2027 自托管</text>
+
+      <text x="620" y="142" font-family="serif" font-style="italic" font-size="10" fill="#b45837" font-weight="600">④ 个人</text>
+      <text x="620" y="156" font-family="sans-serif" font-size="9" fill="#6a6660">监控 + 选场景</text>
+    </svg>
+
+    <div class="inset-caption">
+      <b>读法</b> · supply 链从真实数据 → 场景 · demand 链从 Tier 1 → 个人 · ①-④ 是 4 种角色在 demand 链上的位置<br>
+      <b>关键洞察</b> · 数据闭环在 supply 链上游 · 越靠 supply 上游（真实数据），卡位越深 · Tier 1 才能吃到原始数据
+    </div>
+  </div>
+
+  <h2><span class="num">§2</span>4 角色 · 4 行动 · 详细</h2>
+
+  <div class="role-grid">
+    <div class="role">
+      <div class="role-head">① Tier 1 <em>DATA · 黎曼 / RoboScience / 蚂蚁灵波</em></div>
+      <p>你是数据闭环派头部。资金厚，能直接建数据基础设施 + 自研大模型。</p>
+      <div class="actions">
+        <strong>具体行动：</strong>
+        <ul>
+          <li><b>数据基础设施 capex</b> · 遥操作设备 30-40 万 × N 台 + 自动标注管线</li>
+          <li><b>共同投资 + LTA</b> · 参股数据采集公司 + 锁 2026 末 100 万小时</li>
+          <li><b>统一中间表征专利</b> · VLOA / Object Trajectory / World Model · 行业标准</li>
+          <li><b>商业化试点</b> · 国大药房 / 商超 / 物流 · 验证场景可复制性</li>
+        </ul>
+      </div>
+    </div>
+    <div class="role">
+      <div class="role-head">② Tier 2 <em>HARDWARE · 宇树 / 智元</em></div>
+      <p>你是本体派。IPO 已成 / 即将，硬件 + 资本强。但「融资补脑」是公开的秘密。</p>
+      <div class="actions">
+        <strong>具体行动：</strong>
+        <ul>
+          <li><b>抢数据源合作</b> · 与 Tier 1 签 LTA / 优先数据采购</li>
+          <li><b>本体 + 模型双线</b> · 投资或自研 VLA 小模型</li>
+          <li><b>IPO 后 capex</b> · 用上市资金建自有数据闭环</li>
+          <li><b>垂直场景</b> · 工厂 / 物流 · 高 ROI 验证</li>
+        </ul>
+      </div>
+    </div>
+    <div class="role">
+      <div class="role-head">③ Tier 3 <em>STARTUP · 帕西尼 / 越疆 / 其他</em></div>
+      <p>你是零部件派或单点能力派。资金有限，等 LTA 排到你要 2028。</p>
+      <div class="actions">
+        <strong>具体行动：</strong>
+        <ul>
+          <li><b>等 2027 自托管</b> · Riemann-1.0 等开源 / API 化后接入</li>
+          <li><b>单点深度</b> · 触觉 / 教育 / 医疗 · 利基市场</li>
+          <li><b>合作 Tier 1</b> · 做上游配套 / 数据采集服务商</li>
+          <li><b>关注应用层</b> · 仿真工具 / 评测平台 / 工具链</li>
+        </ul>
+      </div>
+    </div>
+    <div class="role you">
+      <div class="role-head">④ 个人 <em>YOU · 决策层 / 资源有限的个人</em></div>
+      <p>你是个人决策者 / 投资者 / 求职者。资源有限但影响力高。集中在「决策 + 监控 + 调度」3 件事上。</p>
+      <div class="actions">
+        <strong>具体行动：</strong>
+        <ul>
+          <li><b>监控 6 个 RAG 信号</b> · 见 Q3 §3 · 决定跟哪条时间线</li>
+          <li><b>投资视角</b> · Tier 1 数据闭环派是 LLM 时代「OpenAI」位置 · 优先关注</li>
+          <li><b>求职 / 跳槽</b> · 物理 AI 是 Decision Scientist / AI-Augmented Decision Intelligence 的下一个 5 年蓝海</li>
+          <li><b>消费 / 决策</b> · 实体机器人 (宇树 G1 等) · 2027 H2 价格回落</li>
+          <li><b>不押宝本体</b> · 本体 IPO 红利期已短 · 数据闭环才是长期</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="num">§3</span>个人行动 · 时序表</h2>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>时序</th>
+        <th>具体动作</th>
+        <th>对应 RAG 信号</th>
+        <th>预期影响</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td>D+6 → D+30</td>
+        <td>跟踪黎曼动力 / RoboScience 进展</td>
+        <td>信号 1, 2</td>
+        <td>决定 100 万小时是否如期达成</td>
+      </tr>
+      <tr>
+        <td>D+30 → D+45</td>
+        <td>看 Tier 1 数据闭环派商业化试点</td>
+        <td>信号 3</td>
+        <td>判断国大药房 / 物流场景可复制性</td>
+      </tr>
+      <tr>
+        <td>D+45 → D+60</td>
+        <td>看 Sim2Real 收敛度</td>
+        <td>信号 4</td>
+        <td>判断仿真路线是否 work</td>
+      </tr>
+      <tr>
+        <td>D+60 → D+90</td>
+        <td>看宇树 / 智元 IPO 后 capex</td>
+        <td>信号 5</td>
+        <td>判断本体派能否补脑成功</td>
+      </tr>
+      <tr>
+        <td>D+90+</td>
+        <td>2027 H2 数据门槛达成 → 投资 / 跳槽</td>
+        <td>信号 6</td>
+        <td>卡位物理 AI 5 年蓝海</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><span class="num">§4</span>所以 · Q4 答案 + 4-Q 系列收尾</h2>
+
+  <div class="pullquote">
+    没有"对所有人一样的行动"。
+    <br>Tier 1 共同投资 + LTA · Tier 2 抢数据源 · Tier 3 等自托管 · 个人 监控 + 选场景。
+    <br>这 4 种行动不对立 · 它们在 4 个层级同时发生。
+    <br>知道自己是哪一层，比知道"物理 AI 卡在数据"更重要。
+    <div class="attrib">— Q4 答 · Hermes Agent · 2026-08-07</div>
+  </div>
+
+  <h2><span class="num">§5</span>4-Q 系列收尾</h2>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>Q</th>
+        <th>问题</th>
+        <th>答</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Q1</td><td>物理 AI 真瓶颈在哪？</td><td>在数据 · 不是硬件 / 资本 · 百万小时门槛</td></tr>
+      <tr><td>Q2</td><td>哪类公司有优势？</td><td>Tier 1 数据闭环派 (黎曼 / RoboScience / 蚂蚁灵波)</td></tr>
+      <tr><td>Q3</td><td>何时补齐？</td><td>乐观 2026 底 / 基准 2027 H2 / 悲观 2028</td></tr>
+      <tr><td>Q4</td><td>现在做什么？</td><td>看角色：Tier 1 共同投资 · Tier 2 抢数据 · Tier 3 等自托管 · 个人 监控 + 选场景</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <b>4-Q 系列完结</b> · 数据源：36kr 8-6 具身专题多篇 (黎曼动力 / RoboScience 机器科学 / 蚂蚁灵波 / 宇树 IPO) · CNBC 8-6 头条 · 行业常识 · <b>GitHub</b> · private repo (user 专属 · 路径不公开)<br>
+    <b>下次更新</b> · CNBC cron 7/13/20 CST 自动跑 · 物理 AI 公司动态补充 · Q1-Q4 任何问题回复"修订 QN" 我立刻改
+  </div>
+
+  <div class="page-num">04 / Q4</div>
+</div>
+
+</body>
+</html>

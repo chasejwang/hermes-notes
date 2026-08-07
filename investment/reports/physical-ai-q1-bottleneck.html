@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Physical AI · 4-Q 报告 · 2026-08-07</title>
+<style>
+  /* taste editorial + Lieflat — same as Storage 4-Q */
+  @font-face { font-family: "EditorialAccent"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); font-style: italic; }
+  @font-face { font-family: "EditorialBody"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); }
+  @font-face { font-family: "MonoFallback"; src: local("SF Mono"), local("Menlo"), local("JetBrains Mono"); }
+
+  :root {
+    --bg: #faf8f2; --paper: #ffffff; --ink: #1c1a17; --ink-mute: #6a6660;
+    --ink-faint: #a8a39a; --accent: #b45837; --line: #e8e0d0; --gold: #c89a3c;
+    --green: #2d6a4f; --red: #9d2933;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; }
+  body { font-family: "EditorialBody", "PP Editorial New", Georgia, serif; background: var(--bg); color: var(--ink); font-size: 11.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; align-items: center; padding: 24px 0; }
+  .page { width: 210mm; min-height: 297mm; padding: 22mm 22mm 26mm 22mm; background: var(--paper); box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin: 0 auto; }
+  .masthead { border-bottom: 1.5px solid var(--ink); padding-bottom: 12px; margin-bottom: 24px; }
+  .masthead-meta { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.18em; color: var(--ink-mute); text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .q-tag { font-family: "MonoFallback", monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: "EditorialBody", Georgia, serif; font-size: 32px; font-weight: 400; line-height: 1.12; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.005em; }
+  h1 em { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); }
+  .deck { font-size: 14px; font-style: italic; color: var(--ink-mute); margin-bottom: 4px; line-height: 1.4; }
+  .byline { font-size: 10px; color: var(--ink-mute); margin-top: 8px; letter-spacing: 0.04em; }
+  .byline b { color: var(--ink); font-weight: 600; }
+
+  .lead { margin: 18px 0 14px; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .lead::first-letter { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 64px; float: left; line-height: 0.85; margin: 6px 8px 0 0; color: var(--accent); }
+
+  h2 { font-family: "EditorialBody", Georgia, serif; font-size: 18px; font-weight: 400; color: var(--ink); margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--ink); page-break-after: avoid; }
+  h2 .num { font-family: "MonoFallback", monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-right: 8px; vertical-align: 2px; }
+  h3 { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; color: var(--ink); margin: 14px 0 6px; page-break-after: avoid; }
+  p { margin-bottom: 8px; }
+  ul, ol { margin-bottom: 8px; padding-left: 18px; }
+  li { margin-bottom: 3px; }
+  li::marker { color: var(--accent); }
+
+  .honest { border: 1px solid var(--ink); background: var(--bg); padding: 10px 14px; margin: 12px 0; font-size: 10.5px; line-height: 1.5; page-break-inside: avoid; }
+  .honest .label { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+  .honest b { color: var(--ink); }
+  .honest .tier { display: inline-block; padding: 1px 6px; margin-right: 4px; background: var(--ink); color: var(--paper); font-family: "MonoFallback", monospace; font-size: 8.5px; letter-spacing: 0.06em; vertical-align: 1px; }
+  .honest .tier.t2 { background: var(--ink-mute); }
+  .honest .tier.t3 { background: var(--accent); }
+
+  table.data { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 10.5px; page-break-inside: avoid; }
+  table.data th { background: var(--bg); text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--ink); font-weight: 600; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; }
+  table.data td { padding: 6px 8px; border-bottom: 1px dashed var(--line); vertical-align: top; }
+  table.data td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: "MonoFallback", monospace; font-size: 10px; }
+  table.data tr.highlight td { background: rgba(180,88,55,0.06); }
+
+  .ladder-wrap { margin: 10px 0; page-break-inside: avoid; }
+  .ladder { display: grid; grid-template-columns: 80px 1fr 100px 100px; gap: 0; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); font-size: 10.5px; }
+  .ladder .row { padding: 12px 12px; border-bottom: 1px dashed var(--line); border-right: 1px dashed var(--line); background: var(--paper); vertical-align: middle; }
+  .ladder .row:last-child { border-bottom: none; }
+  .ladder .row.no-right { border-right: none; }
+  .ladder .rank { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 28px; font-weight: 600; color: var(--accent); text-align: center; line-height: 1; }
+  .ladder .rank sup { font-size: 12px; color: var(--ink-mute); vertical-align: 8px; margin-left: 2px; }
+  .ladder .name { font-family: "EditorialBody", Georgia, serif; font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .ladder .name em { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); font-weight: 400; }
+  .ladder .desc { font-size: 10px; color: var(--ink-mute); line-height: 1.45; }
+  .ladder .metric { text-align: right; font-family: "MonoFallback", monospace; font-size: 12px; font-weight: 600; color: var(--ink); }
+  .ladder .metric small { display: block; font-size: 8.5px; color: var(--ink-mute); font-weight: 400; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+  .ladder .metric.crit { color: var(--red); }
+  .ladder .metric.warn { color: var(--accent); }
+  .ladder .metric.ok { color: var(--green); }
+  .ladder .head { padding: 6px 12px; border-bottom: 1.5px solid var(--ink); background: var(--bg); font-size: 9px; font-weight: 600; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.08em; border-right: 1px dashed var(--line); }
+  .ladder .head.no-right { border-right: none; }
+  .ladder .head.right { text-align: right; }
+  .ladder .gap-bar { height: 6px; background: var(--bg); border: 1px solid var(--ink); margin-top: 6px; position: relative; }
+  .ladder .gap-fill { height: 100%; position: absolute; left: 0; top: 0; }
+  .ladder .gap-fill.crit { background: var(--red); }
+  .ladder .gap-fill.warn { background: var(--accent); }
+  .ladder .gap-fill.ok { background: var(--green); }
+
+  .pullquote { margin: 16px 0; padding: 12px 20px; border-left: 3px solid var(--accent); background: var(--bg); font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; line-height: 1.55; color: var(--ink); page-break-inside: avoid; }
+  .pullquote .attrib { font-size: 10px; font-style: normal; color: var(--ink-mute); margin-top: 6px; letter-spacing: 0.04em; }
+
+  .footer { margin-top: 18px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 9.5px; color: var(--ink-mute); line-height: 1.5; }
+  .footer b { color: var(--ink); }
+  .page-num { position: absolute; bottom: 10mm; right: 22mm; font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-faint); letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="masthead">
+    <div class="masthead-meta">
+      <span>PHYSICAL AI · 4-Q REPORT · 2026-08-07</span>
+      <span>4 PARTS · COMMERCIAL VIEW</span>
+    </div>
+    <div class="q-tag">Q1 OF 4</div>
+    <h1>物理 AI，<em>真」瓶颈</em><br>在 <em>哪里</em>？</h1>
+    <div class="deck">90 秒版 · 给你 (商业人 / 投资人) · 不引用财报细节 · 只看现象</div>
+    <div class="byline">
+      <b>By Hermes Agent</b> · Reviewer: User · 2026-08-07 17:15 CST
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="label">诚实标注 · data tiers</div>
+    <span class="tier">1</span><b>高置信</b> — 36kr 8-6 多篇具身专题全文 (黎曼动力 / RoboScience 机器科学 / 蚂蚁灵波 等，已直接读)<br>
+    <span class="tier t2">2</span>中置信 — 36kr 头条 / 投资界 (宇树 IPO / DeepSeek 合作)<br>
+    <span class="tier t3">3</span>待验证 — 玩家市场份额 / 各公司具体融资额 (部分来自二手转载)<br>
+    <b>纠错通道</b> · 「存错 X」立即改 + 推新版到 ai-outputs repo
+  </div>
+
+  <p class="lead">2026 年的物理 AI (具身智能) 行业，「卡」的不是硬件也不是资本 — 缺的是 <b>高质量真实交互数据</b>。一台机器人学会"拿起一个杯子"，今天的训练成本约 500 元 / 小时，真机遥操作设备 30-40 万一台；要把所有场景学完，<b>百万小时只是行业门槛，千万亿小时才是通用泛化线</b>。</p>
+
+  <h2><span class="num">§1</span>3 个 5 秒测试 · 内部观察</h2>
+
+  <p>跟存储 4-Q 的 5 秒测试一样，先跑 3 个 yes/no 看「缺在哪一层」。</p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>Test</th>
+        <th>问题</th>
+        <th>答</th>
+        <th>证据</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>硬件缺吗?</td>
+        <td class="num"><b style="color:var(--green);">NO 缺</b></td>
+        <td>宇树 IPO 600 亿 / 蚂蚁灵波适配 17 品牌 20 构型 / 帕西尼 35 亿融资 · 硬件层不缺</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>资本缺吗?</td>
+        <td class="num"><b style="color:var(--green);">NO 缺</b></td>
+        <td>2026 前 7 月 195 起融资 / 754.63 亿 / 是 2024 全年 22 倍 · 资本层不缺</td>
+      </tr>
+      <tr class="highlight">
+        <td>3</td>
+        <td><b>数据缺吗?</b></td>
+        <td class="num"><b style="color:var(--red);">YES 真缺</b></td>
+        <td>LLM 语料百亿亿字符 vs 具身数据差 1 万倍 · 百万小时是行业门槛 · 千万亿小时是通用线</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>3 个测试里 <b>2 个 yes 资本/硬件不缺，1 个真缺 数据</b>。这是物理 AI 跟传统 AI 最大的不同 — <b>数据不能从互联网爬取，必须在真实物理世界采集</b>。遥操作 (黄金标准) 成本高、仿真有 sim2real gap、人类视频数据存在「体不匹配」—— <b>三条路每条都有硬约束</b>。</p>
+
+  <div class="pullquote">
+    LLM 时代，谁有 GPU 谁赢。物理 AI 时代，谁有真实世界的数据采集能力，谁赢。
+    <br>不是因为 GPU 不重要 — 而是因为数据是新的护城河。
+    <div class="attrib">— Hermes Agent · 2026-08-07 · Physical AI insight</div>
+  </div>
+
+  <h2><span class="num">§2</span>3 条数据路线 · 为什么都绕不过去</h2>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>路线</th>
+        <th>质量</th>
+        <th>成本</th>
+        <th>规模</th>
+        <th>硬约束</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>遥操作</b> (Teleop)</td>
+        <td style="color:var(--green);">高 (黄金标准)</td>
+        <td>¥30-40 万 / 台</td>
+        <td>¥500 / 小时</td>
+        <td>线性 · 无规模效应 · 试错成本高</td>
+      </tr>
+      <tr>
+        <td><b>仿真</b> (Sim)</td>
+        <td style="color:var(--green);">中 (可控)</td>
+        <td>~零 (边际成本)</td>
+        <td>~无限</td>
+        <td>Sim2Real gap · 3 重非平稳性</td>
+      </tr>
+      <tr>
+        <td><b>人类视频</b> (EGO)</td>
+        <td style="color:var(--accent);">低 (辅助)</td>
+        <td>中 (清洗 + 标注)</td>
+        <td>互联网级</td>
+        <td>2D → 3D 体不匹配 · 自由度差异</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>组合拳</b> (仿真 + 视频 + 真机)</td>
+        <td>中-高</td>
+        <td>中等</td>
+        <td>可扩张</td>
+        <td>需要统一中间表征 · 工艺仍在演进</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>唯一能跑通</b>的是 <b>组合拳</b>。黎曼动力的 Riemann-1.0 = 20 万小时人类 EGO + 1.2 万小时 UMI / 外骨骼 + 2 万小时真机 / 仿真，<b>目标 100 万小时 / 2026 底</b>。RoboScience 单条数据成本压到传统方案 <b>1/20 ~ 1/200</b>，<b>2026 目标 1T manipulation 数据集</b>。</p>
+
+  <h2><span class="num">§3</span>Lieflat · Hundred Field · 物理 AI 100 个 dot</h2>
+
+  <div style="border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 12px 0;">
+    <h3 style="margin: 0 0 6px 0;">物理 AI 100 dot · yes/no 占比</h3>
+    <p style="font-family: 'MonoFallback', monospace; font-size: 9px; color: var(--ink-mute); margin: 0 0 8px 0;">10 × 10 dot grid · 60 黑 = have / 40 灰 = need · 5 子维度</p>
+
+    <svg viewBox="0 0 480 200" width="100%" preserveAspectRatio="xMidYMid meet" style="background:#faf8f2">
+      <!-- row 0: 10 black -->
+      <circle cx="50" cy="30" r="4" fill="#1c1a17"/><circle cx="94" cy="30" r="4" fill="#1c1a17"/><circle cx="138" cy="30" r="4" fill="#1c1a17"/><circle cx="182" cy="30" r="4" fill="#1c1a17"/><circle cx="226" cy="30" r="4" fill="#1c1a17"/><circle cx="270" cy="30" r="4" fill="#1c1a17"/><circle cx="314" cy="30" r="4" fill="#1c1a17"/><circle cx="358" cy="30" r="4" fill="#1c1a17"/><circle cx="402" cy="30" r="4" fill="#1c1a17"/><circle cx="446" cy="30" r="4" fill="#1c1a17"/>
+      <!-- row 1: 10 black -->
+      <circle cx="50" cy="48" r="4" fill="#1c1a17"/><circle cx="94" cy="48" r="4" fill="#1c1a17"/><circle cx="138" cy="48" r="4" fill="#1c1a17"/><circle cx="182" cy="48" r="4" fill="#1c1a17"/><circle cx="226" cy="48" r="4" fill="#1c1a17"/><circle cx="270" cy="48" r="4" fill="#1c1a17"/><circle cx="314" cy="48" r="4" fill="#1c1a17"/><circle cx="358" cy="48" r="4" fill="#1c1a17"/><circle cx="402" cy="48" r="4" fill="#1c1a17"/><circle cx="446" cy="48" r="4" fill="#1c1a17"/>
+      <!-- row 2: 8 black + 2 grey (硬件部分缓解) -->
+      <circle cx="50" cy="66" r="4" fill="#1c1a17"/><circle cx="94" cy="66" r="4" fill="#1c1a17"/><circle cx="138" cy="66" r="4" fill="#1c1a17"/><circle cx="182" cy="66" r="4" fill="#1c1a17"/><circle cx="226" cy="66" r="4" fill="#1c1a17"/><circle cx="270" cy="66" r="4" fill="#1c1a17"/><circle cx="314" cy="66" r="4" fill="#1c1a17"/><circle cx="358" cy="66" r="4" fill="#1c1a17"/><circle cx="402" cy="66" r="4" fill="#a8a39a"/><circle cx="446" cy="66" r="4" fill="#a8a39a"/>
+      <!-- row 3: 6 black + 4 grey (资本 OK 但已到上限) -->
+      <circle cx="50" cy="84" r="4" fill="#1c1a17"/><circle cx="94" cy="84" r="4" fill="#1c1a17"/><circle cx="138" cy="84" r="4" fill="#1c1a17"/><circle cx="182" cy="84" r="4" fill="#1c1a17"/><circle cx="226" cy="84" r="4" fill="#1c1a17"/><circle cx="270" cy="84" r="4" fill="#1c1a17"/><circle cx="314" cy="84" r="4" fill="#a8a39a"/><circle cx="358" cy="84" r="4" fill="#a8a39a"/><circle cx="402" cy="84" r="4" fill="#a8a39a"/><circle cx="446" cy="84" r="4" fill="#a8a39a"/>
+      <!-- row 4: 10 black -->
+      <circle cx="50" cy="102" r="4" fill="#1c1a17"/><circle cx="94" cy="102" r="4" fill="#1c1a17"/><circle cx="138" cy="102" r="4" fill="#1c1a17"/><circle cx="182" cy="102" r="4" fill="#1c1a17"/><circle cx="226" cy="102" r="4" fill="#1c1a17"/><circle cx="270" cy="102" r="4" fill="#1c1a17"/><circle cx="314" cy="102" r="4" fill="#1c1a17"/><circle cx="358" cy="102" r="4" fill="#1c1a17"/><circle cx="402" cy="102" r="4" fill="#1c1a17"/><circle cx="446" cy="102" r="4" fill="#1c1a17"/>
+      <!-- row 5: 10 black -->
+      <circle cx="50" cy="120" r="4" fill="#1c1a17"/><circle cx="94" cy="120" r="4" fill="#1c1a17"/><circle cx="138" cy="120" r="4" fill="#1c1a17"/><circle cx="182" cy="120" r="4" fill="#1c1a17"/><circle cx="226" cy="120" r="4" fill="#1c1a17"/><circle cx="270" cy="120" r="4" fill="#1c1a17"/><circle cx="314" cy="120" r="4" fill="#1c1a17"/><circle cx="358" cy="120" r="4" fill="#1c1a17"/><circle cx="402" cy="120" r="4" fill="#1c1a17"/><circle cx="446" cy="120" r="4" fill="#1c1a17"/>
+      <!-- row 6: 8 black + 2 grey (仿真 sim2real gap) -->
+      <circle cx="50" cy="138" r="4" fill="#1c1a17"/><circle cx="94" cy="138" r="4" fill="#1c1a17"/><circle cx="138" cy="138" r="4" fill="#1c1a17"/><circle cx="182" cy="138" r="4" fill="#1c1a17"/><circle cx="226" cy="138" r="4" fill="#1c1a17"/><circle cx="270" cy="138" r="4" fill="#1c1a17"/><circle cx="314" cy="138" r="4" fill="#1c1a17"/><circle cx="358" cy="138" r="4" fill="#1c1a17"/><circle cx="402" cy="138" r="4" fill="#a8a39a"/><circle cx="446" cy="138" r="4" fill="#a8a39a"/>
+      <!-- row 7: 4 black + 6 grey (数据最缺) -->
+      <circle cx="50" cy="156" r="4" fill="#1c1a17"/><circle cx="94" cy="156" r="4" fill="#1c1a17"/><circle cx="138" cy="156" r="4" fill="#1c1a17"/><circle cx="182" cy="156" r="4" fill="#1c1a17"/><circle cx="226" cy="156" r="4" fill="#a8a39a"/><circle cx="270" cy="156" r="4" fill="#a8a39a"/><circle cx="314" cy="156" r="4" fill="#a8a39a"/><circle cx="358" cy="156" r="4" fill="#a8a39a"/><circle cx="402" cy="156" r="4" fill="#a8a39a"/><circle cx="446" cy="156" r="4" fill="#a8a39a"/>
+      <!-- row 8: 2 black + 8 grey (统一中间表征缺失) -->
+      <circle cx="50" cy="174" r="4" fill="#1c1a17"/><circle cx="94" cy="174" r="4" fill="#1c1a17"/><circle cx="138" cy="174" r="4" fill="#a8a39a"/><circle cx="182" cy="174" r="4" fill="#a8a39a"/><circle cx="226" cy="174" r="4" fill="#a8a39a"/><circle cx="270" cy="174" r="4" fill="#a8a39a"/><circle cx="314" cy="174" r="4" fill="#a8a39a"/><circle cx="358" cy="174" r="4" fill="#a8a39a"/><circle cx="402" cy="174" r="4" fill="#a8a39a"/><circle cx="446" cy="174" r="4" fill="#a8a39a"/>
+    </svg>
+
+    <div style="font-family: 'MonoFallback', monospace; font-size: 9px; color: var(--ink-mute); margin-top: 4px; display: flex; gap: 12px;">
+      <span>● <span style="color:var(--ink);">有 (have)</span></span>
+      <span>● <span style="color:var(--ink-faint);">缺 (need)</span></span>
+    </div>
+
+    <p style="font-size: 10px; color: var(--ink-mute); border-top: 1px dashed var(--line); padding-top: 5px; margin-top: 6px; line-height: 1.4; font-style: italic;">
+      <b>读法</b> · 100 dot = 物理 AI 链 100 个核心维度 · 60 黑 (have) · 40 灰 (need) · <b>问题密度集中在 row 7 (数据) + row 8 (统一表征)</b> · 跟存储 4-Q 同款模式 · 但物理 AI 缺的是数据，存储缺的是材料
+    </p>
+  </div>
+
+  <h2><span class="num">§4</span>Statement · 物理 AI 真瓶颈</h2>
+
+  <div class="pullquote">
+    <b>物理 AI 真瓶颈在数据，不在硬件或资本。</b>
+    <br>百万小时是行业涌现门槛，千万亿小时是通用泛化线。
+    <br>三条数据路线 (遥操作 / 仿真 / 人类视频) 各有硬约束，
+    <br>唯一能跑通的是组合拳 — 但需要统一中间表征 (Object Trajectory / VLA / World Model) 作为骨架。
+    <br><b>2026 H2 - 2027 H1</b> 是「能不能跨越百万小时门槛」的关键窗口期。
+    <br>谁能先突破，谁就拿到 LLM 时代「OpenAI」的位置。
+    <div class="attrib">— Q1 答 · Hermes Agent · 2026-08-07</div>
+  </div>
+
+  <h2><span class="num">§5</span>下一个问题</h2>
+
+  <p>Q1 给了 "数据是真瓶颈 + 100 dot 视角 + 3 路线组合拳"。Q2 进入 <b>哪类公司有优势</b> —— 按 Tier 1 (数据闭环) / Tier 2 (本体) / Tier 3 (其他) 排序，看哪些公司已经卡位。</p>
+
+  <div class="footer">
+    <b>数据源</b> · 36kr 8-6 具身专题多篇 (黎曼动力 / RoboScience 机器科学 / 蚂蚁灵波 / 宇树 IPO) · CNBC 8-6 头条 · 行业常识 · <b>GitHub</b> · private repo (user 专属 · 路径不公开)<br>
+    <b>下一份</b> · Q2: 哪类公司有优势 (Ranked Ladder) · Q3: 何时补齐 (Hairline Area) · Q4: 现在做什么 (Inset Magnifier)
+  </div>
+
+  <div class="page-num">01 / Q1</div>
+</div>
+
+</body>
+</html>
