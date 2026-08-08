@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Q3 项目中应用 Harness · Hairline Area · Harness Engineering</title>
+<style>
+  @font-face { font-family: "EditorialAccent"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); font-style: italic; }
+  @font-face { font-family: "EditorialBody"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); }
+  @font-face { font-family: "MonoFallback"; src: local("SF Mono"), local("Menlo"), local("JetBrains Mono"); }
+  :root {
+    --bg: #faf8f2; --paper: #ffffff; --ink: #1c1a17; --ink-mute: #6a6660;
+    --ink-faint: #a8a39a; --accent: #b45837; --line: #e8e0d0; --gold: #c89a3c;
+    --green: #2d6a4f; --red: #9d2933;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; }
+  body { font-family: "EditorialBody", "PP Editorial New", Georgia, serif; background: var(--bg); color: var(--ink); font-size: 11.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; align-items: center; padding: 24px 0; }
+  .page { width: 210mm; min-height: 297mm; padding: 22mm 22mm 26mm 22mm; background: var(--paper); box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin: 0 auto; }
+  .masthead { border-bottom: 1.5px solid var(--ink); padding-bottom: 12px; margin-bottom: 24px; }
+  .masthead-meta { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.18em; color: var(--ink-mute); text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .q-tag { font-family: "MonoFallback", monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: "EditorialBody", Georgia, serif; font-size: 32px; font-weight: 400; line-height: 1.12; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.005em; }
+  h1 em { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); }
+  .deck { font-size: 14px; font-style: italic; color: var(--ink-mute); margin-bottom: 4px; line-height: 1.4; }
+  .byline { font-size: 10px; color: var(--ink-mute); margin-top: 8px; letter-spacing: 0.04em; }
+  .byline b { color: var(--ink); font-weight: 600; }
+  .lead { margin: 18px 0 14px; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .lead::first-letter { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 64px; float: left; line-height: 0.85; margin: 6px 8px 0 0; color: var(--accent); }
+  h2 { font-family: "EditorialBody", Georgia, serif; font-size: 18px; font-weight: 400; color: var(--ink); margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--ink); page-break-after: avoid; }
+  h2 .num { font-family: "MonoFallback", monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-right: 8px; vertical-align: 2px; }
+  h3 { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; color: var(--ink); margin: 14px 0 6px; page-break-after: avoid; }
+  p { margin-bottom: 8px; }
+  ul, ol { margin-bottom: 8px; padding-left: 18px; }
+  li { margin-bottom: 3px; }
+  li::marker { color: var(--accent); }
+  .honest { border: 1px solid var(--ink); background: var(--bg); padding: 10px 14px; margin: 12px 0; font-size: 10.5px; line-height: 1.5; page-break-inside: avoid; }
+  .honest .label { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+  .honest b { color: var(--ink); }
+  .honest .tier { display: inline-block; padding: 1px 6px; margin-right: 4px; background: var(--ink); color: var(--paper); font-family: "MonoFallback", monospace; font-size: 8.5px; letter-spacing: 0.06em; vertical-align: 1px; }
+  .honest .tier.t2 { background: var(--ink-mute); }
+  .honest .tier.t3 { background: var(--accent); }
+
+  pre.code { background: #1c1a17; color: #faf8f2; padding: 12px 14px; border-radius: 4px; font-family: "MonoFallback", monospace; font-size: 10px; line-height: 1.5; overflow-x: auto; margin: 8px 0; page-break-inside: avoid; }
+  pre.code .kw { color: #c89a3c; }
+  pre.code .str { color: #2d6a4f; }
+  pre.code .cm { color: #8a8a85; font-style: italic; }
+
+  table.data { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 10.5px; page-break-inside: avoid; }
+  table.data th { background: var(--bg); text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--ink); font-weight: 600; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; }
+  table.data td { padding: 6px 8px; border-bottom: 1px dashed var(--line); vertical-align: top; }
+  table.data td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: "MonoFallback", monospace; font-size: 10px; }
+  table.data tr.highlight td { background: rgba(180,88,55,0.06); }
+
+  .pullquote { margin: 16px 0; padding: 12px 20px; border-left: 3px solid var(--accent); background: var(--bg); font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; line-height: 1.55; color: var(--ink); page-break-inside: avoid; }
+  .pullquote .attrib { font-size: 10px; font-style: normal; color: var(--ink-mute); margin-top: 6px; letter-spacing: 0.04em; }
+
+  .footer { margin-top: 18px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 9.5px; color: var(--ink-mute); line-height: 1.5; }
+  .footer b { color: var(--ink); }
+  .page-num { position: absolute; bottom: 10mm; right: 22mm; font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-faint); letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="masthead">
+    <div class="masthead-meta">
+      <span>HARNESS ENGINEERING · 4-Q REPORT · 2026-08-07</span>
+      <span>PART 3 OF 4 · APPLICATION</span>
+    </div>
+    <div class="q-tag">Q3 OF 4</div>
+    <h1>项目中<em>如何应用</em><br>Harness Engineering？</h1>
+    <div class="deck">5 种典型项目 × 必做 3 件 · 落地优先级 · 不同项目类型映射</div>
+    <div class="byline">
+      <b>By Hermes Agent</b> · Reviewer: User · 2026-08-07 19:18 CST
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="label">mapping · 5 项目类型 × 必做</div>
+    <span class="tier">1</span><b>单轮问答</b> (ChatGPT 替代) — 1 个 best practice 必做<br>
+    <span class="tier t2">2</span>RAG 文档问答 — 2 个<br>
+    <span class="tier t3">3</span>多步 agent / tool-calling — 3 个全做
+  </div>
+
+  <p class="lead">Q2 给出了"8 best practice + 3 必做 + 5 nice-to-have"。Q3 进入下一步：<b>不同项目类型 · 不同的应用组合</b>。5 种典型项目 × 必做 3 件 × 落地优先级。</p>
+
+  <h2><span class="num">§1</span>5 种典型项目 × 必做映射</h2>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>项目类型</th>
+        <th>Eval Suite</th>
+        <th>Tracing</th>
+        <th>Log/Debug</th>
+        <th>CI</th>
+        <th>Monitoring</th>
+        <th>何时应用</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td><b>① 单轮问答</b></td>
+        <td>必做</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>Day 1</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>② RAG 文档问答</b></td>
+        <td>必做</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>Day 1</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>③ 多步 agent</b></td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>—</td>
+        <td>—</td>
+        <td>Day 1</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>④ Production Agent</b></td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>—</td>
+        <td>Week 2+</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>⑤ ToB / 合规 Agent</b></td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>Month 1+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>核心洞察</b>：<b>Eval Suite 永远是 Day 1</b> — 即使是最简单的项目。其他根据可靠性要求递进。</p>
+
+  <h2><span class="num">§2</span>项目类型 1 · 单轮问答</h2>
+
+  <p><b>场景</b>：替代 ChatGPT 完成某领域问答（投资分析 / 代码 review / 文档总结）。</p>
+
+  <h3>必做</h3>
+  <ul>
+    <li>写 <b>5-10 个 eval cases</b>（典型问题 + 期望回答范围）</li>
+    <li>跑 baseline → 拿到 pass rate</li>
+    <li>迭代 prompt + context 直到 pass rate &gt; 80%</li>
+  </ul>
+
+  <h3>代码示例 · 单轮问答的 Eval Suite</h3>
+
+  <pre class="code"><span class="kw">import</span> json
+<span class="kw">from</span> langchain <span class="kw">import</span> ChatOpenAI
+
+llm = ChatOpenAI(model=<span class="str">"gpt-5"</span>)
+
+<span class="cm"># Eval cases</span>
+eval_cases = [
+    {<span class="str">"input"</span>: <span class="str">"什么是市盈率?"</span>, <span class="str">"expected_keywords"</span>: [<span class="str">"P/E"</span>, <span class="str">"股价"</span>, <span class="str">"每股收益"</span>]},
+    {<span class="str">"input"</span>: <span class="str">"ROE 怎么算?"</span>, <span class="str">"expected_keywords"</span>: [<span class="str">"净利润"</span>, <span class="str">"股东权益"</span>]},
+]
+
+<span class="kw">def</span> <span class="fn">run_eval</span>(case):
+    response = llm.invoke(case[<span class="str">"input"</span>]).content
+    <span class="kw">return</span> <span class="fn">all</span>(kw <span class="kw">in</span> response <span class="kw">for</span> kw <span class="str">case</span>[<span class="str">"expected_keywords"</span>])
+
+pass_rate = <span class="fn">sum</span>(run_eval(c) <span class="kw">for</span> c <span class="str">eval_cases</span>) / <span class="fn">len</span>(eval_cases)
+<span class="fn">print</span>(f<span class="str">"Pass rate: {pass_rate:.0%}"</span>)
+
+<span class="cm"># 保存 baseline</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">".eval-baseline.json"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:
+    json.dump({<span class="str">"pass_rate"</span>: pass_rate, <span class="str">"version"</span>: <span class="str">"v0-baseline"</span>}, f)</pre>
+
+  <h2><span class="num">§3</span>项目类型 2 · RAG 文档问答</h2>
+
+  <p><b>场景</b>：企业内部文档 / 法律法规 / 学术论文问答。</p>
+
+  <h3>必做</h3>
+  <ul>
+    <li><b>Eval Suite</b> · 至少 20 个 cases (含"找不到" + "找到 + 准确" + "找到但不准确")</li>
+    <li><b>RAGAS Metrics</b> · faithfulness + answer relevance + context relevance</li>
+    <li>文档 <b>chunking 策略</b> 评估</li>
+    <li>Embedding 模型选型</li>
+  </ul>
+
+  <h3>代码示例 · RAGAS 评测</h3>
+
+  <pre class="code"><span class="kw">from</span> ragas <span class="kw">import</span> evaluate
+<span class="kw">from</span> ragas.metrics <span class="kw">import</span> (
+    faithfulness,
+    answer_relevancy,
+    context_relevancy,
+    context_precision,
+)
+
+<span class="cm"># 准备 eval dataset</span>
+dataset = [
+    {
+        <span class="str">"question"</span>: <span class="str">"什么是 context engineering?"</span>,
+        <span class="str">"answer"</span>: rag_response.answer,
+        <span class="str">"contexts"</span>: rag_response.contexts,
+        <span class="str">"ground_truth"</span>: <span class="str">"..."</span>,
+    },
+    <span class="cm"># ... 20 个 cases</span>
+]
+
+<span class="cm"># 跑 RAGAS 评测</span>
+results = evaluate(
+    dataset,
+    metrics=[faithfulness, answer_relevancy, context_relevancy, context_precision],
+)
+
+<span class="fn">print</span>(f<span class="str">"Faithfulness: {results['faithfulness']:.2f}"</span>)
+<span class="fn">print</span>(f<span class="str">"Answer relevance: {results['answer_relevancy']:.2f}"</span>)
+<span class="fn">print</span>(f<span class="str">"Context relevance: {results['context_relevancy']:.2f}"</span>)
+<span class="fn">print</span>(f<span class="str">"Context precision: {results['context_precision']:.2f}"</span>)</pre>
+
+  <h2><span class="num">§4</span>项目类型 3 · 多步 Agent</h2>
+
+  <p><b>场景</b>：需要 LLM 调用多个工具完成复杂任务。</p>
+
+  <h3>必做 · 3 件全做</h3>
+  <ul>
+    <li><b>Eval Suite</b> · 工具调用成功率 + 任务成功率</li>
+    <li><b>Tracing</b> · 每个 LLM call + tool call 都 trace</li>
+    <li><b>Log/Debug</b> · 失败 case 自动 capture + 重放</li>
+  </ul>
+
+  <h3>代码示例 · LangSmith 全 trace</h3>
+
+  <pre class="code"><span class="kw">from</span> langsmith <span class="kw">import</span> traceable, Client
+
+<span class="cm"># 1. 所有函数都 @traceable</span>
+<span class="dv">@traceable</span>(run_type=<span class="str">"tool"</span>)
+<span class="kw">def</span> <span class="fn">search</span>(query: str) -> str:
+    <span class="kw">return</span> search_api(query)
+
+<span class="dv">@traceable</span>(run_type=<span class="str">"llm"</span>)
+<span class="kw">def</span> <span class="fn">llm_call</span>(prompt: str) -> str:
+    <span class="kw">return</span> llm.invoke(prompt).content
+
+<span class="dv">@traceable</span>(run_type=<span class="str">"chain"</span>)
+<span class="kw">def</span> <span class="fn">agent_step</span>(state):
+    <span class="cm"># 1. think</span>
+    thought = <span class="fn">llm_call</span>(state[<span class="str">"prompt"</span>])
+    <span class="cm"># 2. act</span>
+    result = <span class="fn">search</span>(thought)
+    <span class="cm"># 3. observe</span>
+    <span class="kw">return</span> {<span class="str">"thought"</span>: thought, <span class="str">"result"</span>: result}
+
+<span class="cm"># 2. 跑 eval suite (LangSmith client)</span>
+client = Client()
+results = client.<span class="fn">evaluate_run</span>(
+    runnable=<span class="fn">agent_step</span>,
+    dataset_name=<span class="str">"agent-v1"</span>,
+    evaluators=[<span class="str">"correctness"</span>, <span class="str">"embedding_distance"</span>],
+)
+
+<span class="fn">print</span>(f<span class="str">"Agent pass rate: {results.aggregate_metrics['correctness']:.0%}"</span>)</pre>
+
+  <h2><span class="num">§5</span>项目类型 4 · Production Agent</h2>
+
+  <p><b>场景</b>：多步 agent + 真实用户 + 可靠性要求 &gt; 95%。</p>
+
+  <p>完整 harness — Eval + Tracing + Log + CI regression + Monitoring。详细对比见 Q4。</p>
+
+  <h2><span class="num">§6</span>项目类型 5 · ToB / 合规 Agent</h2>
+
+  <p><b>场景</b>：金融 / 医疗 / 法律场景，需要合规 + 审计 + 红队测试。</p>
+
+  <p>全套 5 件 harness + 额外的：</p>
+
+  <ul>
+    <li><b>Promptfoo Red Team</b> · 越狱检测 · 边界 case 攻击</li>
+    <li><b>Audit log</b> · 每个决策都可回溯</li>
+    <li><b>Compliance report</b> · 自动生成合规报告</li>
+  </ul>
+
+  <h2><span class="num">§7</span>所以 · Q3 答案</h2>
+
+  <div class="pullquote">
+    5 种项目 × 必做映射：
+    <br><b>单轮问答</b> · Eval only
+    <br><b>RAG</b> · Eval + RAGAS
+    <br><b>多步 Agent</b> · Eval + Tracing + Log/Debug
+    <br><b>Production Agent</b> · + CI regression
+    <br><b>ToB / 合规</b> · 全 5 件 + Red Team
+    <br><b>核心原则</b> · <b>Eval Suite 永远是 Day 1</b>，其他根据可靠性要求递进。
+    <div class="attrib">— Q3 答 · Hermes Agent · 2026-08-07</div>
+  </div>
+
+  <h2><span class="num">§8</span>下一个问题</h2>
+
+  <p>Q3 给出了"5 项目类型 × 必做映射"。Q4 进入 <b>效果到底多大</b> — Inset Magnifier · 4 角色 · 复合效应 vs 单点效应 · 量化数据。</p>
+
+  <div class="footer">
+    <b>数据源</b> · Hamel Husain · LangSmith · Anthropic · RAGAS · 36kr 8-6 头条 · 14 篇评测 (D+4 #9) · <b>GitHub</b> · private repo (user 专属 · 路径不公开)<br>
+    <b>上一份</b> · Context Engineering 4-Q · <b>下一份</b> · Q4: 量化效果
+  </div>
+
+  <div class="page-num">03 / Q3</div>
+</div>
+
+</body>
+</html>

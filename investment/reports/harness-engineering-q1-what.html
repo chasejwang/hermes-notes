@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Harness Engineering · 4-Q 报告 · 2026-08-07</title>
+<style>
+  @font-face { font-family: "EditorialAccent"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); font-style: italic; }
+  @font-face { font-family: "EditorialBody"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); }
+  @font-face { font-family: "MonoFallback"; src: local("SF Mono"), local("Menlo"), local("JetBrains Mono"); }
+  :root {
+    --bg: #faf8f2; --paper: #ffffff; --ink: #1c1a17; --ink-mute: #6a6660;
+    --ink-faint: #a8a39a; --accent: #b45837; --line: #e8e0d0; --gold: #c89a3c;
+    --green: #2d6a4f; --red: #9d2933;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; }
+  body { font-family: "EditorialBody", "PP Editorial New", Georgia, serif; background: var(--bg); color: var(--ink); font-size: 11.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; align-items: center; padding: 24px 0; }
+  .page { width: 210mm; min-height: 297mm; padding: 22mm 22mm 26mm 22mm; background: var(--paper); box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin: 0 auto; }
+  .masthead { border-bottom: 1.5px solid var(--ink); padding-bottom: 12px; margin-bottom: 24px; }
+  .masthead-meta { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.18em; color: var(--ink-mute); text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .q-tag { font-family: "MonoFallback", monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: "EditorialBody", Georgia, serif; font-size: 32px; font-weight: 400; line-height: 1.12; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.005em; }
+  h1 em { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); }
+  .deck { font-size: 14px; font-style: italic; color: var(--ink-mute); margin-bottom: 4px; line-height: 1.4; }
+  .byline { font-size: 10px; color: var(--ink-mute); margin-top: 8px; letter-spacing: 0.04em; }
+  .byline b { color: var(--ink); font-weight: 600; }
+  .lead { margin: 18px 0 14px; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .lead::first-letter { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 64px; float: left; line-height: 0.85; margin: 6px 8px 0 0; color: var(--accent); }
+  h2 { font-family: "EditorialBody", Georgia, serif; font-size: 18px; font-weight: 400; color: var(--ink); margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--ink); page-break-after: avoid; }
+  h2 .num { font-family: "MonoFallback", monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-right: 8px; vertical-align: 2px; }
+  h3 { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; color: var(--ink); margin: 14px 0 6px; page-break-after: avoid; }
+  p { margin-bottom: 8px; }
+  ul, ol { margin-bottom: 8px; padding-left: 18px; }
+  li { margin-bottom: 3px; }
+  li::marker { color: var(--accent); }
+  .honest { border: 1px solid var(--ink); background: var(--bg); padding: 10px 14px; margin: 12px 0; font-size: 10.5px; line-height: 1.5; page-break-inside: avoid; }
+  .honest .label { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+  .honest b { color: var(--ink); }
+  .honest .tier { display: inline-block; padding: 1px 6px; margin-right: 4px; background: var(--ink); color: var(--paper); font-family: "MonoFallback", monospace; font-size: 8.5px; letter-spacing: 0.06em; vertical-align: 1px; }
+  .honest .tier.t2 { background: var(--ink-mute); }
+  .honest .tier.t3 { background: var(--accent); }
+
+  pre.code { background: #1c1a17; color: #faf8f2; padding: 12px 14px; border-radius: 4px; font-family: "MonoFallback", monospace; font-size: 10px; line-height: 1.5; overflow-x: auto; margin: 8px 0; page-break-inside: avoid; }
+  pre.code .kw { color: #c89a3c; }
+  pre.code .str { color: #2d6a4f; }
+  pre.code .cm { color: #8a8a85; font-style: italic; }
+
+  table.data { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 10.5px; page-break-inside: avoid; }
+  table.data th { background: var(--bg); text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--ink); font-weight: 600; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; }
+  table.data td { padding: 6px 8px; border-bottom: 1px dashed var(--line); vertical-align: top; }
+  table.data td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: "MonoFallback", monospace; font-size: 10px; }
+  table.data tr.highlight td { background: rgba(180,88,55,0.06); }
+
+  .ladder-wrap { margin: 10px 0; page-break-inside: avoid; }
+  .ladder { display: grid; grid-template-columns: 60px 1fr 80px; gap: 0; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); font-size: 10.5px; }
+  .ladder .row { padding: 10px 10px; border-bottom: 1px dashed var(--line); border-right: 1px dashed var(--line); background: var(--paper); vertical-align: middle; }
+  .ladder .row:last-child { border-bottom: none; }
+  .ladder .row.no-right { border-right: none; }
+  .ladder .rank { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 20px; font-weight: 600; color: var(--accent); text-align: center; line-height: 1; }
+  .ladder .rank sup { font-size: 9px; color: var(--ink-mute); vertical-align: 4px; margin-left: 2px; }
+  .ladder .name { font-family: "EditorialBody", Georgia, serif; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .ladder .name em { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); font-weight: 400; }
+  .ladder .desc { font-size: 9.5px; color: var(--ink-mute); line-height: 1.4; }
+  .ladder .metric { text-align: right; font-family: "MonoFallback", monospace; font-size: 11px; font-weight: 600; color: var(--ink); }
+  .ladder .metric small { display: block; font-size: 8px; color: var(--ink-mute); font-weight: 400; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+  .ladder .head { padding: 5px 10px; border-bottom: 1.5px solid var(--ink); background: var(--bg); font-size: 8.5px; font-weight: 600; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.08em; border-right: 1px dashed var(--line); }
+  .ladder .head.no-right { border-right: none; }
+  .ladder .head.right { text-align: right; }
+
+  .pullquote { margin: 16px 0; padding: 12px 20px; border-left: 3px solid var(--accent); background: var(--bg); font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; line-height: 1.55; color: var(--ink); page-break-inside: avoid; }
+  .pullquote .attrib { font-size: 10px; font-style: normal; color: var(--ink-mute); margin-top: 6px; letter-spacing: 0.04em; }
+
+  .footer { margin-top: 18px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 9.5px; color: var(--ink-mute); line-height: 1.5; }
+  .footer b { color: var(--ink); }
+  .page-num { position: absolute; bottom: 10mm; right: 22mm; font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-faint); letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="masthead">
+    <div class="masthead-meta">
+      <span>HARNESS ENGINEERING · 4-Q REPORT · 2026-08-07</span>
+      <span>4 PARTS · DEVELOPER VIEW</span>
+    </div>
+    <div class="q-tag">Q1 OF 4</div>
+    <h1>Harness Engineering，<em>为什么</em><br>不只是 Eval？</h1>
+    <div class="deck">90 秒版 · 给你 (开发者 / 工程师) · 4 个问题框架 · 与 Context Engineering 互补</div>
+    <div class="byline">
+      <b>By Hermes Agent</b> · Reviewer: User · 2026-08-07 18:55 CST
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="label">data sources · 4 档</div>
+    <span class="tier">1</span><b>论文</b> — Hamel Husain 《Your AI Product Needs Evals》 · LangSmith Evaluation · Anthropic Building Effective Agents (harness view)<br>
+    <span class="tier t2">2</span>GitHub — <code>langchain-ai/langsmith</code> · <code>hamel-ai/evals</code> · <code>openai/evals</code> · <code>langfuse/langfuse</code><br>
+    <span class="tier t3">3</span>14 篇评测 (D+4 #9): Hamel Evals 8.00 / LangSmith 7.80 / Building Effective Agents (harness view) 7.40 / ReAct 7.90<br>
+    <b>纠错通道</b> · 「存错 X」立即改 + 推新版到 ai-outputs repo
+  </div>
+
+  <p class="lead">如果说 <b>Context Engineering</b> 是「模型看到什么」 — 那 <b>Harness Engineering</b> 是「你怎么知道模型做得对」 + 「错的时候怎么 debug」 + 「生产环境怎么监控」。Harness 是 LLM 应用的"<b>测试基础设施 + 监控 + 调试</b>"，是 Eval 的超集。</p>
+
+  <h2><span class="num">§1</span>Harness Engineering 是什么</h2>
+
+  <p>它跟 Eval 的区别，按 Hamel Husain + LangSmith 论文：</p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>维度</th>
+        <th>Eval</th>
+        <th>Harness</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>关注点</b></td>
+        <td>"<b>对不对</b>" (单次评估)</td>
+        <td>"<b>为什么对 / 为什么错 + 怎么持续监控</b>"</td>
+      </tr>
+      <tr>
+        <td><b>修改对象</b></td>
+        <td>test cases + pass rate</td>
+        <td>eval + observability + log + tracing + regression</td>
+      </tr>
+      <tr>
+        <td><b>任务复杂度</b></td>
+        <td>单次评估 / 一次性</td>
+        <td>持续监控 / 跨版本回归 / 失败回放</td>
+      </tr>
+      <tr>
+        <td><b>关键问题</b></td>
+        <td>"pass rate 多少"</td>
+        <td>"<b>为什么这个 case 失败 + 跨版本回归率</b>"</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>1 句话总结</b>：Eval 关注"<b>对不对</b>" — Harness 关注"<b>为什么 + 怎么持续知道</b>"。 后者是前者的超集，也是 LLM 应用的可靠性质保。</p>
+
+  <h2><span class="num">§2</span>Harness 的 4 大组件</h2>
+
+  <p>Harness Engineering 不是单一技术 — 它由 4 大组件构成：</p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>组件</th>
+        <th>做什么</th>
+        <th>代表工具</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td>1</td>
+        <td><b>Eval Suite</b></td>
+        <td>test cases + pass rate + 自动化</td>
+        <td>Hamel Evals / OpenAI Evals / LangSmith Evals</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><b>Tracing / Observability</b></td>
+        <td>每次 LLM call 记录 prompt + response + latency + token cost</td>
+        <td>LangSmith / Langfuse / Arize Phoenix / Helicone</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><b>Log / Debug</b></td>
+        <td>失败 case 回放 + 上下文栈 + token 流向</td>
+        <td>LangSmith Debug / Helicone Playground</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><b>Regression / CI</b></td>
+        <td>版本对比 · 跨 release pass rate · 自动报警</td>
+        <td>LangSmith CI / Braintrust / DeepEval</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>这 4 件里，<b>Eval Suite 是 Day 1 必做</b>，其余 3 件在 production 阶段加上。</p>
+
+  <h2><span class="num">§3</span>GitHub 项目 · 6 个值得看</h2>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Repo</th>
+        <th>Stars</th>
+        <th>做什么</th>
+        <th>应用</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td>1</td>
+        <td><code>langchain-ai/langsmith</code></td>
+        <td class="num">~1K</td>
+        <td>Eval + observability + tracing + CI · LangChain 官方</td>
+        <td>生产级 LLM 监控</td>
+      </tr>
+      <tr class="highlight">
+        <td>2</td>
+        <td><code>langfuse/langfuse</code></td>
+        <td class="num">~5K</td>
+        <td>开源 LLM observability · 自托管 · 与 LangSmith 类似</td>
+        <td>企业自托管</td>
+      </tr>
+      <tr class="highlight">
+        <td>3</td>
+        <td><code>openai/evals</code></td>
+        <td class="num">~3K</td>
+        <td>OpenAI 官方 eval 框架 · eval cases + grading</td>
+        <td>OpenAI 模型 eval</td>
+      </tr>
+      <tr class="highlight">
+        <td>4</td>
+        <td><code>confident-ai/deepeval</code></td>
+        <td class="num">~3K</td>
+        <td>DeepEval · LLM eval 框架 · G-Eval / RAG metrics</td>
+        <td>学术 + 生产</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><code>explodinggradients/ragas</code></td>
+        <td class="num">~9K</td>
+        <td>RAG eval 框架 · faithfulness / relevance / precision</td>
+        <td>RAG 应用</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><code>promptfoo/promptfoo</code></td>
+        <td class="num">~5K</td>
+        <td>Prompt + LLM 评测 · 红队 · CI/CD 集成</td>
+        <td>CI / 安全</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><span class="num">§4</span>Harness vs Context Engineering · 互补</h2>
+
+  <p>这 4-Q 系列跟 Context Engineering 4-Q 是 <b>互补关系</b>，不是替代：</p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>问题</th>
+        <th>Context Engineering 答</th>
+        <th>Harness Engineering 答</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td><b>"模型该看到什么"</b></td>
+        <td>Context 设计的 8 best practice · 4 类失败模式</td>
+        <td>—</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>"模型做得对不对"</b></td>
+        <td>—</td>
+        <td>Eval Suite + pass rate</td>
+      </tr>
+      <tr>
+        <td><b>"为什么失败"</b></td>
+        <td>—</td>
+        <td>Tracing + Log + Debug</td>
+      </tr>
+      <tr>
+        <td><b>"跨版本回归"</b></td>
+        <td>—</td>
+        <td>Regression test + CI</td>
+      </tr>
+      <tr>
+        <td><b>"生产监控"</b></td>
+        <td>—</td>
+        <td>Observability + Alert</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>核心洞察</b>：<b>Context Engineering 设计 → Harness 验证 + 监控</b>。前者是 craft（手艺），后者是 engineering（工程）。两者一起才完整。</p>
+
+  <h2><span class="num">§5</span>代码示例 · LangSmith Eval Suite</h2>
+
+  <p>Hamel Husain 的 "evals first" 范式 + LangSmith 实现：</p>
+
+  <pre class="code"><span class="kw">from</span> langsmith <span class="kw">import</span> Client, evaluate
+<span class="kw">from</span> langchain <span class="kw">import</span> ChatOpenAI
+
+<span class="cm"># Step 1: 写 eval cases</span>
+client = Client()
+dataset = client.create_dataset(<span class="str">"invest-qa-v1"</span>)
+
+client.create_examples(
+    inputs=[
+        {<span class="str">"question"</span>: <span class="str">"什么是市盈率?"</span>},
+        {<span class="str">"question"</span>: <span class="str">"ROE 怎么算?"</span>},
+        {<span class="str">"question"</span>: <span class="str">"DCF 模型三要素?"</span>},
+    ],
+    outputs=[
+        {<span class="str">"answer"</span>: <span class="str">"P/E 是 股价 / 每股收益"</span>},
+        {<span class="str">"answer"</span>: <span class="str">"净利润 / 股东权益"</span>},
+        {< class="str">"answer"</span>: <span class="str">"现金流 + 折现率 + 终值"</span>},
+    ],
+    dataset_id=dataset.id,
+)
+
+<span class="cm"># Step 2: 定义 predict + grader</span>
+<span class="kw">def</span> <span class="fn">predict</span>(inputs):
+    <span class="kw">return</span> llm.invoke(inputs[<span class="str">"question"</span>]).content
+
+<span class="kw">def</span> <span class="fn">grade</span>(run, example):
+    <span class="cm"># 用 LLM-as-judge 评分</span>
+    grader_prompt = f<span class="str">"""Is the answer semantically equivalent to the expected?
+
+Expected: {example.outputs['answer']}
+Actual: {run.outputs['answer']}
+
+Answer YES or NO."""</span>
+    verdict = llm.invoke(grader_prompt).content
+    <span class="kw">return</span> {<span class="str">"score"</span>: <span class="dv">1</span> <span class="kw">if</span> <span class="str">"YES"</span> <span class="kw">in</span> verdict.upper() <span class="kw">else</span> <span class="dv">0</span>}
+
+<span class="cm"># Step 3: 跑 eval</span>
+results = evaluate(
+    predict,
+    data=dataset.name,
+    evaluators=[grade],
+    experiment_prefix=<span class="str">"v1-baseline"</span>,
+)
+
+<span class="cm"># Step 4: 看 pass rate</span>
+<span class="fn">print</span>(f<span class="str">"Pass rate: {results.aggregate_metrics['pass_rate']:.0%}"</span>)</pre>
+
+  <p><b>关键设计</b>：用 LangSmith 把 eval cases + grading + run history 都存起来 — <b>每一版本都有 trace</b>。这就是 harness 的核心。</p>
+
+  <h2><span class="num">§6</span>所以 · Q1 答案</h2>
+
+  <div class="pullquote">
+    Harness Engineering ≠ Eval。
+    <br>Eval 关注"<b>对不对</b>"，Harness 关注"<b>为什么 + 怎么持续知道</b>"。
+    <br>4 大组件 · Eval / Tracing / Log / Regression · 6 个 GitHub repo · 与 Context Engineering 互补。
+    <br><b>Eval Suite 永远是 Day 1</b>，其他 3 件 production 阶段加上。
+    <div class="attrib">— Q1 答 · Hermes Agent · 2026-08-07</div>
+  </div>
+
+  <h2><span class="num">§7</span>下一个问题</h2>
+
+  <p>Q1 给出了"4 大组件 + 6 repo + 与 Context Engineering 互补"。Q2 进入 <b>如何做好 Harness Engineering</b> — Ranked Ladder 8 个 best practice · 哪些最重要 / 哪些是 nice to have。</p>
+
+  <div class="footer">
+    <b>数据源</b> · Hamel Husain · LangSmith · Anthropic Building Effective Agents · 36kr 8-6 头条 · 14 篇评测 (D+4 #9) · <b>GitHub</b> · private repo (user 专属 · 路径不公开)<br>
+    <b>上一份</b> · Context Engineering 4-Q · <b>下一份</b> · Q2: 如何做好 Harness Engineering
+  </div>
+
+  <div class="page-num">01 / Q1</div>
+</div>
+
+</body>
+</html>
