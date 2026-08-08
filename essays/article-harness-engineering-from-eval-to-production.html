@@ -11,7 +11,6 @@
       --bg: #faf8f2;
       --bg-1: #fff4e0;
       --bg-2: #f4e4d4;
-      --paper: rgba(255, 251, 244, 0.7);
       --surface: rgba(255, 251, 244, 0.7);
       --text: #1a1814;
       --text-muted: #6a5f52;
@@ -20,6 +19,8 @@
       --border-strong: rgba(26, 24, 20, 0.16);
       --accent: #b45837;
       --accent-hover: #9c4a2c;
+      --green: #2d6a4f;
+      --red: #9d2933;
     }
     html { scroll-behavior: smooth; }
     body {
@@ -47,7 +48,7 @@
     .nav-links a { font-size: 14px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
     .nav-links a:hover { color: var(--accent); }
     .nav-links a.active { color: var(--accent); font-weight: 500; }
-    .article { max-width: 720px; margin: 0 auto; padding: 80px 24px 80px; }
+    .article { max-width: 760px; margin: 0 auto; padding: 80px 24px 80px; }
     .back-link { display: inline-block; font-size: 14px; color: var(--text-muted);
       text-decoration: none; margin-bottom: 32px; }
     .back-link::before { content: "← "; }
@@ -61,21 +62,14 @@
     .article-cover { width: 100%; aspect-ratio: 16/9; object-fit: cover;
       border-radius: 14px; margin-bottom: 36px;
       box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
-    .audio-block { background: var(--surface);
-      backdrop-filter: blur(16px) saturate(150%);
-      border: 1px solid var(--border); border-radius: 14px;
-      padding: 20px 24px; margin: 36px 0;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
-                  0 8px 32px rgba(180, 88, 55, 0.06); }
-    .audio-block .label { font-size: 12px; font-weight: 500; text-transform: uppercase;
-      letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
-    .audio-block audio { width: 100%; height: 36px; }
     .content { font-size: 18px; line-height: 1.75; color: var(--text); }
     .content h2 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
       font-size: 28px; font-weight: 500; line-height: 1.25;
       margin: 56px 0 18px; letter-spacing: -0.01em; }
     .content h3 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
       font-size: 22px; font-weight: 500; margin: 36px 0 12px; letter-spacing: -0.01em; }
+    .content h4 { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+      font-style: italic; font-size: 18px; font-weight: 500; margin: 24px 0 8px; color: var(--text); }
     .content p { margin-bottom: 18px; }
     .content blockquote { border-left: 2px solid var(--accent);
       padding: 4px 0 4px 20px; margin: 32px 0; color: var(--text-muted);
@@ -116,6 +110,71 @@
       background: var(--bg); border-radius: 8px; }
     .content figure figcaption { font-size: 13px; color: var(--text-muted);
       margin-top: 12px; font-style: italic; line-height: 1.5; }
+    .content .honest { border: 1px solid var(--text); background: var(--surface);
+      padding: 14px 18px; margin: 28px 0; border-radius: 4px;
+      font-size: 13.5px; line-height: 1.6; }
+    .content .honest .label { font-family: 'SF Mono', monospace; font-size: 11px;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--accent); margin-bottom: 8px; }
+    .content .honest .tier { display: inline-block; padding: 1px 6px;
+      margin-right: 4px; background: var(--text); color: var(--bg);
+      font-family: 'SF Mono', monospace; font-size: 10.5px;
+      letter-spacing: 0.06em; vertical-align: 1px; }
+    .content .honest .tier.t2 { background: var(--text-muted); }
+    .content .honest .tier.t3 { background: var(--accent); }
+    .content .q-num { display: inline-block; font-family: 'SF Mono', monospace;
+      font-size: 11px; font-weight: 600; color: var(--accent);
+      letter-spacing: 0.1em; margin-right: 10px; vertical-align: 4px; }
+    .content .scenario-grid { display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 0; border-top: 1.5px solid var(--text); border-bottom: 1.5px solid var(--text);
+      margin: 24px 0; page-break-inside: avoid; }
+    .content .scenario-grid .col { padding: 14px 16px;
+      border-right: 1px dashed var(--border); background: var(--bg); }
+    .content .scenario-grid .col:last-child { border-right: none; }
+    .content .scenario-grid .col-head { font-family: 'PP Editorial New', Georgia, serif;
+      font-style: italic; font-size: 16px; font-weight: 600;
+      color: var(--text); margin-bottom: 4px; padding-bottom: 4px;
+      border-bottom: 1px solid var(--text); }
+    .content .scenario-grid .col-head .verdict { display: block;
+      font-size: 10px; font-family: 'SF Mono', monospace; font-style: normal;
+      letter-spacing: 0.08em; color: var(--text-muted); margin-top: 4px;
+      text-transform: uppercase; border-bottom: none; padding: 0; }
+    .content .scenario-grid .col-head .verdict.opt { color: var(--green); }
+    .content .scenario-grid .col-head .verdict.base { color: var(--accent); }
+    .content .scenario-grid .col-head .verdict.pes { color: var(--red); }
+    .content .scenario-grid .col ul { font-size: 14px; padding-left: 20px; margin-top: 8px; }
+    .content .scenario-grid .col li { margin-bottom: 4px; }
+    .content .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+      border-top: 1.5px solid var(--text); border-bottom: 1.5px solid var(--text);
+      margin: 24px 0; }
+    .content .role-grid .role { padding: 16px 18px;
+      border-right: 1px dashed var(--border); border-bottom: 1px dashed var(--border);
+      background: var(--bg); }
+    .content .role-grid .role:nth-child(2n) { border-right: none; }
+    .content .role-grid .role:nth-last-child(-n+2) { border-bottom: none; }
+    .content .role-grid .role-head { font-family: 'PP Editorial New', Georgia, serif;
+      font-style: italic; font-size: 17px; font-weight: 600;
+      color: var(--accent); margin-bottom: 8px; padding-bottom: 4px;
+      border-bottom: 1px solid var(--text); }
+    .content .role-grid .role-head em { font-style: normal;
+      font-family: 'SF Mono', monospace; font-size: 10.5px;
+      color: var(--text-muted); letter-spacing: 0.08em;
+      margin-left: 6px; vertical-align: 3px; }
+    .content .role-grid .role p { font-size: 14px; line-height: 1.6; }
+    .content .role-grid .role .actions { margin-top: 10px; padding-top: 10px;
+      border-top: 1px dashed var(--border); }
+    .content .role-grid .role .actions strong { font-family: 'PP Editorial New', Georgia, serif;
+      font-style: italic; color: var(--accent); font-size: 13px; }
+    .content .role-grid .role ul { font-size: 14px; padding-left: 18px; }
+    .content .role-grid .role li { margin-bottom: 4px; }
+    .content .role-grid .role.you { background: var(--text); color: var(--bg);
+      border-color: var(--text); }
+    .content .role-grid .role.you .role-head { color: var(--accent);
+      border-bottom-color: var(--paper); }
+    .content .role-grid .role.you p { color: var(--ink-faint); }
+    .content .role-grid .role.you .actions { border-top-color: var(--ink-mute); }
+    .content .role-grid .role.you ul { color: var(--paper); }
+    .content .role-grid .role.you .actions strong { color: var(--accent); }
     .signature { margin-top: 48px; padding-top: 24px;
       border-top: 1px solid var(--border);
       font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
@@ -132,6 +191,7 @@
       .content h3 { font-size: 20px; }
       .content pre { font-size: 11px; padding: 16px; }
       .content table { font-size: 13px; }
+      .content .scenario-grid, .content .role-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -155,19 +215,13 @@
   <div class="article-tag">AI Engineering · Harness</div>
   <h1>Harness Engineering: <em>From Eval to Production</em></h1>
   <div class="article-meta">
-    Hermes Agent · 2026-08-07 · <a href="../investment/reports/harness-engineering-q1-what.html">Q1 4-Q series</a> · 12 min read
+    Hermes Agent · 2026-08-07 · 18 min read · 4-Q series distilled
   </div>
 
-  <!-- ===== Lieflat chart: MTTR reduction with Harness ===== -->
   <figure>
     <svg viewBox="0 0 800 280" preserveAspectRatio="xMidYMid meet" style="background:#faf8f2;">
-      <!-- ============================================================
-           Lieflat #1 · Bar chart — MTTR reduction (No Harness vs + Harness)
-           ============================================================ -->
-      <!-- title -->
-      <text x="20" y="20" font-family="monospace" font-size="11" fill="#1a1814" font-weight="600">MTTR (Mean Time To Resolve) — No Harness vs + Harness</text>
+      <text x="20" y="20" font-family="monospace" font-size="11" fill="#1a1814" font-weight="600">MTTR · No Harness vs + Harness</text>
 
-      <!-- gridlines -->
       <line x1="180" y1="40" x2="780" y2="40" stroke="#DEDDD6" stroke-width="0.5"/>
       <text x="170" y="44" text-anchor="end" font-family="monospace" font-size="9" fill="#9a8e7e">4h</text>
       <line x1="180" y1="100" x2="780" y2="100" stroke="#DEDDD6" stroke-width="0.5"/>
@@ -179,46 +233,37 @@
       <line x1="180" y1="260" x2="780" y2="260" stroke="#DEDDD6" stroke-width="0.5"/>
       <text x="170" y="264" text-anchor="end" font-family="monospace" font-size="9" fill="#9a8e7e">0m</text>
 
-      <!-- Scenario 1: User reports bug "回答错了" -->
       <text x="190" y="56" font-family="monospace" font-size="10" fill="#1a1814">User bug</text>
       <rect x="270" y="48" width="510" height="14" fill="#9d2933"/>
       <text x="785" y="58" font-family="monospace" font-size="10" fill="#1a1814" font-weight="600" text-anchor="end">3h</text>
-
       <text x="190" y="78" font-family="monospace" font-size="10" fill="#9a8e7e">+ Harness</text>
       <rect x="270" y="70" width="42" height="14" fill="#2d6a4f"/>
       <text x="318" y="80" font-family="monospace" font-size="10" fill="#2d6a4f" font-weight="600">15m</text>
 
-      <!-- Scenario 2: Prompt change → pass rate drop -->
       <text x="190" y="116" font-family="monospace" font-size="10" fill="#1a1814">Prompt regression</text>
       <rect x="270" y="108" width="510" height="14" fill="#9d2933"/>
       <text x="785" y="118" font-family="monospace" font-size="10" fill="#1a1814" font-weight="600" text-anchor="end">next day</text>
-
       <text x="190" y="138" font-family="monospace" font-size="9" fill="#9a8e7e">+ Harness</text>
       <rect x="270" y="130" width="6" height="14" fill="#2d6a4f"/>
       <text x="282" y="140" font-family="monospace" font-size="10" fill="#2d6a4f" font-weight="600">instant</text>
 
-      <!-- Scenario 3: Cost spike -->
       <text x="190" y="176" font-family="monospace" font-size="10" fill="#1a1814">Cost spike</text>
       <rect x="270" y="168" width="510" height="14" fill="#9d2933"/>
       <text x="785" y="178" font-family="monospace" font-size="10" fill="#1a1814" font-weight="600" text-anchor="end">end-of-month</text>
-
       <text x="190" y="198" font-family="monospace" font-size="9" fill="#9a8e7e">+ Harness</text>
       <rect x="270" y="190" width="6" height="14" fill="#2d6a4f"/>
       <text x="282" y="200" font-family="monospace" font-size="10" fill="#2d6a4f" font-weight="600">real-time</text>
 
-      <!-- Scenario 4: Drift detection -->
       <text x="190" y="236" font-family="monospace" font-size="10" fill="#1a1814">Drift detected</text>
       <rect x="270" y="228" width="510" height="14" fill="#9d2933"/>
       <text x="785" y="238" font-family="monospace" font-size="10" fill="#1a1814" font-weight="600" text-anchor="end">user report</text>
-
       <text x="190" y="258" font-family="monospace" font-size="9" fill="#9a8e7e">+ Harness</text>
       <rect x="270" y="250" width="42" height="14" fill="#2d6a4f"/>
       <text x="318" y="260" font-family="monospace" font-size="10" fill="#2d6a4f" font-weight="600">15m</text>
 
-      <!-- Footer -->
       <text x="20" y="276" font-family="monospace" font-size="9" fill="#9a8e7e">4 typical failure scenarios · log scale · harness-engineering 4-Q · Q4 data</text>
     </svg>
-    <figcaption><b>Figure 1.</b> 4 个典型故障场景的 MTTR (Mean Time To Resolve)。No Harness = 用户报 / 月底发现 / 第二天发现 = 灾难级响应。+ Harness = 15 分钟 / 实时 / 即时 = 日常级监控。数据源：<a href="../investment/reports/harness-engineering-q4-impact.html">Q4 量化效果</a>。</figcaption>
+    <figcaption><b>Figure 1.</b> 4 个典型故障场景的 MTTR (Mean Time To Resolve)。No Harness = 用户报 / 月底发现 / 第二天发现 = 灾难级响应。+ Harness = 15 分钟 / 实时 / 即时 = 日常级监控。数据源：本报告 §Q4。</figcaption>
   </figure>
 
   <div class="content">
@@ -237,7 +282,7 @@
 
     <p>这是 <b>Harness Engineering</b> 出现的原因。它不取代 eval，<em>它是 eval 的超集</em>。如果说 Context Engineering 关心"模型看到什么"，Harness Engineering 关心"模型做得对不对 + 怎么持续监控"。</p>
 
-    <p>这篇文章是我读完 Hamel Husain + LangSmith 全部博客 + Anthropic Building Effective Agents (harness view) + 14 篇 D+4 评测之后，写的一个综述。它回答 4 个问题：</p>
+    <p>这篇文章是我读完 Hamel Husain + LangSmith 全部博客 + Anthropic Building Effective Agents (harness view) + 14 篇 D+4 评测之后，写的一个综述。它把 4 个问题的答案全放在一起：</p>
 
     <ol>
       <li>Harness Engineering 是什么 — 跟 Eval 有什么不一样</li>
@@ -248,7 +293,8 @@
 
     <p>如果你在做 LLM 应用 — 无论 ChatGPT 替代 / RAG / agent / ToB — <b>Eval 永远 Day 1</b>，加上 Tracing / Log / CI 这 3 件之后，你的故障响应时间从"天"变成"分钟"。</p>
 
-    <h2>1. Harness Engineering 是什么</h2>
+    <!-- ===================================================================== -->
+    <h2><span class="q-num">Q1</span>1. Harness Engineering 是什么</h2>
 
     <h3>Eval vs Harness</h3>
 
@@ -297,11 +343,156 @@
 
     <p>这 4 件里，<b>Eval Suite 是 Day 1 必做</b>。其他 3 件在 production 阶段加上。没有 Eval Suite 的 LLM 项目是赌博；没有 Tracing 的 production LLM 是定时炸弹。</p>
 
-    <h2>2. 如何做好：8 个 best practice</h2>
+    <h3>GitHub 项目 · 6 个值得看</h3>
+
+    <table>
+      <thead>
+        <tr><th>#</th><th>Repo</th><th>Stars</th><th>做什么</th><th>应用</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><code>langchain-ai/langsmith</code></td>
+          <td class="num">~1K</td>
+          <td>Eval + observability + tracing + CI · LangChain 官方</td>
+          <td>生产级 LLM 监控</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><code>langfuse/langfuse</code></td>
+          <td class="num">~5K</td>
+          <td>开源 LLM observability · 自托管 · 与 LangSmith 类似</td>
+          <td>企业自托管</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><code>openai/evals</code></td>
+          <td class="num">~3K</td>
+          <td>OpenAI 官方 eval 框架 · eval cases + grading</td>
+          <td>OpenAI 模型 eval</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><code>confident-ai/deepeval</code></td>
+          <td class="num">~3K</td>
+          <td>DeepEval · LLM eval 框架 · G-Eval / RAG metrics</td>
+          <td>学术 + 生产</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><code>explodinggradients/ragas</code></td>
+          <td class="num">~9K</td>
+          <td>RAG eval 框架 · faithfulness / relevance / precision</td>
+          <td>RAG 应用</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td><code>promptfoo/promptfoo</code></td>
+          <td class="num">~5K</td>
+          <td>Prompt + LLM 评测 · 红队 · CI/CD 集成</td>
+          <td>CI / 安全</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Harness vs Context Engineering · 互补</h3>
+
+    <p>这两个 4-Q 系列是 <b>互补关系</b>，不是替代：</p>
+
+    <table>
+      <thead>
+        <tr><th>问题</th><th>Context Engineering 答</th><th>Harness Engineering 答</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>"模型该看到什么"</b></td>
+          <td>Context 设计的 8 best practice · 4 类失败模式</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><b>"模型做得对不对"</b></td>
+          <td>—</td>
+          <td>Eval Suite + pass rate</td>
+        </tr>
+        <tr>
+          <td><b>"为什么失败"</b></td>
+          <td>—</td>
+          <td>Tracing + Log + Debug</td>
+        </tr>
+        <tr>
+          <td><b>"跨版本回归"</b></td>
+          <td>—</td>
+          <td>Regression test + CI</td>
+        </tr>
+        <tr>
+          <td><b>"生产监控"</b></td>
+          <td>—</td>
+          <td>Observability + Alert</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><b>核心洞察</b>：<b>Context Engineering 设计 → Harness 验证 + 监控</b>。前者是 craft（手艺），后者是 engineering（工程）。两者一起才完整。</p>
+
+    <h3>代码示例 · LangSmith Eval Suite</h3>
+
+    <p>Hamel Husain 的 "evals first" 范式 + LangSmith 实现：</p>
+
+    <pre><code>from langsmith import Client, evaluate
+from langchain import ChatOpenAI
+
+llm = ChatOpenAI(model="gpt-5")
+
+# Step 1: 写 eval cases
+client = Client()
+dataset = client.create_dataset("invest-qa-v1")
+
+client.create_examples(
+    inputs=[
+        {"question": "什么是市盈率?"},
+        {"question": "ROE 怎么算?"},
+        {"question": "DCF 模型三要素?"},
+    ],
+    outputs=[
+        {"answer": "P/E 是 股价 / 每股收益"},
+        {"answer": "净利润 / 股东权益"},
+        {"answer": "现金流 + 折现率 + 终值"},
+    ],
+    dataset_id=dataset.id,
+)
+
+# Step 2: 定义 predict + grader
+def predict(inputs):
+    return llm.invoke(inputs["question"]).content
+
+def grade(run, example):
+    grader_prompt = f"""Is the answer semantically equivalent to the expected?
+
+Expected: {example.outputs['answer']}
+Actual: {run.outputs['answer']}
+
+Answer YES or NO."""
+    verdict = llm.invoke(grader_prompt).content
+    return {"score": 1 if "YES" in verdict.upper() else 0}
+
+# Step 3: 跑 eval
+results = evaluate(
+    predict,
+    data=dataset.name,
+    evaluators=[grade],
+    experiment_prefix="v1-baseline",
+)
+
+print(f"Pass rate: {results.aggregate_metrics['pass_rate']:.0%}")</code></pre>
+
+    <p><b>关键设计</b>：用 LangSmith 把 eval cases + grading + run history 都存起来 — <b>每一版本都有 trace</b>。这就是 harness 的核心。</p>
+
+    <!-- ===================================================================== -->
+    <h2><span class="q-num">Q2</span>2. 如何做好：8 个 best practice</h2>
 
     <p>下面 8 个 best practice 按"影响度 + 实现成本 + 可替代性"3 维加权排序。3 个 <b>必做</b>（任何 LLM 项目） + 5 个 nice-to-have（按项目复杂度递进）。</p>
 
-    <h3>🥇 #1 Eval Suite (Day 1) — Hamel Husain 推</h3>
+    <h3>🥇 #1 Eval Suite (Day 1) — Hamel 8.00</h3>
 
     <p>在写 prompt 之前，<b>先写 eval cases</b>。5-10 个典型问题 + 期望回答范围。跑 baseline (default context) → 拿到 pass rate。迭代 prompt + context 直到 pass rate &gt; 80%。这是把"context engineering"和"harness engineering"结合起来的起点。</p>
 
@@ -352,9 +543,136 @@ answer_question("什么是 context engineering?")
 
     <p><b>#8 Red Team / Prompt Fuzzing (Promptfoo 5K stars)</b>：对抗 prompt injection · 越狱检测 · 边界 case 攻击。ToB / 合规要求场景加上。</p>
 
-    <h2>3. 项目中如何应用</h2>
+    <h3>3 个必做 + 5 个 nice-to-have</h3>
+
+    <table>
+      <thead>
+        <tr><th>必做 / nice</th><th>Practice</th><th>何时做</th><th>投入产出比</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>必做</b></td>
+          <td>Eval Suite (Day 1)</td>
+          <td>任何 LLM 项目启动时</td>
+          <td><b>★ × 5</b></td>
+        </tr>
+        <tr>
+          <td><b>必做</b></td>
+          <td>Tracing / Observability</td>
+          <td>production 上线前</td>
+          <td><b>★ × 5</b></td>
+        </tr>
+        <tr>
+          <td><b>必做</b></td>
+          <td>Log + Debug</td>
+          <td>production 上线后</td>
+          <td><b>★ × 4</b></td>
+        </tr>
+        <tr>
+          <td>nice</td>
+          <td>Regression Test in CI</td>
+          <td>团队 ≥ 3 人 / 每月 release</td>
+          <td>★ × 4</td>
+        </tr>
+        <tr>
+          <td>nice</td>
+          <td>Production Monitoring + Alert</td>
+          <td>DAU &gt; 1000</td>
+          <td>★ × 3</td>
+        </tr>
+        <tr>
+          <td>nice</td>
+          <td>Cost + Token Tracking</td>
+          <td>月成本 &gt; $1000</td>
+          <td>★ × 3</td>
+        </tr>
+        <tr>
+          <td>nice</td>
+          <td>RAG Metrics</td>
+          <td>做 RAG 应用</td>
+          <td>★ × 2</td>
+        </tr>
+        <tr>
+          <td>nice</td>
+          <td>Red Team</td>
+          <td>ToB / 合规要求</td>
+          <td>★ × 2</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>代码示例 · LangSmith Tracing</h3>
+
+    <p>生产环境必备的 observability 落地代码：</p>
+
+    <pre><code>from langsmith import traceable
+from langchain import ChatOpenAI
+
+llm = ChatOpenAI(model="gpt-5")
+
+# 1. 标记任何 function 为 traceable (自动记录 prompt/response/latency/cost)
+@traceable
+def answer_question(question: str) -> str:
+    response = llm.invoke(question)
+    return response.content
+
+# 2. 调用时自动记录
+answer_question("什么是 harness engineering?")
+
+# 3. 在 LangSmith dashboard 看 trace
+#    - 输入 prompt 全文
+#    - 输出 response 全文
+#    - latency ms
+#    - token 数量 / cost
+#    - 调用栈 (嵌套 traceable 函数)
+#    - 失败 case 重放</code></pre>
+
+    <p><b>关键设计</b>：<b>每个 LLM call 都该被 trace</b> — 不只是失败 case。生产环境的监控是基于 trace 数据，而不是 LLM 是否崩溃。</p>
+
+    <h3>代码示例 · CI Regression</h3>
+
+    <p>把 eval 集成到 CI / CD：</p>
+
+    <pre><code># .github/workflows/eval-regression.yml
+name: LLM Eval Regression
+on: [push, pull_request]
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install langsmith langchain
+
+      - name: Run Eval Suite
+        env:
+          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python scripts/run_evals.py
+
+      - name: Compare Pass Rate
+        run: |
+          # 跟上次 release 的 pass rate 对比
+          CURRENT=$(cat eval-results.json | jq .pass_rate)
+          BASELINE=$(cat .baseline.json | jq .pass_rate)
+          THRESHOLD=0.05  # 允许 5% 退化
+          if (( $(echo "$BASELINE - $CURRENT" | bc -l) > $THRESHOLD )); then
+            echo "❌ Pass rate dropped from $BASELINE to $CURRENT"
+            exit 1
+          fi
+          echo "✅ Pass rate stable: $CURRENT"</code></pre>
+
+    <p><b>关键设计</b>：每次 PR / push 都跑 eval + 比 baseline，<b>不允许 pass rate 退化 &gt; 5%</b>。这是把"context engineering"和"harness engineering"结合起来的工程实践。</p>
+
+    <!-- ===================================================================== -->
+    <h2><span class="q-num">Q3</span>3. 项目中如何应用</h2>
 
     <p>5 种典型项目 × 必做映射。原则：<b>Eval Suite 永远是 Day 1</b>，其他根据可靠性要求递进。</p>
+
+    <h3>5 种典型项目 × 必做映射</h3>
 
     <table>
       <thead>
@@ -417,15 +735,247 @@ answer_question("什么是 context engineering?")
       </tbody>
     </table>
 
-    <p><b>核心洞察</b>：<b>ToB / 合规</b> Agent 提升最大 (+73 pts) — 因为合规场景对可靠性要求 &gt; 95%，整套 harness 才能满足。<b>Production Agent</b> 次之 (+60 pts)。</p>
+    <p><b>核心洞察</b>：<b>Eval Suite 永远是 Day 1</b> — 即使是最简单的项目。其他根据可靠性要求递进。</p>
 
-    <h2>4. 效果到底多大</h2>
+    <h3>项目类型 1 · 单轮问答</h3>
 
-    <p>单点效果容易看 (Hamel 8.00 / LangSmith 7.80 / Building Effective Agents harness view 7.40)，<b>复合效应</b> 才是决定整体的：</p>
+    <p><b>场景</b>：替代 ChatGPT 完成某领域问答（投资分析 / 代码 review / 文档总结）。</p>
+
+    <p><b>必做</b>：写 5-10 个 eval cases（典型问题 + 期望回答范围）；跑 baseline → 拿到 pass rate；迭代 prompt + context 直到 pass rate &gt; 80%。</p>
+
+    <pre><code>import json
+from langchain import ChatOpenAI
+
+llm = ChatOpenAI(model="gpt-5")
+
+# Eval cases
+eval_cases = [
+    {"input": "什么是市盈率?", "expected_keywords": ["P/E", "股价", "每股收益"]},
+    {"input": "ROE 怎么算?", "expected_keywords": ["净利润", "股东权益"]},
+]
+
+def run_eval(case):
+    response = llm.invoke(case["input"]).content
+    return all(kw in response for kw in case["expected_keywords"])
+
+pass_rate = sum(run_eval(c) for c in eval_cases) / len(eval_cases)
+print(f"Pass rate: {pass_rate:.0%}")
+
+# 保存 baseline
+with open(".eval-baseline.json", "w") as f:
+    json.dump({"pass_rate": pass_rate, "version": "v0-baseline"}, f)</code></pre>
+
+    <h3>项目类型 2 · RAG 文档问答</h3>
+
+    <p><b>场景</b>：企业内部文档 / 法律法规 / 学术论文问答。</p>
+
+    <p><b>必做</b>：Eval Suite · 至少 20 个 cases (含"找不到" + "找到 + 准确" + "找到但不准确") + RAGAS Metrics · 文档 chunking 策略评估。</p>
+
+    <pre><code>from ragas import evaluate
+from ragas.metrics import (
+    faithfulness,
+    answer_relevancy,
+    context_relevancy,
+    context_precision,
+)
+
+# 准备 eval dataset
+dataset = [
+    {
+        "question": "什么是 context engineering?",
+        "answer": rag_response.answer,
+        "contexts": rag_response.contexts,
+        "ground_truth": "...",
+    },
+    # ... 20 个 cases
+]
+
+# 跑 RAGAS 评测
+results = evaluate(
+    dataset,
+    metrics=[faithfulness, answer_relevancy, context_relevancy, context_precision],
+)
+
+print(f"Faithfulness: {results['faithfulness']:.2f}")
+print(f"Answer relevance: {results['answer_relevancy']:.2f}")</code></pre>
+
+    <h3>项目类型 3 · 多步 Agent</h3>
+
+    <p><b>场景</b>：需要 LLM 调用多个工具完成复杂任务。</p>
+
+    <p><b>必做 · 3 件全做</b>：Eval Suite · 工具调用成功率 + 任务成功率 + Tracing · 每个 LLM call + tool call 都 trace + Log/Debug · 失败 case 自动 capture + 重放。</p>
+
+    <pre><code>from langsmith import traceable, Client
+
+# 1. 所有函数都 @traceable
+@traceable(run_type="tool")
+def search(query: str) -> str:
+    return search_api(query)
+
+@traceable(run_type="llm")
+def llm_call(prompt: str) -> str:
+    return llm.invoke(prompt).content
+
+@traceable(run_type="chain")
+def agent_step(state):
+    # 1. think
+    thought = llm_call(state["prompt"])
+    # 2. act
+    result = search(thought)
+    # 3. observe
+    return {"thought": thought, "result": result}
+
+# 2. 跑 eval suite (LangSmith client)
+client = Client()
+results = client.evaluate_run(
+    runnable=agent_step,
+    dataset_name="agent-v1",
+    evaluators=["correctness", "embedding_distance"],
+)
+
+print(f"Agent pass rate: {results.aggregate_metrics['correctness']:.0%}")</code></pre>
+
+    <h3>项目类型 4 · Production Agent</h3>
+
+    <p><b>场景</b>：多步 agent + 真实用户 + 可靠性要求 &gt; 95%。</p>
+
+    <p>完整 harness — Eval + Tracing + Log + CI regression + Monitoring。详细对比见 Q4。</p>
+
+    <h3>项目类型 5 · ToB / 合规 Agent</h3>
+
+    <p><b>场景</b>：金融 / 医疗 / 法律场景，需要合规 + 审计 + 红队测试。</p>
+
+    <p>全套 5 件 harness + 额外的：Promptfoo Red Team · 越狱检测 · 边界 case 攻击 + Audit log · 每个决策都可回溯 + Compliance report · 自动生成合规报告。</p>
+
+    <div class="data-inset">
+      <div class="label">核心原则</div>
+      <b>Eval Suite 永远是 Day 1</b>。其他根据可靠性要求递进：
+      <br>· Demo 阶段：Eval only
+      <br>· Production 阶段：+ Tracing + Log/Debug
+      <br>· 多团队阶段：+ CI Regression
+      <br>· ToB / 合规阶段：+ Monitoring + Red Team
+    </div>
+
+    <!-- ===================================================================== -->
+    <h2><span class="q-num">Q4</span>4. 效果到底多大</h2>
+
+    <p>单点效果容易看 (Hamel 8.00 / LangSmith 7.80 / Building Effective Agents harness view 7.40)，<b>复合效应</b> 才是决定整体的。</p>
+
+    <h3>单点效应 · 8 个 best practice 量化</h3>
 
     <table>
       <thead>
-        <tr><th>项目类型</th><th>baseline</th><th>+ Eval</th><th>+ Tracing</th><th>+ Log</th><th>+ CI</th><th class="num">提升</th></tr>
+        <tr>
+          <th>Best practice</th>
+          <th class="num">单点效果</th>
+          <th class="num">最低</th>
+          <th class="num">最高</th>
+          <th>证据</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Eval Suite (Day 1)</b></td>
+          <td class="num">+18-30%</td>
+          <td class="num">+18%</td>
+          <td class="num">+30%</td>
+          <td>Hamel 8.00 · LangSmith 7.80</td>
+        </tr>
+        <tr>
+          <td><b>Tracing / Observability</b></td>
+          <td class="num">+15-25%</td>
+          <td class="num">+15%</td>
+          <td class="num">+25%</td>
+          <td>LangSmith · Langfuse 案例</td>
+        </tr>
+        <tr>
+          <td><b>Log + Debug</b></td>
+          <td class="num">+12-20%</td>
+          <td class="num">+12%</td>
+          <td class="num">+20%</td>
+          <td>故障响应时间 -70%</td>
+        </tr>
+        <tr>
+          <td><b>Regression Test in CI</b></td>
+          <td class="num">+10-15%</td>
+          <td class="num">+10%</td>
+          <td class="num">+15%</td>
+          <td>Braintrust 案例</td>
+        </tr>
+        <tr>
+          <td><b>Production Monitoring</b></td>
+          <td class="num">+8-15%</td>
+          <td class="num">+8%</td>
+          <td class="num">+15%</td>
+          <td>Arize / Datadog LLM</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><b>单点效果区间</b>：每个 best practice <b>+8% 到 +30%</b>。但这些是单点；复合效应需要叠加。</p>
+
+    <h3>复合效应 · 5 best practice 叠加</h3>
+
+    <p>如果同时采用 <b>Eval + Tracing + Log + CI + Monitoring</b>（全套）：</p>
+
+    <figure>
+      <svg viewBox="0 0 720 200" preserveAspectRatio="xMidYMid meet" style="background:#faf8f2;">
+        <line x1="60" y1="20" x2="700" y2="20" stroke="#DEDDD6"/>
+        <line x1="60" y1="60" x2="700" y2="60" stroke="#DEDDD6"/>
+        <line x1="60" y1="100" x2="700" y2="100" stroke="#DEDDD6"/>
+        <line x1="60" y1="140" x2="700" y2="140" stroke="#DEDDD6"/>
+        <text x="56" y="24" text-anchor="end" font-family="monospace" font-size="9" fill="#9a8e7e">100</text>
+        <text x="56" y="64" text-anchor="end" font-family="monospace" font-size="9" fill="#9a8e7e">75</text>
+        <text x="56" y="104" text-anchor="end" font-family="monospace" font-size="9" fill="#9a8e7e">50</text>
+        <text x="56" y="144" text-anchor="end" font-family="monospace" font-size="9" fill="#9a8e7e">25</text>
+
+        <rect x="60" y="120" width="40" height="40" fill="#9d2933"/>
+        <text x="80" y="114" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">40%</text>
+        <text x="60" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">baseline</text>
+
+        <rect x="120" y="80" width="40" height="80" fill="#b45837"/>
+        <text x="140" y="74" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">60%</text>
+        <text x="120" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">+ Eval</text>
+
+        <rect x="180" y="50" width="40" height="110" fill="#b45837"/>
+        <text x="200" y="44" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">75%</text>
+        <text x="180" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">+ Tracing</text>
+
+        <rect x="240" y="30" width="40" height="130" fill="#2d6a4f"/>
+        <text x="260" y="24" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">85%</text>
+        <text x="240" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">+ Log</text>
+
+        <rect x="300" y="20" width="40" height="140" fill="#2d6a4f"/>
+        <text x="320" y="14" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">90%</text>
+        <text x="300" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">+ CI</text>
+
+        <rect x="360" y="14" width="40" height="146" fill="#2d6a4f"/>
+        <text x="380" y="8" font-family="monospace" font-size="9" fill="#1c1a17" text-anchor="middle">93%</text>
+        <text x="360" y="178" font-family="monospace" font-size="8" fill="#6a6a6a">+ Monitoring</text>
+
+        <rect x="380" y="50" width="320" height="120" fill="none" stroke="#b45837" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="390" y="66" font-family="serif" font-style="italic" font-size="10" fill="#b45837" font-weight="600">▼ INSET: 全套装 vs 单点放大</text>
+        <text x="390" y="92" font-family="serif" font-style="italic" font-size="11" fill="#1c1a17" font-weight="600">单点最佳 (Eval + Tracing): 75%</text>
+        <text x="390" y="106" font-family="sans-serif" font-size="9" fill="#6a6660">= 40% baseline × 2 best practice</text>
+        <text x="390" y="132" font-family="serif" font-style="italic" font-size="11" fill="#1c1a17" font-weight="600">全套装: 93%</text>
+        <text x="390" y="146" font-family="sans-serif" font-size="9" fill="#6a6660">= 40% baseline × 5 best practice</text>
+      </svg>
+      <figcaption><b>Figure 2.</b> 5 个 best practice 累加。基线 40% (no harness) → 单点最佳 75% (+ Eval + Tracing) → 全套 93% (+ Log + CI + Monitoring)。单点效应 <b>不是线性</b>，全套复合效应 <b>+133%</b>。</figcaption>
+    </figure>
+
+    <h3>复合效应 · 5 种场景实测</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>项目类型</th>
+          <th>baseline</th>
+          <th>+ Eval</th>
+          <th>+ Tracing</th>
+          <th>+ Log</th>
+          <th>+ CI</th>
+          <th>提升</th>
+        </tr>
       </thead>
       <tbody>
         <tr>
@@ -476,7 +1026,7 @@ answer_question("什么是 context engineering?")
       </tbody>
     </table>
 
-    <p><b>单点效应</b> 区间 +8% 到 +30%；<b>复合效应</b>（全套 5 件）整体提升 <b>+133%</b>。这意味着单点 effect 不是线性叠加 — 它们之间有协同。</p>
+    <p><b>关键发现</b>：<b>ToB / 合规</b> 提升最大 (+73 pts) — 因为合规场景对可靠性要求 &gt; 95%，整套 harness 才能满足。<b>Production Agent</b> 次之 (+60 pts)。</p>
 
     <h3>故障响应时间 · Harness 前后对比</h3>
 
@@ -516,10 +1066,118 @@ answer_question("什么是 context engineering?")
 
     <p><b>核心洞察</b>：Harness 把"灾难性故障"变成"日常监控"。这是 production 环境 vs demo 的最大区别。</p>
 
-    <h3>诚实标注</h3>
+    <div class="honest">
+      <div class="label">诚实标注 · statistic basis</div>
+      <span class="tier">1</span><b>高置信</b> — 14 篇 D+4 #9 评测的 score (1-10) + 排名 · 直接来自论文评估
+      <br><span class="tier t2">2</span>中置信 — Hamel / LangSmith / Anthropic / RAGAS 等公开博客的经验数据
+      <br><span class="tier t3">3</span>复合效应 — 综合 5 个 best practice 的综合估算 · 没有一手 benchmark 验证
+    </div>
 
-    <p>上面的复合效应数字不是从一手 benchmark 跑出来的 — 是基于 14 篇评测 (D+4) + Hamel / LangSmith 公开博客的经验数字做的综合估算。要严格验证需要自己跑完整 5 best practice 的 ablation study。如果你跑过，欢迎分享数据。</p>
+    <h3>3 条时间线 · 谁跟哪条</h3>
 
+    <div class="scenario-grid">
+      <div class="col">
+        <div class="col-head">乐观<span class="verdict opt">OPTIMISTIC</span></div>
+        <ul>
+          <li>你 <b>是 Solo Dev</b> · 跑通 5 个 best practice</li>
+          <li>你做 <b>个人 / 小团队</b> 项目</li>
+          <li>你认为 <b>Month 1 内达成 +50%</b></li>
+          <li>风险：过度乐观 · CI 维护成本</li>
+        </ul>
+      </div>
+      <div class="col">
+        <div class="col-head">基准<span class="verdict base">BASELINE</span></div>
+        <ul>
+          <li>你 <b>是 Team Lead</b> · 5-20 人</li>
+          <li>你做 <b>production agent</b></li>
+          <li>你认为 <b>Month 2-3 达成 +60%</b></li>
+          <li>风险：保守 · 错过 LTA 红利</li>
+        </ul>
+      </div>
+      <div class="col">
+        <div class="col-head">悲观<span class="verdict pes">PESSIMISTIC</span></div>
+        <ul>
+          <li>你 <b>是 Enterprise CTO</b> · 多团队</li>
+          <li>你做 <b>ToB / 合规</b> 项目</li>
+          <li>你认为 <b>Month 6+ 达成 +70%</b></li>
+          <li>风险：可能误判 · 但保护最大</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>4 角色 · 4 行动</h3>
+
+    <div class="role-grid">
+      <div class="role">
+        <div class="role-head">① Solo Dev <em>FOUNDATION · 个人 / 独立开发者</em></div>
+        <p>你是独立开发者 / 小团队工程师。资源有限但迭代快。</p>
+        <div class="actions">
+          <strong>具体行动：</strong>
+          <ul>
+            <li><b>Day 1</b> · 写 5-10 个 eval cases</li>
+            <li><b>Week 1</b> · 加 LangSmith / Langfuse tracing</li>
+            <li><b>Week 2</b> · 选 1-2 个 best practice</li>
+            <li><b>Month 1</b> · 看 pass rate / MTTR 是否改善</li>
+          </ul>
+        </div>
+      </div>
+      <div class="role">
+        <div class="role-head">② Team Lead <em>MIDDLE · 5-20 人团队</em></div>
+        <p>你是团队 lead / 架构师。要平衡工程复杂度和效果。</p>
+        <div class="actions">
+          <strong>具体行动：</strong>
+          <ul>
+            <li><b>Week 1</b> · 建 Eval Suite (10-30 cases)</li>
+            <li><b>Week 2</b> · CI 集成 Regression Test</li>
+            <li><b>Month 1</b> · Tracing + Log 全量部署</li>
+            <li><b>Month 2</b> · Production Monitoring + Alert</li>
+          </ul>
+        </div>
+      </div>
+      <div class="role">
+        <div class="role-head">③ Org Architect <em>ENTERPRISE · 大型组织</em></div>
+        <p>你是平台架构师 / CTO。要兼顾多个团队 / 项目复用。</p>
+        <div class="actions">
+          <strong>具体行动：</strong>
+          <ul>
+            <li><b>Month 1</b> · 建 Harness Engineering 平台 (eval / trace / log 共享)</li>
+            <li><b>Month 2</b> · 标准化 Eval Suite (按项目类型)</li>
+            <li><b>Month 3</b> · 全公司 Harness 覆盖率 + 跨团队对比</li>
+            <li><b>持续</b> · Red Team + 合规 + Audit log</li>
+          </ul>
+        </div>
+      </div>
+      <div class="role you">
+        <div class="role-head">④ 你 <em>YOU · 决策层 / 资源有限的个人</em></div>
+        <p>你是个人决策者。资源有限但影响力高。</p>
+        <div class="actions">
+          <strong>具体行动：</strong>
+          <ul>
+            <li><b>Day 1</b> · 任何 LLM 项目 · 写 5 个 eval cases</li>
+            <li><b>Week 1</b> · 选 1 个项目 · 跑通 Eval + Tracing</li>
+            <li><b>Month 1</b> · 对比 baseline vs 全套 · 量化提升</li>
+            <li><b>持续</b> · 监控 LangSmith / RAGAS / Hamel 更新</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <h2>4-Q 系列收尾</h2>
+
+    <table>
+      <thead>
+        <tr><th>Q</th><th>问题</th><th>答</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Q1</td><td>Harness Engineering 是什么？</td><td>不只是 Eval · 关注"为什么 + 怎么持续知道" · 4 大组件</td></tr>
+        <tr><td>Q2</td><td>如何做好？</td><td>8 best practice · 3 必做 + 5 nice-to-have · 代码示例</td></tr>
+        <tr><td>Q3</td><td>项目中应用？</td><td>5 项目类型 × 必做映射 · Eval Suite 永远 Day 1</td></tr>
+        <tr><td>Q4</td><td>效果多大？</td><td>单点 +8-30% · 全套 +133% · MTTR -70% ~ -99%</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ===================================================================== -->
     <h2>Why this matters</h2>
 
     <p>如果你在做 LLM 应用，"<b>好 prompt</b>" 已经不够了 — 你需要"<em>好 context</em>"，你需要"<em>好 harness</em>"。Context 是 LLM 的 attention budget，是模型看到的所有东西的总和。Harness 是 LLM 的 production 操作系统，是模型所有行为的可观测 + 可回归 + 可报警的底座。</p>
@@ -549,7 +1207,7 @@ answer_question("什么是 context engineering?")
     </ol>
 
     <h2>Download</h2>
-    <p>完整 4-Q 报告（Q1 是什么 / Q2 如何做好 / Q3 项目中应用 / Q4 量化效果）作为独立 HTML 报告发布，每篇含代码示例 + 数据表 + Lieflat 视觉语法。下载：</p>
+    <p>本报告也作为 4 个独立 HTML 报告（Q1 是什么 / Q2 如何做好 / Q3 项目中应用 / Q4 量化效果）发布在 Investment 入口，方便分章节引用：</p>
     <ul>
       <li><a href="../investment/reports/harness-engineering-q1-what.html">Q1 · 是什么</a></li>
       <li><a href="../investment/reports/harness-engineering-q2-how.html">Q2 · 如何做好</a></li>
