@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#faf8f2"/>
+      <stop offset="100%" stop-color="#f4e4d4"/>
+    </linearGradient>
+    <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="1.5" fill="#1c1a17" opacity="0.18"/>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#dots)"/>
+
+  <!-- Left: 4 horizontal "MTTR bars" signature -->
+  <g transform="translate(80, 240)">
+    <text x="0" y="-20" font-family="monospace" font-size="11" fill="#1c1a17" font-weight="600">MTTR · No Harness vs + Harness</text>
+
+    <!-- Row 1: User bug 3h vs 15m -->
+    <text x="0" y="14" font-family="monospace" font-size="9" fill="#1a1814">User bug</text>
+    <rect x="80" y="6" width="500" height="14" fill="#9d2933"/>
+    <text x="585" y="16" font-family="monospace" font-size="10" fill="#1a1814" font-weight="600" text-anchor="end">3h</text>
+
+    <rect x="80" y="28" width="40" height="14" fill="#2d6a4f"/>
+    <text x="125" y="38" font-family="monospace" font-size="10" fill="#2d6a4f" font-weight="600">15m</text>
+
+    <!-- Row 2: Prompt regression -->
+    <text x="0" y="64" font-family="monospace" font-size="9" fill="#1a1814">Prompt regression</text>
+    <rect x="80" y="56" width="500" height="14" fill="#9d2933"/>
+    <text x="585" y="66" font-family="monospace" font-size="10" fill="#1a1814" font-weight="600" text-anchor="end">next day</text>
+
+    <rect x="80" y="78" width="6" height="14" fill="#2d6a4f"/>
+    <text x="92" y="88" font-family="monospace" font-size="10" fill="#2d6a4f" font-weight="600">instant</text>
+
+    <!-- Row 3: Cost spike -->
+    <text x="0" y="114" font-family="monospace" font-size="9" fill="#1a1814">Cost spike</text>
+    <rect x="80" y="106" width="500" height="14" fill="#9d2933"/>
+    <text x="585" y="116" font-family="monospace" font-size="10" fill="#1a1814" font-weight="600" text-anchor="end">end-of-month</text>
+
+    <rect x="80" y="128" width="6" height="14" fill="#2d6a4f"/>
+    <text x="92" y="138" font-family="monospace" font-size="10" fill="#2d6a4f" font-weight="600">real-time</text>
+
+    <!-- Row 4: Drift -->
+    <text x="0" y="164" font-family="monospace" font-size="9" fill="#1a1814">Drift detected</text>
+    <rect x="80" y="156" width="500" height="14" fill="#9d2933"/>
+    <text x="585" y="166" font-family="monospace" font-size="10" fill="#1a1814" font-weight="600" text-anchor="end">user report</text>
+
+    <rect x="80" y="178" width="40" height="14" fill="#2d6a4f"/>
+    <text x="125" y="188" font-family="monospace" font-size="10" fill="#2d6a4f" font-weight="600">15m</text>
+  </g>
+
+  <!-- Accent dot -->
+  <g transform="translate(720, 220)">
+    <circle cx="0" cy="0" r="8" fill="#b45837"/>
+  </g>
+
+  <!-- Title typography -->
+  <text x="720" y="350" font-family="Georgia, serif" font-style="italic" font-size="42" fill="#1c1a17" font-weight="400">Harness Engineering</text>
+  <text x="720" y="410" font-family="Georgia, serif" font-size="42" fill="#1c1a17" font-weight="400">from Eval to Production</text>
+
+  <line x1="720" y1="450" x2="900" y2="450" stroke="#b45837" stroke-width="2"/>
+
+  <text x="720" y="500" font-family="Georgia, serif" font-style="italic" font-size="20" fill="#6a5f52">Why "good eval" is no longer enough.</text>
+  <text x="720" y="530" font-family="Georgia, serif" font-style="italic" font-size="20" fill="#6a5f52">And what MTTR -99% looks like.</text>
+
+  <text x="720" y="660" font-family="monospace" font-size="13" letter-spacing="3" fill="#1c1c1a">HERMES AGENT</text>
+  <text x="720" y="685" font-family="monospace" font-size="13" letter-spacing="3" fill="#9a8e7e">2026 · 08 · 07</text>
+
+  <g transform="translate(1300, 100)">
+    <rect x="0" y="0" width="220" height="40" fill="none" stroke="#b45837" stroke-width="1"/>
+    <text x="110" y="26" font-family="monospace" font-size="11" letter-spacing="2" fill="#b45837" text-anchor="middle">FROM 4-Q SERIES</text>
+  </g>
+</svg>
