@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Q3 项目中应用 Loop · Loop Engineering</title>
+<style>
+  @font-face { font-family: "EditorialAccent"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); font-style: italic; }
+  @font-face { font-family: "EditorialBody"; src: local("PP Editorial New"), local("Lyon Text"), local("Georgia"), local("Cormorant Garamond"), local("Times New Roman"), local("Songti SC"); }
+  @font-face { font-family: "MonoFallback"; src: local("SF Mono"), local("Menlo"), local("JetBrains Mono"); }
+  :root {
+    --bg: #faf8f2; --paper: #ffffff; --ink: #1c1a17; --ink-mute: #6a6660;
+    --ink-faint: #a8a39a; --accent: #b45837; --line: #e8e0d0; --gold: #c89a3c;
+    --green: #2d6a4f; --red: #9d2933;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; }
+  body { font-family: "EditorialBody", "PP Editorial New", Georgia, serif; background: var(--bg); color: var(--ink); font-size: 11.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; align-items: center; padding: 24px 0; }
+  .page { width: 210mm; min-height: 297mm; padding: 22mm 22mm 26mm 22mm; background: var(--paper); box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin: 0 auto; }
+  .masthead { border-bottom: 1.5px solid var(--ink); padding-bottom: 12px; margin-bottom: 24px; }
+  .masthead-meta { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.18em; color: var(--ink-mute); text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .q-tag { font-family: "MonoFallback", monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: "EditorialBody", Georgia, serif; font-size: 32px; font-weight: 400; line-height: 1.12; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.005em; }
+  h1 em { font-family: "EditorialAccent", Georgia, serif; font-style: italic; color: var(--accent); }
+  .deck { font-size: 14px; font-style: italic; color: var(--ink-mute); margin-bottom: 4px; line-height: 1.4; }
+  .byline { font-size: 10px; color: var(--ink-mute); margin-top: 8px; letter-spacing: 0.04em; }
+  .byline b { color: var(--ink); font-weight: 600; }
+  .lead { margin: 18px 0 14px; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .lead::first-letter { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 64px; float: left; line-height: 0.85; margin: 6px 8px 0 0; color: var(--accent); }
+  h2 { font-family: "EditorialBody", Georgia, serif; font-size: 18px; font-weight: 400; color: var(--ink); margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--ink); page-break-after: avoid; }
+  h2 .num { font-family: "MonoFallback", monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.1em; margin-right: 8px; vertical-align: 2px; }
+  h3 { font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; color: var(--ink); margin: 14px 0 6px; page-break-after: avoid; }
+  p { margin-bottom: 8px; }
+  ul, ol { margin-bottom: 8px; padding-left: 18px; }
+  li { margin-bottom: 3px; }
+  li::marker { color: var(--accent); }
+  .honest { border: 1px solid var(--ink); background: var(--bg); padding: 10px 14px; margin: 12px 0; font-size: 10.5px; line-height: 1.5; page-break-inside: avoid; }
+  .honest .label { font-family: "MonoFallback", monospace; font-size: 9px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+  .honest b { color: var(--ink); }
+  .honest .tier { display: inline-block; padding: 1px 6px; margin-right: 4px; background: var(--ink); color: var(--paper); font-family: "MonoFallback", monospace; font-size: 8.5px; letter-spacing: 0.06em; vertical-align: 1px; }
+  .honest .tier.t2 { background: var(--ink-mute); }
+  .honest .tier.t3 { background: var(--accent); }
+
+  pre.code { background: #1c1a17; color: #faf8f2; padding: 12px 14px; border-radius: 4px; font-family: "MonoFallback", monospace; font-size: 10px; line-height: 1.5; overflow-x: auto; margin: 8px 0; page-break-inside: avoid; }
+  pre.code .kw { color: #c89a3c; }
+  pre.code .str { color: #2d6a4f; }
+  pre.code .cm { color: #8a8a85; font-style: italic; }
+
+  table.data { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 10.5px; page-break-inside: avoid; }
+  table.data th { background: var(--bg); text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--ink); font-weight: 600; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; }
+  table.data td { padding: 6px 8px; border-bottom: 1px dashed var(--line); vertical-align: top; }
+  table.data td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: "MonoFallback", monospace; font-size: 10px; }
+  table.data tr.highlight td { background: rgba(180,88,55,0.06); }
+
+  .pullquote { margin: 16px 0; padding: 12px 20px; border-left: 3px solid var(--accent); background: var(--bg); font-family: "EditorialAccent", Georgia, serif; font-style: italic; font-size: 14px; line-height: 1.55; color: var(--ink); page-break-inside: avoid; }
+  .pullquote .attrib { font-size: 10px; font-style: normal; color: var(--ink-mute); margin-top: 6px; letter-spacing: 0.04em; }
+
+  .footer { margin-top: 18px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 9.5px; color: var(--ink-mute); line-height: 1.5; }
+  .footer b { color: var(--ink); }
+  .page-num { position: absolute; bottom: 10mm; right: 22mm; font-family: "MonoFallback", monospace; font-size: 9px; color: var(--ink-faint); letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="masthead">
+    <div class="masthead-meta">
+      <span>LOOP ENGINEERING · 4-Q REPORT · 2026-08-07</span>
+      <span>PART 3 OF 4 · APPLICATION</span>
+    </div>
+    <div class="q-tag">Q3 OF 4</div>
+    <h1>项目中<em>如何应用</em><br>Loop Engineering？</h1>
+    <div class="deck">5 种典型项目 × 必做 3 件 · 落地优先级 · 不同项目类型映射</div>
+    <div class="byline">
+      <b>By Hermes Agent</b> · Reviewer: User · 2026-08-07 20:00 CST
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="label">mapping · 5 项目类型 × 必做</div>
+    <span class="tier">1</span><b>单轮问答</b> — 不需要 loop (0 件必做, 单轮就够了)<br>
+    <span class="tier t2">2</span>RAG 文档问答 — 1 件 (max-iter)<br>
+    <span class="tier t3">3</span>多步 agent / tool-calling — 3 件全做
+  </div>
+
+  <p class="lead">Q2 给出了"8 best practice + 3 必做 + 5 nice-to-have"。Q3 进入下一步：<b>不同项目类型 · 不同的应用组合</b>。5 种典型项目 × 必做 3 件 × 落地优先级。</p>
+
+  <h2><span class="num">§1</span>5 种典型项目 × 必做映射</h2>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>项目类型</th>
+        <th>Max-iter + Stuck</th>
+        <th>Scratchpad Reset</th>
+        <th>Cost Limits</th>
+        <th>Reflection</th>
+        <th>Skill Library</th>
+        <th>何时应用</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>① 单轮问答</b></td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>不需要 loop</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>② RAG 文档问答</b></td>
+        <td>必做</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>Day 1 (max 5-10 round)</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>③ 多步 agent</b></td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>—</td>
+        <td>—</td>
+        <td>Day 1</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>④ Long-loop Agent</b></td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>—</td>
+        <td>Week 2+</td>
+      </tr>
+      <tr class="highlight">
+        <td><b>⑤ Persistent Agent</b></td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>必做</td>
+        <td>Month 1+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>核心洞察</b>：<b>Max-iter + Stuck Detection 是 Day 1 必做</b> — 任何 loop 项目。其他根据复杂度递进。</p>
+
+  <h2><span class="num">§2</span>项目类型 1 · 单轮问答</h2>
+
+  <p><b>场景</b>：替代 ChatGPT 完成某领域问答（投资分析 / 代码 review / 文档总结）。</p>
+
+  <p><b>不需要 loop</b> — 单轮 prompt 就能解决。Loop Engineering 不适用。</p>
+
+  <h2><span class="num">§3</span>项目类型 2 · RAG 文档问答</h2>
+
+  <p><b>场景</b>：企业内部文档 / 法律法规 / 学术论文问答。可能需要 multi-step 检索 + 答案生成。</p>
+
+  <h3>必做 · 1 件</h3>
+  <ul>
+    <li><b>Max-iter + Stuck Detection</b> · RAG 通常 5-10 round 内完成 · 设 max_iter=10 + stuck detection</li>
+  </ul>
+
+  <h3>代码示例 · RAG + Max-iter</h3>
+
+  <pre class="code"><span class="kw">def</span> <span class="fn">rag_loop</span>(question: str, max_iter: int = <span class="dv">10</span>):
+    <span class="cm"># Step 1: retrieve</span>
+    docs = <span class="fn">retrieve</span>(question, top_k=<span class="dv">5</span>)
+
+    <span class="cm"># Step 2: answer with retrieved context</span>
+    context = <span class="str">"\n"</span>.<span class="fn">join</span>(docs)
+    answer = llm.invoke(f<span class="str">"Context: {context}\nQuestion: {question}\nAnswer:"</span>).content
+
+    <span class="cm"># Step 3: 如果 answer 不满意 (可选 loop)</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(max_iter):
+        <span class="cm"># Self-evaluation: 这个 answer 满足 question 吗?</span>
+        satisfied = llm.invoke(f<span class="str">"Question: {question}\nAnswer: {answer}\nIs this answer complete and correct? Answer YES or NO."</span>)
+
+        <span class="kw">if</span> <span class="str">"YES"</span> <span class="kw">in</span> satisfied.upper():
+            <span class="kw">return</span> answer
+
+        <span class="cm"># 如果 NO, 重 retrieve with refined question</span>
+        refined = llm.invoke(f<span class="str">"Question: {question}\nAnswer: {answer}\nGenerate a better search query."</span>).content
+        new_docs = <span class="fn">retrieve</span>(refined, top_k=<span class="dv">5</span>)
+        context = <span class="str">"\n"</span>.<span class="fn">join</span>(new_docs)
+        answer = llm.invoke(f<span class="str">"Context: {context}\nQuestion: {question}\nRefined answer:"</span>).content
+
+    <span class="kw">return</span> answer</pre>
+
+  <p><b>关键设计</b>：<b>max_iter=10</b> 防止无限循环 · <b>self-evaluation feedback</b> 让 LLM 自己判断满意</p>
+
+  <h2><span class="num">§4</span>项目类型 3 · 多步 Agent</h2>
+
+  <p><b>场景</b>：需要 LLM 调用多个工具完成复杂任务。</p>
+
+  <h3>必做 · 3 件全做</h3>
+  <ul>
+    <li><b>Max-iter + Stuck Detection</b> · 防止 loop 停滞</li>
+    <li><b>Scratchpad Reset</b> · 防止 context 累积</li>
+    <li><b>Cost Limits</b> · 防止烧钱</li>
+  </ul>
+
+  <h3>代码示例 · LangGraph ReAct Loop</h3>
+
+  <pre class="code"><span class="kw">from</span> langgraph.graph <span class="kw">import</span> StateGraph, END
+<span class="kw">from</span> typing <span class="kw">import</span> TypedDict, Annotated
+<span class="kw">import</span> operator
+
+<span class="cm"># 1. LangGraph state (loop 的 state)</span>
+<span class="kw">class</span> LoopState(TypedDict):
+    messages: Annotated[list, operator.add]
+    scratchpad: str
+    total_tokens: int
+
+MAX_ITER = <span class="dv">10</span>
+TOKEN_BUDGET = <span class="dv">50000</span>
+RESET_EVERY = <span class="dv">5</span>  <span class="cm"># 每 5 轮 reset scratchpad</span>
+
+<span class="cm"># 2. Loop node</span>
+<span class="kw">def</span> <span class="fn">loop_node</span>(state: LoopState) -> LoopState:
+    <span class="cm"># Cost check</span>
+    <span class="kw">if</span> state[<span class="str">"total_tokens"</span>] > TOKEN_BUDGET:
+        <span class="kw">return</span> {<span class="str">"messages"</span>: [<span class="str">"❌ Budget exceeded"</span>]}
+
+    <span class="cm"># Reset scratchpad every N rounds</span>
+    <span class="kw">if</span> <span class="fn">len</span>(state[<span class="str">"messages"</span>]) % RESET_EVERY == <span class="dv">0</span>:
+        scratchpad = <span class="fn">summarize</span>(state[<span class="str">"scratchpad"</span>])
+    <span class="kw">else</span>:
+        scratchpad = state[<span class="str">"scratchpad"</span>]
+
+    <span class="cm"># Think + Act</span>
+    response = llm.invoke(scratchpad + <span class="str">"\n\nNext step:"</span>)
+    <span class="kw">return</span> {
+        <span class="str">"messages"</span>: [response],
+        <span class="str">"scratchpad"</span>: scratchpad + <span class="str">f"\n{response.content}"</span>,
+        <span class="str">"total_tokens"</span>: state[<span class="str">"total_tokens"</span>] + response.usage.total_tokens,
+    }
+
+<span class="cm"># 3. Conditional: continue or end</span>
+<span class="kw">def</span> <span class="fn">should_continue</span>(state: LoopState):
+    <span class="kw">if</span> <span class="fn">len</span>(state[<span class="str">"messages"</span>]) >= MAX_ITER <span class="kw">or</span> state[<span class="str">"total_tokens"</span>] > TOKEN_BUDGET:
+        <span class="kw">return</span> END
+    <span class="kw">return</span> <span class="str">"loop"</span>
+
+<span class="cm"># 4. Build graph</span>
+workflow = StateGraph(LoopState)
+workflow.add_node(<span class="str">"loop"</span>, loop_node)
+workflow.add_conditional_edges(<span class="str">"loop"</span>, should_continue, {<span class="str">"loop"</span>: <span class="str">"loop"</span>, END: END})
+workflow.set_entry_point(<span class="str">"loop"</span>)
+app = workflow.<span class="fn">compile</span>()</pre>
+
+  <p><b>关键设计</b>：3 层防护都在 state 里 — <code>total_tokens</code> (cost limit) · <code>RESET_EVERY</code> (scratchpad reset) · <code>should_continue</code> (max_iter + cost)</p>
+
+  <h2><span class="num">§5</span>项目类型 4 · Long-loop Agent</h2>
+
+  <p><b>场景</b>：loop 跑 50-200 round（数据探索 / 复杂代码生成 / Long-horizon 任务）。</p>
+
+  <h3>必做 · 4 件</h3>
+  <ul>
+    <li><b>Max-iter + Stuck Detection</b></li>
+    <li><b>Scratchpad Reset</b> · 每 5-10 round</li>
+    <li><b>Cost Limits</b> · 设高 (50K-200K tokens)</li>
+    <li><b>Reflection with Change Path</b> · 关键 — 防止循环</li>
+  </ul>
+
+  <h3>代码示例 · Reflexion 反思</h3>
+
+  <pre class="code"><span class="kw">def</span> <span class="fn">react_with_reflexion</span>(question: str, max_iter: int = <span class="dv">50</span>):
+    scratchpad = <span class="str">f"Question: {question}\n"</span>
+    reflections = []
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(max_iter):
+        <span class="cm"># 1. Think (with previous reflections)</span>
+        thought = llm.invoke(
+            f<span class="str">"{scratchpad}\n\n"</span>
+            f<span class="str">"Past reflections: {reflections}\n"</span>
+            f<span class="str">"Next step (avoid repeating past mistakes):"</span>
+        ).content
+
+        <span class="cm"># 2. Act + Observe</span>
+        result = <span class="fn">act</span>(thought)
+        scratchpad += f<span class="str">"\nStep {i+1}: {thought}\nObs: {result}\n"</span>
+
+        <span class="cm"># 3. 如果失败, 反思</span>
+        <span class="kw">if</span> <span class="str">"error"</span> <span class="kw">in</span> result.lower() <span class="kw">or</span> <span class="str">"failed"</span> <span class="kw">in</span> result.lower():
+            reflection = llm.invoke(
+                f<span class="str">"Action: {thought}\nResult: {result}\n"</span>
+                f<span class="str">"Why did this fail? What should I do differently next time?"</span>
+            ).content
+            reflections.append(reflection)
+
+        <span class="cm"># 4. 成功 → 返回</span>
+        <span class="kw">if</span> <span class="str">"success"</span> <span class="kw">in</span> result.lower():
+            <span class="kw">return</span> result</pre>
+
+  <p><b>关键设计</b>：<b>reflections list</b> 累积所有反思 · 下一步 think 时看到 → 避免重蹈覆辙。</p>
+
+  <h2><span class="num">§6</span>项目类型 5 · Persistent Agent</h2>
+
+  <p><b>场景</b>：长期跑 agent（Cursor / 跨 session 助手 / 你的 Hermes Agent）。</p>
+
+  <h3>必做 · 5 件全做</h3>
+  <ul>
+    <li><b>Max-iter + Stuck Detection</b></li>
+    <li><b>Scratchpad Reset</b></li>
+    <li><b>Cost Limits</b></li>
+    <li><b>Reflection with Change Path</b></li>
+    <li><b>Skill Library</b> · 关键 — 永久 loop 必备</li>
+  </ul>
+
+  <p>Voyager 论文风格：loop 跑成功 → 沉淀为 skill → 下次 loop 复用 skill → 越跑越快 + 越跑越准。</p>
+
+  <h2><span class="num">§7</span>所以 · Q3 答案</h2>
+
+  <div class="pullquote">
+    5 种项目 × 必做映射：
+    <br><b>单轮问答</b> · 不需要 loop
+    <br><b>RAG 文档问答</b> · Max-iter only
+    <br><b>多步 Agent</b> · Max-iter + Scratchpad + Cost (3 件)
+    <br><b>Long-loop Agent</b> · + Reflection (4 件)
+    <br><b>Persistent Agent</b> · + Skill Library (5 件)
+    <br><b>核心原则</b> · <b>Max-iter + Stuck Detection 是 Day 1 必做</b>，其他根据复杂度递进。
+    <div class="attrib">— Q3 答 · Hermes Agent · 2026-08-07</div>
+  </div>
+
+  <h2><span class="num">§8</span>下一个问题</h2>
+
+  <p>Q3 给出了"5 项目类型 × 必做映射"。Q4 进入 <b>效果到底多大</b> — Inset Magnifier · 4 角色 · 复合效应 vs 单点效应 · 量化数据。</p>
+
+  <div class="footer">
+    <b>数据源</b> · ReAct · Reflexion · Voyager · AutoGPT · DSPy · 36kr 8-6 头条 · 14 篇评测 (D+4 #9) · <b>GitHub</b> · private repo (user 专属 · 路径不公开)<br>
+    <b>上一份</b> · Context Engineering 4-Q · <b>下一份</b> · Q4: 量化效果
+  </div>
+
+  <div class="page-num">03 / Q3</div>
+</div>
+
+</body>
+</html>
