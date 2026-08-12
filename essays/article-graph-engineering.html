@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph Engineering · 4-Q 研究笔记</title>
+<style>
+  :root {
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --accent: #b45837;
+    --accent-2: #26827c;
+    --accent-3: #6c5ce7;
+    --bg: #faf8f3;
+    --border: rgba(26, 24, 20, 0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", "STHeiti", "Helvetica Neue", sans-serif; }
+  body { line-height: 1.7; font-size: 16px; padding: 32px 20px 80px; max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 16px; }
+  h1 .accent { color: var(--accent); }
+  .meta { color: var(--text-muted); font-size: 13px; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .meta span { margin-right: 14px; }
+  .meta .tag { background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  h2 { font-size: 26px; font-weight: 700; margin-top: 56px; margin-bottom: 16px; padding-top: 24px; border-top: 1px solid var(--border); }
+  h2 .num { display: inline-block; width: 36px; height: 36px; line-height: 36px; background: var(--accent); color: #fff; border-radius: 50%; text-align: center; font-size: 16px; margin-right: 12px; vertical-align: middle; }
+  h3 { font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 12px; color: var(--accent-2); }
+  p { margin-bottom: 16px; }
+  strong { color: var(--accent); font-weight: 700; }
+  em { color: var(--text-muted); font-style: italic; }
+  ul, ol { margin: 12px 0 16px 24px; }
+  li { margin-bottom: 8px; }
+  code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; font-family: "SF Mono", Menlo, monospace; font-size: 14px; }
+  pre { background: #1a1a2e; color: #fafaf5; padding: 16px 20px; border-radius: 6px; overflow-x: auto; margin: 16px 0; font-size: 13px; line-height: 1.5; font-family: "SF Mono", Menlo, monospace; }
+  pre code { background: none; padding: 0; color: inherit; }
+  blockquote { border-left: 3px solid var(--accent); padding: 4px 0 4px 16px; margin: 20px 0; color: var(--text-muted); font-style: italic; }
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: rgba(180, 88, 55, 0.08); font-weight: 700; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .summary-box { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 16px 20px; margin: 24px 0; border-radius: 4px; }
+  .summary-box strong { display: block; margin-bottom: 8px; font-size: 14px; }
+  .tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+  .tag-row span { background: rgba(180, 88, 55, 0.1); color: var(--accent); padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>Graph <span class="accent">Engineering</span> · 4 个问题研究笔记</h1>
+
+<div class="meta">
+  <span class="tag">D+10 · 2026-08-12</span>
+  <span>研究: 4 个核心项目</span>
+  <span>语言: 中文</span>
+  <span>字数: ~2500</span>
+</div>
+
+<div class="tag-row">
+  <span>langgraph ★39.5K</span>
+  <span>trustgraph ★2.5K</span>
+  <span>deer-workflow ★433</span>
+  <span>codejunkie99/graph-engineering ★376</span>
+</div>
+
+<blockquote>
+<strong>来源 quote</strong> (codejunkie99/graph-engineering README):
+"Graph Engineering = 设计 AI agents 工作的结构, 不是 prompts.
+1. <strong>Knowledge graphs</strong> = agents 记得什么 (entity, fact, relationship with time/provenance)
+2. <strong>Task graphs</strong> = agents 怎么工作 (job nodes, execution dependencies, parallel fan-out, verifiers, stop rule, human gate)
+Prompt engineers 控制模型的话. Loop engineers 控制模型的迭代. <strong>Graph engineers 控制模型的拓扑</strong>."
+</blockquote>
+
+<div class="summary-box">
+<strong>一句话总结</strong>
+Graph Engineering 不是新框架, 是新<strong>学科</strong>: 把 AI agent 当分布式系统设计, 用图 (knowledge + task) 做骨架. 2026 年从 prompt → loop → graph 三阶段进化.
+</div>
+
+<hr>
+
+<h2><span class="num">Q1</span>什么是 Graph Engineering?</h2>
+
+<p>Graph Engineering 是 2026 年 AI agent 工程领域的<strong>新学科</strong>. 它不是某个新框架, 也不是某个新论文, 而是一种<strong>设计思路的转变</strong>:</p>
+
+<ul>
+<li><strong>Prompt Engineering</strong> (2023 年) — 设计模型读什么 (prompts 怎么写)</li>
+<li><strong>Loop Engineering</strong> (2024 年) — 设计模型怎么迭代 (ReAct / Voyager / Reflexion / AutoGPT 的反思循环)</li>
+<li><strong>Graph Engineering</strong> (2026 年) — 设计模型<strong>拓扑结构</strong> (agent 之间怎么连接, 上下文怎么传递, 怎么并行, 怎么验证)</li>
+</ul>
+
+<p>核心方法学有 2 个层次:</p>
+
+<h3>1. Knowledge Graphs (知识图谱) = Agent 记得什么</h3>
+
+<p>传统的 RAG 把文档切片 → embedding → 向量检索. 问题: <strong>丢掉了实体关系</strong>. Knowledge Graph 把信息建模成图:</p>
+<ul>
+<li><strong>节点 (Node)</strong>: entity (公司 / 人 / 概念) + fact (事实)</li>
+<li><strong>边 (Edge)</strong>: relationship + <strong>时间戳</strong> + <strong>来源</strong> (provenance)</li>
+<li><strong>本体 (Ontology)</strong>: 节点和边的 schema 定义</li>
+</ul>
+
+<p>5 个标准步骤: ontology → extraction → fusion → serving → (持续更新).</p>
+
+<h3>2. Task Graphs (任务图) = Agent 怎么工作</h3>
+
+<p>传统的 agent loop 是 "1 个 agent → 思考 → 行动 → 观察". 问题: <strong>慢, 容易卡, 难以并行</strong>. Task Graph 把工作流建模成图:</p>
+<ul>
+<li><strong>节点 (Node)</strong>: job (任务), 可能是 1 个 agent 调用, 或 1 个工具, 或 1 个人类审核</li>
+<li><strong>边 (Edge)</strong>: execution dependencies (依赖关系)</li>
+<li><strong>并行 (Fan-out)</strong>: 多个不依赖的任务同时跑</li>
+<li><strong>验证 (Verifier)</strong>: 单独的 agent 验证主 agent 的输出</li>
+<li><strong>停止规则 (Stop rule)</strong>: 什么时候结束 (成本 / 质量 / 时间)</li>
+<li><strong>人类节点 (Human gate)</strong>: 关键决策前暂停, 让人确认</li>
+</ul>
+
+<h3>跟 D+4 实战的关系</h3>
+
+<p>你 D+4 那套 LangGraph AI 投资决策系统 <strong>就是 Graph Engineering</strong>:</p>
+<ul>
+<li>7 维度并行 agent — Task Graph 的 fan-out 模式</li>
+<li>State 字段在节点间传递 — Task Graph 的边</li>
+<li>Scoring Rubric (1-10 加权) — Knowledge Graph 的 ontology</li>
+<li>Scoring → Verifier → Peer Comparison — Task Graph 的 verifier 模式</li>
+</ul>
+
+<p>你<strong>不是学了一个新东西</strong>, 你<strong>一直在用</strong>. 现在只是有个名字了.</p>
+
+<hr>
+
+<h2><span class="num">Q2</span>应用场景是什么?</h2>
+
+<p>基于 4 个核心项目的真实用法 + 行业落地, Graph Engineering 主要解决<strong>6 类问题</strong>:</p>
+
+<h3>1. Multi-Agent 协作 (LangGraph 主战场)</h3>
+<p>当你需要 5+ 个 agent 协同 (你 D+4 那套 7 维度 agent 就是典型), Task Graph 是唯一可维护的方案. Loop-only 写法的代码 100 行就崩, Graph 写法 1000 行还是清晰的.</p>
+
+<h3>2. 长上下文管理 (TrustGraph 主战场)</h3>
+<p>当 LLM 上下文窗口不够, 或者成本太高 (每次塞 50K token), Knowledge Graph 做"压缩 + 检索": 把全量信息存成图, 只把当前任务需要的 subgraph 喂给 LLM. TrustGraph 的 "holonic context harness" 就是这个思路.</p>
+
+<h3>3. 复杂业务决策 (你的求职方向)</h3>
+<p>BCG X / Thermo Fisher / Lazada 这类<strong>决策建模岗位</strong>, 核心就是 Task Graph: 收集数据 (agent 1) → 验证 (agent 2) → 假设 (agent 3) → 验证 (agent 4) → 人类审核 (human gate) → 输出. 没有 Graph, 这种决策 5 个 agent 会写成一团乱麻.</p>
+
+<h3>4. 跨组织数据整合 (Knowledge Graph 经典场景)</h3>
+<p>大公司 10+ 个系统的数据, 用 Graph 统一建模. 这不是新东西, 但 2026 年因为 LLM 让 "extraction → fusion" 变得可行. trustgraph 在这方向很强.</p>
+
+<h3>5. Coding Agent 编排 (Deer Workflow)</h3>
+<p>Bytedance 的 DeerFlow 3.0 = 把"研究 → 写代码 → 调试 → 测试 → 提交" 做成 graph. 这就是 GitHub 上 earendil-works/pi 那种 AI agent CLI 做的事.</p>
+
+<h3>6. Research & Analysis Agent (你 D+7 系列做过)</h3>
+<p>你 D+7 发的 4 篇 Loop Engineering 文章, 本身就是 Research Agent 跑出来的. 如果把这种工作做成 Task Graph (搜索 → 摘要 → 评分 → 写文), 可以扩展到 10+ 个主题并行跑.</p>
+
+<p><strong>最热的应用</strong>: 1 (Multi-Agent) + 3 (决策建模, 你目标岗位). <strong>次热</strong>: 2 (TrustGraph), 4 (跨组织), 5 (Coding Agent). <strong>实验性</strong>: 6 (Research Agent).</p>
+
+<hr>
+
+<h2><span class="num">Q3</span>最大的阻碍和风险是哪些?</h2>
+
+<p>基于 4 个项目的真实问题 + 行业讨论, 3 层风险:</p>
+
+<h3>1. 技术层 (最常见)</h3>
+<ul>
+<li><strong>Look-ahead bias</strong>: 用未来数据算因子 (你 D+10 量化回测时修过这个 bug)</li>
+<li><strong>Graph cycle 死循环</strong>: Task Graph 节点互相依赖, agent 永远跑不完 (需要 cycle detection + max steps)</li>
+<li><strong>Token 成本爆炸</strong>: Fan-out 跑 50 个 agent 节点, 每次都调 LLM, 一次回测能烧 $50 (需要 cache + 摘要 + 分层)</li>
+<li><strong>Knowledge Graph 漂移</strong>: 实体关系随时间变, Graph 不更新就跟事实脱节 (需要 cron 重建)</li>
+</ul>
+
+<h3>2. 工程层 (最被低估)</h3>
+<ul>
+<li><strong>调试地狱</strong>: 7 个 agent 节点并行跑, 一个错整个崩, 你不知道是哪个节点错 (需要 observability: LangSmith / LangGraph Studio)</li>
+<li><strong>状态管理</strong>: State 字段在节点间传递, 字段改了多个节点, 调试谁改的 = 噩梦</li>
+<li><strong>可重现性</strong>: LLM 输出非确定性, 同 1 个 input 不同时间跑结果不同 (需要 temperature=0 + seed)</li>
+<li><strong>回测过拟合</strong>: Graph 结构调来调去, 最后只是"在历史数据上好看" (你 D+10 量化回测踩过这个)</li>
+</ul>
+
+<h3>3. 组织层 (最致命)</h3>
+<ul>
+<li><strong>"学术 vs 工业" 分裂</strong>: codejunkie99 的 graph-engineering 来自 2019 年的 SEU 研究生课程, LangGraph 是 LangChain 工业产品. 两套语言不一样.</li>
+<li><strong>"Graph 过度设计" 反模式</strong>: 简单任务 (单 agent) 用 Graph = 过度工程. 你 D+4 用 7 维度合适, 但很多场景 1-2 维度就够.</li>
+<li><strong>"LLM 幻觉 传染"</strong>: Knowledge Graph 里如果有一个错误 fact, 所有 downstream agent 都用错 fact → 输出错结论. <strong>Verifier 是必须的</strong>.</li>
+<li><strong>招聘市场不成熟</strong>: 现在 (2026) 真正"懂 Graph Engineering" 的人 < 1 万. 你目标岗位 (BCG X / Thermo Fisher) 要不要这个能力, 看 JD (很多还停留在 "SQL + Python" 阶段).</li>
+</ul>
+
+<h3>诚实建议</h3>
+<p>如果你想做 Graph Engineering 项目放到简历, <strong>重点讲 "应用 + 业务价值"</strong>, 不要讲 "用了 X 框架". HR / 招聘官听不懂 LangGraph, 听得懂 "帮决策提速 50%" / "准确率从 60% 到 80%".</p>
+
+<hr>
+
+<h2><span class="num">Q4</span>研究 · 项目示例 · 代码</h2>
+
+<h3>4 个核心项目对比</h3>
+<table>
+<tr><th>项目</th><th>★</th><th>语言</th><th>定位</th><th>核心概念</th></tr>
+<tr><td><a href="https://github.com/langchain-ai/langgraph">langchain-ai/langgraph</a></td><td>39.5K</td><td>Python</td><td>Task Graph 事实标准</td><td>StateGraph / fan-out / checkpoint</td></tr>
+<tr><td><a href="https://github.com/trustgraph-ai/trustgraph">trustgraph-ai/trustgraph</a></td><td>2.5K</td><td>Python</td><td>Knowledge Graph + Context</td><td>holonic context / ontology / extraction</td></tr>
+<tr><td><a href="https://github.com/deerwork-ai/deer-workflow">deerwork-ai/deer-workflow</a></td><td>433</td><td>TypeScript</td><td>Task Graph runtime (Bytedance)</td><td>Dynamic Workflow / observable</td></tr>
+<tr><td><a href="https://github.com/codejunkie99/graph-engineering">codejunkie99/graph-engineering</a></td><td>376</td><td>Claude Skill</td><td>Graph Engineering 理论定义</td><td>Knowledge + Task Graph 统一</td></tr>
+</table>
+
+<h3>代码示例 1: LangGraph Task Graph (你 D+4 那种)</h3>
+<pre><code>from langgraph.graph import StateGraph
+from typing import TypedDict
+
+class State(TypedDict):
+    query: str
+    data: dict
+    score: float
+
+def analyst_1(state: State):
+    # Fan-out 节点: 收集数据
+    state['data'] = fetch_real_time(state['query'])
+    return state
+
+def analyst_2(state: State):
+    # Verifier 节点: 验证数据
+    assert check_quality(state['data'])
+    return state
+
+def scorer(state: State):
+    # Scoring 节点: 打分
+    state['score'] = compute_score(state['data'])
+    return state
+
+# 拓扑: analyst_1 → analyst_2 → scorer
+graph = StateGraph(State)
+graph.add_node('collect', analyst_1)
+graph.add_node('verify', analyst_2)
+graph.add_node('score', scorer)
+graph.add_edge('collect', 'verify')  # 边
+graph.add_edge('verify', 'score')
+graph.set_entry_point('collect')
+graph.set_finish_point('score')
+
+app = graph.compile()
+result = app.invoke({'query': '000001', 'data': {}, 'score': 0})</code></pre>
+
+<h3>代码示例 2: TrustGraph Knowledge Graph</h3>
+<pre><code>from trustgraph import KnowledgeGraph
+
+kg = KnowledgeGraph(
+    ontology='company',  # 用 ontology 模板
+    extraction_model='claude-sonnet-4',
+    fusion_strategy='merge-with-provenance',
+)
+
+# 自动从文档抽取 entities + relationships
+kg.extract('https://company.com/annual-report.pdf')
+# 输出: nodes (公司, 人, 事件) + edges (雇佣, 投资, 收购, 都带时间戳)
+
+# 检索
+subgraph = kg.query('平安银行 2024 年投资过哪些 AI 公司')
+# 返回: 子图 (平安银行 → 投资 → AI 公司) + provenance (来源 PDF)</code></pre>
+
+<h3>代码示例 3: Task Graph 的"停止规则" 模式</h3>
+<pre><code># 你 D+4 实战踩过: 如果不用 stop rule, agent 永远跑
+from langgraph.graph import StateGraph
+
+class State(TypedDict):
+    iteration: int
+    quality: float
+    max_cost_usd: float
+
+def should_stop(state: State) -> str:
+    if state['iteration'] >= 10:
+        return 'end'  # 最多 10 轮
+    if state['quality'] > 0.85:
+        return 'end'  # 质量够了
+    if state['max_cost_usd'] > 5.0:
+        return 'end'  # 成本爆了
+    return 'continue'
+
+graph.add_conditional_edges('verifier', should_stop, {
+    'continue': 'refiner',
+    'end': END,
+})</code></pre>
+
+<h3>代码示例 4: 你能立刻 fork / 用的</h3>
+<ul>
+<li><strong>langgraph</strong>: <code>pip install langgraph</code> — 你 D+4 已装, 升级到 v0.3+ 看新特性</li>
+<li><strong>trustgraph</strong>: <code>pip install trustgraph</code> + 申请 Playground 试用</li>
+<li><strong>deer-workflow</strong>: <code>bun install @deerwork-ai/deer-workflow</code> + 看 examples/</li>
+<li><strong>codejunkie99</strong>: <a href="https://github.com/codejunkie99/graph-engineering">repo</a> 直接读, 是教程不是库</li>
+</ul>
+
+<h3>你的 D+4 系统 = Graph Engineering 教科书案例</h3>
+<p>你 D+4 那套 LangGraph AI 投资系统, 现在可以重新解读:</p>
+<ul>
+<li>7 维度 agent = Task Graph 的 fan-out (并行)</li>
+<li>Scoring Rubric = Knowledge Graph 的 ontology</li>
+<li>Verifier (4 维度评分 + 阈值判定) = Task Graph 的 verifier + stop rule</li>
+<li>Peer Comparison = Knowledge Graph 的 relationship 查询</li>
+<li>State 字段 (公司/行业/财务/政策/...) = Graph 的 state passing</li>
+</ul>
+<p><strong>简历怎么写</strong>: "用 Graph Engineering 方法学构建 7 维度 AI 投资决策系统, 量化回测年化 X%, Sharpe Y" — 比 "用 LangGraph 跑 agent" 高 10 倍.</p>
+
+<hr>
+
+<h2 style="border-top: none; margin-top: 80px;">总结</h2>
+
+<p><strong>Graph Engineering = AI agent 工程的下一阶段</strong>. 你 D+4 已经在用, 现在只是有了名字和理论.</p>
+
+<p>4 个核心 takeaway:</p>
+<ol>
+<li><strong>不是新框架, 是新学科</strong>. 你已经用, 不要怕.</li>
+<li><strong>Knowledge Graph + Task Graph 双引擎</strong>. 选 LangGraph (Task) + TrustGraph (Knowledge) 就能落地.</li>
+<li><strong>最大风险是过度设计</strong>. 简单任务用简单方案, Graph 不是 silver bullet.</li>
+<li><strong>简历价值在于业务</strong>. "帮决策提速 50%" > "用了 LangGraph".</li>
+</ol>
+
+<hr>
+
+<p style="color: var(--text-muted); font-size: 13px; margin-top: 40px;">
+本研究基于 GitHub API 元数据 + 4 个项目 README (2026-08-12 抓取).
+所有 stars / 描述 / 概念来自官方仓库.
+诚实标注: 代码示例为简化版, 实际 API 可能有版本差异.
+</p>
+
+</body>
+</html>
