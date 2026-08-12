@@ -124,6 +124,115 @@ Graph Engineering 不是新框架, 是新<strong>学科</strong>: 把 AI agent �
 
 <p>你<strong>不是学了一个新东西</strong>, 你<strong>一直在用</strong>. 现在只是有个名字了.</p>
 
+<!-- Lieflat 图 1: 4 项目 stars 对比 -->
+<style>
+.lieflat-card-1 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #faf8f2;
+  border-radius: 24px;
+  padding: 28px 32px 24px;
+  margin: 32px 0;
+  max-width: 720px;
+}
+.lieflat-card-1 h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1c1c1a;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.lieflat-card-1 .sub {
+  font-size: 12px;
+  color: #6a5f52;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.lieflat-card-1 .row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.lieflat-card-1 .label {
+  width: 200px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c1c1a;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lieflat-card-1 .bar-wrap {
+  flex: 1;
+  height: 28px;
+  position: relative;
+}
+.lieflat-card-1 .bar {
+  height: 100%;
+  background: #1c1c1a;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  color: #faf8f2;
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.lieflat-card-1 .bar.tier-2 { background: #6a5f52; }
+.lieflat-card-1 .bar.tier-3 { background: #9a8e7e; }
+.lieflat-card-1 .bar.tier-4 { background: #b8b0a3; }
+.lieflat-card-1 .source {
+  font-size: 10px;
+  color: #9a8e7e;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 16px;
+  text-align: right;
+}
+</style>
+
+<div class="lieflat-card-1">
+  <h2>Graph Engineering · 4 个核心项目热度</h2>
+  <div class="sub">GitHub stars · 2026-08-12 · 单调灰阶, 明度即数据</div>
+
+  <div class="row">
+    <div class="label">langchain-ai/langgraph</div>
+    <div class="bar-wrap">
+      <div class="bar" style="width: 100%">39,475</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">trustgraph-ai/trustgraph</div>
+    <div class="bar-wrap">
+      <div class="bar tier-2" style="width: 6.3%">2,498</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">deerwork-ai/deer-workflow</div>
+    <div class="bar-wrap">
+      <div class="bar tier-3" style="width: 1.1%">433</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">codejunkie99/graph-engineering</div>
+    <div class="bar-wrap">
+      <div class="bar tier-4" style="width: 1.0%">376</div>
+    </div>
+  </div>
+
+  <div class="source">SOURCE · GitHub API · 2026-08-12</div>
+</div>
+
 <hr>
 
 <h2><span class="num">Q2</span>应用场景是什么?</h2>
@@ -182,6 +291,169 @@ Graph Engineering 不是新框架, 是新<strong>学科</strong>: 把 AI agent �
 
 <h3>诚实建议</h3>
 <p>如果你想做 Graph Engineering 项目放到简历, <strong>重点讲 "应用 + 业务价值"</strong>, 不要讲 "用了 X 框架". HR / 招聘官听不懂 LangGraph, 听得懂 "帮决策提速 50%" / "准确率从 60% 到 80%".</p>
+
+<!-- Lieflat 图 2: 3 层风险矩阵 -->
+<style>
+.lieflat-card-2 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #faf8f2;
+  border-radius: 24px;
+  padding: 28px 32px 24px;
+  margin: 32px 0;
+  max-width: 720px;
+}
+.lieflat-card-2 h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1c1c1a;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.lieflat-card-2 .sub {
+  font-size: 12px;
+  color: #6a5f52;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.lieflat-card-2 .matrix {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  margin: 16px 0 8px;
+  border-left: 1.5px solid #1c1c1a;
+  border-bottom: 1.5px solid #1c1c1a;
+}
+.lieflat-card-2 .y-axis-label,
+.lieflat-card-2 .x-axis-label {
+  position: absolute;
+  font-size: 10px;
+  font-weight: 700;
+  color: #1c1c1a;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.lieflat-card-2 .y-axis-label {
+  left: -8px;
+  top: 50%;
+  transform: translate(-100%, -50%) rotate(-90deg);
+  transform-origin: right center;
+}
+.lieflat-card-2 .x-axis-label {
+  bottom: -8px;
+  left: 50%;
+  transform: translate(-50%, 100%);
+}
+.lieflat-card-2 .axis-tick {
+  position: absolute;
+  font-size: 10px;
+  color: #9a8e7e;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.lieflat-card-2 .axis-tick.y-low { top: 92%; left: 8px; }
+.lieflat-card-2 .axis-tick.y-high { top: 8px; left: 8px; }
+.lieflat-card-2 .axis-tick.x-low { bottom: -22px; left: 5%; }
+.lieflat-card-2 .axis-tick.x-high { bottom: -22px; left: 90%; }
+.lieflat-card-2 .point {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #faf8f2;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 0 4px #faf8f2;
+}
+.lieflat-card-2 .point.tier-1 { background: #1c1c1a; }
+.lieflat-card-2 .point.tier-2 { background: #6a5f52; }
+.lieflat-card-2 .point.tier-3 { background: #9a8e7e; }
+.lieflat-card-2 .legend {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid #d6d2c5;
+}
+.lieflat-card-2 .legend-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.lieflat-card-2 .legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.lieflat-card-2 .legend-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1c1c1a;
+}
+.lieflat-card-2 .legend-desc {
+  font-size: 11px;
+  color: #6a5f52;
+  line-height: 1.4;
+}
+.lieflat-card-2 .source {
+  font-size: 10px;
+  color: #9a8e7e;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 16px;
+  text-align: right;
+}
+</style>
+
+<div class="lieflat-card-2">
+  <h2>Graph Engineering 风险地图 · 频率 vs 严重度</h2>
+  <div class="sub">3 层风险 · 25 个常见坑 · 单调灰阶, 越暗越严重</div>
+
+  <div class="matrix">
+    <div class="y-axis-label">严重度</div>
+    <div class="x-axis-label">发生频率</div>
+    <div class="axis-tick y-low">低</div>
+    <div class="axis-tick y-high">高</div>
+    <div class="axis-tick x-low">少</div>
+    <div class="axis-tick x-high">常见</div>
+
+    <!-- 技术层 (Tier 1 - 高频, 中等严重度) -->
+    <div class="point tier-1" style="left: 82%; top: 60%; width: 56px; height: 56px;">T</div>
+    <div class="point tier-1" style="left: 88%; top: 72%; width: 44px; height: 44px;">G</div>
+
+    <!-- 工程层 (Tier 2 - 中频, 高严重度, 被低估) -->
+    <div class="point tier-2" style="left: 62%; top: 24%; width: 60px; height: 60px;">E</div>
+
+    <!-- 组织层 (Tier 3 - 低频, 致命) -->
+    <div class="point tier-3" style="left: 24%; top: 14%; width: 38px; height: 38px;">O</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div><span class="legend-dot" style="background:#1c1c1a;"></span><span class="legend-label">T · 技术层</span></div>
+      <div class="legend-desc">最常见: look-ahead bias / cycle 死循环 / token 爆</div>
+    </div>
+    <div class="legend-item">
+      <div><span class="legend-dot" style="background:#6a5f52;"></span><span class="legend-label">E · 工程层</span></div>
+      <div class="legend-desc">最被低估: 调试地狱 / 状态管理 / 回测过拟合</div>
+    </div>
+    <div class="legend-item">
+      <div><span class="legend-dot" style="background:#9a8e7e;"></span><span class="legend-label">O · 组织层</span></div>
+      <div class="legend-desc">最致命: 学术/工业分裂 / 过度设计 / 招聘不熟</div>
+    </div>
+  </div>
+
+  <div class="source">SOURCE · Javis D+10 经验 + 4 项目 README 风险扫描</div>
+</div>
 
 <hr>
 
