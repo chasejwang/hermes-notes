@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Pages 5 天上手 · Vibe Coding 教程</title>
+<style>
+  :root {
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --accent: #0078d4;
+    --accent-2: #b45837;
+    --bg: #faf8f3;
+    --border: rgba(26, 24, 20, 0.12);
+    --code-bg: #1a1a2e;
+    --code-fg: #fafaf5;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", "STHeiti", "Helvetica Neue", "Inter", sans-serif; }
+  body { line-height: 1.7; font-size: 16px; padding: 32px 20px 80px; max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 38px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 12px; }
+  h1 .accent { color: var(--accent); }
+  .meta { color: var(--text-muted); font-size: 13px; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .meta span { margin-right: 14px; }
+  .meta .tag { background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  h2 { font-size: 28px; font-weight: 700; margin-top: 56px; margin-bottom: 16px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text); }
+  h2 .day-num { display: inline-block; width: 56px; height: 56px; line-height: 56px; background: var(--accent); color: #fff; border-radius: 50%; text-align: center; font-size: 18px; font-weight: 800; margin-right: 14px; vertical-align: middle; }
+  h3 { font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 12px; color: var(--accent); }
+  h4 { font-size: 16px; font-weight: 700; margin-top: 20px; margin-bottom: 8px; }
+  p { margin-bottom: 16px; }
+  strong { color: var(--accent); font-weight: 700; }
+  em { color: var(--text-muted); font-style: italic; }
+  ul, ol { margin: 12px 0 16px 24px; }
+  li { margin-bottom: 8px; }
+  code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; font-family: "SF Mono", Menlo, monospace; font-size: 14px; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 16px 20px; border-radius: 6px; overflow-x: auto; margin: 16px 0; font-size: 13px; line-height: 1.5; font-family: "SF Mono", Menlo, monospace; }
+  pre code { background: none; padding: 0; color: inherit; }
+  blockquote { border-left: 3px solid var(--accent); padding: 4px 0 4px 16px; margin: 20px 0; color: var(--text-muted); font-style: italic; }
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: rgba(0, 120, 212, 0.08); font-weight: 700; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .summary-box { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 16px 20px; margin: 24px 0; border-radius: 4px; }
+  .summary-box strong { display: block; margin-bottom: 8px; font-size: 14px; }
+  .checklist { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; margin: 20px 0; }
+  .checklist h4 { margin-top: 0; color: var(--accent); }
+  .checklist ul { margin-bottom: 0; }
+  .warn-box { background: #fff8f0; border: 1px solid #f0c896; border-left: 4px solid var(--accent-2); padding: 14px 18px; margin: 20px 0; border-radius: 4px; font-size: 14px; }
+  .day-time { color: var(--text-dim); font-size: 14px; font-weight: 600; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+
+<h1>Power Pages <span class="accent">5 天上手</span> · Vibe Coding 教程</h1>
+
+<div class="meta">
+  <span class="tag">D+11 教程</span>
+  <span>2026-08-12</span>
+  <span>~4000 字</span>
+  <span>5 天 × 1-2 小时</span>
+</div>
+
+<blockquote>
+<strong>给 Javis 的 Power Pages 教程</strong>。Vibe Coding = 用 AI 工具 (Power Pages Copilot + Claude Code) 写 Power Pages 站点。你 PwC 客户 (可口可乐 / 摩根大通 / Eli Lilly) 大量用 Power Pages, 知道这个 = 简历加分项。
+</blockquote>
+
+<div class="summary-box">
+<strong>5 天总览</strong>
+Day 1: Power Platform 生态 + 第一个站点 · Day 2: Vibe Coding 工具 (Copilot / Claude Code) · Day 3: Dataverse 数据建模 + 表单 · Day 4: 业务流程 (Power Automate) · Day 5: 实战项目 (公司介绍页 + 客户门户)
+</div>
+
+<hr>
+
+<h2><span class="day-num">D1</span>Day 1 · Power Platform 生态 + 第一个站点</h2>
+
+<p class="day-time">2026-08-13 周四 · 90 分钟 · 目标: 在 Power Pages 跑通 hello world 站点</p>
+
+<h3>4 个核心概念 (10 分钟)</h3>
+<ul>
+<li><strong>Power Pages</strong> = low-code 网站平台, 微软 Power Platform 的一部分</li>
+<li><strong>Dataverse</strong> = 数据存储 (类似 SQL 表, 但 low-code 友好)</li>
+<li><strong>Power Automate</strong> = 业务流程 (类似 IFTTT / Zapier)</li>
+<li><strong>Power Pages Copilot</strong> = AI 助手, 用自然语言写 Power Pages</li>
+</ul>
+
+<h3>Power Platform 生态 (5 分钟)</h3>
+<table>
+<tr><th>组件</th><th>用途</th><th>对应 Azure</th></tr>
+<tr><td>Power Pages</td><td>公开/客户网站</td><td>Static Web Apps</td></tr>
+<tr><td>Power Apps</td><td>内部 App</td><td>App Service</td></tr>
+<tr><td>Power Automate</td><td>业务流程</td><td>Logic Apps / Functions</td></tr>
+<tr><td>Power BI</td><td>数据分析</td><td>Power BI Embedded</td></tr>
+<tr><td>Dataverse</td><td>数据存储</td><td>Cosmos DB / SQL</td></tr>
+<tr><td>Copilot Studio</td><td>AI 助手 / Chatbot</td><td>Azure OpenAI</td></tr>
+</table>
+
+<h3>前置 (15 分钟)</h3>
+<ol>
+<li>注册 Microsoft 365 商业版账号: https://powerpages.microsoft.com (需信用卡, 30 天试用)</li>
+<li>或: <strong>Power Pages 开发者计划</strong> (免费 1 年): https://powerpages.microsoft.com/en-us/developer-plan</li>
+<li>登录 <a href="https://make.powerpages.com">make.powerpages.com</a></li>
+</ol>
+
+<h3>第一个站点 (30 分钟)</h3>
+<p>用 Power Pages Copilot 写第 1 个站点:</p>
+<ol>
+<li>登录 <a href="https://make.powerpages.com">make.powerpages.com</a></li>
+<li>点 "Create a site" → 选空白模板 (Blank)</li>
+<li>站点名: "My First Power Pages" (你后面可改)</li>
+<li>等 2-3 分钟 Power Platform 准备环境</li>
+<li>在 Power Pages Studio (设计器) 里, 点右上 "Copilot" 图标</li>
+<li>输入: <strong>"Create a homepage with company name 'Javis Data' and a hero section with my photo placeholder"</strong></li>
+<li>Copilot 1-2 分钟生成</li>
+</ol>
+
+<h3>Vibe Coding 演示 (15 分钟)</h3>
+<p>继续用 Copilot, 试 3 个 prompt:</p>
+<pre><code>1. "Add a services section with 3 cards: Data Analytics, AI Solutions, Pricing Strategy"
+2. "Change the color scheme to blue (#0078d4) and white"
+3. "Add a contact form with fields: name, email, message, and submit button"</code></pre>
+
+<div class="checklist">
+<h4>Day 1 验证 ✓</h4>
+<ul>
+<li>☐ 站点创建成功, 看到 https://yoursite.powerappsportals.com</li>
+<li>☐ Copilot 生成 hero section</li>
+<li>☐ 3 个服务卡片显示</li>
+<li>☐ 联系表单显示 (不能提交, Day 3 加数据后才行)</li>
+</ul>
+</div>
+
+<hr>
+
+<!-- Lieflat 图 1: Power Platform 生态 -->
+<style>
+.lf-eco {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #faf8f2;
+  border-radius: 24px;
+  padding: 28px 32px 24px;
+  margin: 32px 0;
+  max-width: 720px;
+}
+.lf-eco h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1c1c1a;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+  border: none;
+  padding: 0;
+}
+.lf-eco .sub {
+  font-size: 12px;
+  color: #6a5f52;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.lf-eco .node {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #1c1c1a;
+  color: #faf8f2;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.lf-eco .node.tier-2 { background: #4a4138; }
+.lf-eco .node.tier-3 { background: #6a5f52; }
+.lf-eco .node .label { flex: 0 0 140px; font-weight: 700; }
+.lf-eco .node .desc { flex: 1; color: #d6d2c5; font-weight: 500; }
+.lf-eco .source {
+  font-size: 10px;
+  color: #9a8e7e;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 16px;
+  text-align: right;
+}
+</style>
+
+<div class="lf-eco">
+  <h2>Power Platform 生态 · 6 大组件</h2>
+  <div class="sub">微软 low-code 全家桶 · 颜色越深, 与 Power Pages 关联越紧</div>
+
+  <div class="node">
+    <div class="label">Power Pages</div>
+    <div class="desc">公开/客户网站 (本教程重点)</div>
+  </div>
+  <div class="node tier-2">
+    <div class="label">Power Apps</div>
+    <div class="desc">内部 App · 与 Power Pages 共享 Dataverse</div>
+  </div>
+  <div class="node tier-2">
+    <div class="label">Power Automate</div>
+    <div class="desc">业务流程 · 触发 Power Pages 表单</div>
+  </div>
+  <div class="node tier-3">
+    <div class="label">Dataverse</div>
+    <div class="desc">数据存储 · Power Pages 后端</div>
+  </div>
+  <div class="node tier-3">
+    <div class="label">Copilot Studio</div>
+    <div class="desc">AI Chatbot · 嵌入 Power Pages</div>
+  </div>
+  <div class="node tier-3">
+    <div class="label">Power BI</div>
+    <div class="desc">数据分析 · Power Pages 嵌报表</div>
+  </div>
+
+  <div class="source">SOURCE · Microsoft Learn · learn.microsoft.com/power-pages</div>
+</div>
+
+<hr>
+
+<h2><span class="day-num">D2</span>Day 2 · Vibe Coding 工具</h2>
+
+<p class="day-time">2026-08-14 周五 · 90 分钟 · 目标: 3 个工具都装好, 都会用</p>
+
+<h3>3 个 Vibe Coding 工具对比</h3>
+<table>
+<tr><th>工具</th><th>用途</th><th>你 D+10 关联</th></tr>
+<tr><td><strong>Power Pages Copilot</strong></td><td>写 Power Pages 页面 / 表单 / 流程</td><td>⭐⭐⭐⭐⭐ 首选</td></tr>
+<tr><td><strong>Claude Code</strong></td><td>写 custom code (JavaScript / Liquid / PCF)</td><td>⭐⭐⭐⭐ 你有 Hermes 经验</td></tr>
+<tr><td><strong>Cursor</strong></td><td>通用 IDE, 写 Power Pages 相关代码</td><td>⭐⭐⭐ 中等</td></tr>
+</table>
+
+<h3>工具 1: Power Pages Copilot (30 分钟)</h3>
+<p>你在 Day 1 已经用过, 今天练 5 个 prompt:</p>
+<pre><code>1. "Add a pricing section with 3 tiers: Basic / Pro / Enterprise"
+2. "Generate 5 FAQ items for a data analytics service"
+3. "Add a testimonials carousel with 3 customer quotes"
+4. "Create a footer with social media links and contact info"
+5. "Suggest 3 improvements to the homepage design"</code></pre>
+
+<h3>工具 2: Claude Code (30 分钟)</h3>
+<p>Power Pages 的 <strong>custom code 编辑器</strong> 支持写 JavaScript / Liquid 模板. 用 Claude Code 写:</p>
+<ol>
+<li>装 Claude Code: <code>brew install claude-code</code> 或 npm <code>npm install -g @anthropic-ai/claude-code</code></li>
+<li>Power Pages Studio → 选 "Advanced" (custom code editor)</li>
+<li>导出站点代码 (Power Pages → 站点设置 → Download Site)</li>
+<li>解压后用 Claude Code 打开: <code>cd portal && claude</code></li>
+<li>让 Claude Code 改 1 个 Liquid 模板, 加 custom CSS</li>
+</ol>
+
+<p>示例 prompt:</p>
+<pre><code>"Add a sticky header to the homepage that changes background
+color to #0078d4 when the user scrolls down 100px.
+Use vanilla JavaScript, no jQuery. Test in Chrome."</code></pre>
+
+<h3>工具 3: Cursor (30 分钟)</h3>
+<p>Cursor 是 IDE, 写 Power Pages 的 custom code:</p>
+<ol>
+<li>下载 Cursor: <a href="https://cursor.sh">cursor.sh</a></li>
+<li>File → Open Folder → 你的 Power Pages 解压目录</li>
+<li>Cmd+K: 写 1 个 prompt, 改 contact form</li>
+<li>Cmd+L: 问代码问题</li>
+</ol>
+
+<div class="checklist">
+<h4>Day 2 验证 ✓</h4>
+<ul>
+<li>☐ Power Pages Copilot 5 个 prompt 都生效</li>
+<li>☐ Claude Code 装好, 跑通 1 个改 Liquid 任务</li>
+<li>☐ Cursor 装好, 改 1 个 form</li>
+</ul>
+</div>
+
+<hr>
+
+<h2><span class="day-num">D3</span>Day 3 · Dataverse 数据建模 + 表单</h2>
+
+<p class="day-time">2026-08-15 周六 · 120 分钟 · 目标: 1 个能提交数据到 Dataverse 的表单</p>
+
+<h3>为什么 Day 3 最关键?</h3>
+<p>Power Pages 的核心价值是 <strong>收集 + 显示数据</strong>. <strong>没有 Dataverse 表单 = 静态网站</strong>.</p>
+
+<h3>Step 1: 创建 Dataverse 表 (30 分钟)</h3>
+<ol>
+<li>登录 <a href="https://make.powerapps.com">make.powerapps.com</a> → Dataverse → Tables</li>
+<li>New table → 命名: "ContactSubmission"</li>
+<li>加字段:
+  <ul>
+    <li>Name (Text, 必填)</li>
+    <li>Email (Email, 必填)</li>
+    <li>Company (Text)</li>
+    <li>Message (Text Area, 多行)</li>
+    <li>SubmissionDate (Date Time, 默认值 = 现在)</li>
+  </ul>
+</li>
+<li>Save & Close</li>
+</ol>
+
+<h3>Step 2: 用 Vibe Coding 生成 Power Pages 表单 (45 分钟)</h3>
+<p>用 Copilot prompt:</p>
+<pre><code>"Create a contact form page with 4 fields connected to
+Dataverse table 'ContactSubmission':
+- Name (required, max 100 chars)
+- Email (required, email validation)
+- Company (optional, max 200 chars)
+- Message (required, textarea, max 1000 chars)
+
+After successful submission:
+- Show 'Thank you' message
+- Send email to admin@yourcompany.com
+- Redirect to /thank-you page"</code></pre>
+
+<h3>Step 3: 配置权限 (15 分钟)</h3>
+<ol>
+<li>Power Pages → 你的站点 → Set up → Security</li>
+<li>加 1 个 Web Role: "Anonymous" (允许未登录用户提交)</li>
+<li>Table Permissions: 给 "ContactSubmission" 表加 Insert 权限给 Anonymous 角色</li>
+</ol>
+
+<h3>Step 4: 测试 (30 分钟)</h3>
+<ol>
+<li>打开站点 /contact</li>
+<li>填表提交</li>
+<li>Power Pages Studio → Data → ContactSubmissions → 看到 1 条数据</li>
+<li>邮箱 (admin@yourcompany.com) 收到通知 (如果配置了)</li>
+</ol>
+
+<div class="checklist">
+<h4>Day 3 验证 ✓</h4>
+<ul>
+<li>☐ Dataverse 表 "ContactSubmission" 创建成功 (5 字段)</li>
+<li>☐ Power Pages 表单 4 字段都显示</li>
+<li>☐ 提交 1 条测试, Dataverse 看到数据</li>
+<li>☐ Web Role 权限配置好</li>
+</ul>
+</div>
+
+<hr>
+
+<!-- Lieflat 图 2: Vibe Coding 工具对比 -->
+<style>
+.lf-vibe {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #faf8f2;
+  border-radius: 24px;
+  padding: 28px 32px 24px;
+  margin: 32px 0;
+  max-width: 720px;
+}
+.lf-vibe h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1c1c1a;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+  border: none;
+  padding: 0;
+}
+.lf-vibe .sub {
+  font-size: 12px;
+  color: #6a5f52;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.lf-vibe table {
+  width: 100%;
+  font-size: 12px;
+}
+.lf-vibe th, .lf-vibe td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #d6d2c5;
+}
+.lf-vibe th {
+  background: #1c1c1a;
+  color: #faf8f2;
+  text-align: left;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.lf-vibe .tool {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #faf8f2;
+  background: #1c1c1a;
+  letter-spacing: 0.06em;
+}
+.lf-vibe .tool.copilot { background: #0078d4; }
+.lf-vibe .tool.claude { background: #b45837; }
+.lf-vibe .tool.cursor { background: #4a4138; }
+.lf-vibe .source {
+  font-size: 10px;
+  color: #9a8e7e;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 16px;
+  text-align: right;
+}
+</style>
+
+<div class="lf-vibe">
+  <h2>3 个 Vibe Coding 工具对比</h2>
+  <div class="sub">Day 2 · Power Pages 三种 AI 写代码方式</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>工具</th>
+        <th>适合</th>
+        <th>用 AI 写什么</th>
+        <th>难度</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tool copilot">COPILOT</span></td>
+        <td>Power Pages 平台内</td>
+        <td>页面 / 表单 / 流程</td>
+        <td>★☆☆☆☆</td>
+      </tr>
+      <tr>
+        <td><span class="tool claude">CLAUDE</span></td>
+        <td>custom code</td>
+        <td>JavaScript / Liquid / PCF</td>
+        <td>★★★☆☆</td>
+      </tr>
+      <tr>
+        <td><span class="tool cursor">CURSOR</span></td>
+        <td>通用 IDE</td>
+        <td>任意代码 / 调试</td>
+        <td>★★☆☆☆</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="source">SOURCE · Microsoft Copilot + Claude Code + Cursor 官方文档</div>
+</div>
+
+<hr>
+
+<h2><span class="day-num">D4</span>Day 4 · 业务流程 (Power Automate)</h2>
+
+<p class="day-time">2026-08-16 周日 · 90 分钟 · 目标: 1 个完整审批流</p>
+
+<h3>Power Automate 是什么?</h3>
+<p>类似 IFTTT / Zapier, 但微软生态. 触发 → 条件 → 动作. 你 Day 3 提交的表单, 触发 1 个 Power Automate 流:</p>
+
+<h3>Step 1: 创建 Power Automate (30 分钟)</h3>
+<ol>
+<li>登录 <a href="https://make.powerautomate.com">make.powerautomate.com</a></li>
+<li>Create → Automated cloud flow</li>
+<li>Trigger: "When a row is added" (Dataverse → ContactSubmission)</li>
+<li>Action 1: "Send an email" (V2) — to admin@yourcompany.com</li>
+<li>Action 2: "Post a message" (Teams) — to "Sales" channel</li>
+</ol>
+
+<h3>Step 2: Vibe Coding 写条件分支 (30 分钟)</h3>
+<p>用 Copilot 写 (Power Automate 也支持 AI):</p>
+<pre><code>"Add a condition: if the message contains the word 'enterprise',
+route the submission to the 'Sales-Enterprise' channel
+and assign to user 'sales-lead@yourcompany.com'."</code></pre>
+
+<h3>Step 3: 测试 (30 分钟)</h3>
+<ol>
+<li>提交 1 个含 "enterprise" 的表单</li>
+<li>查看 Power Automate run history, 确认路由正确</li>
+<li>提交 1 个普通表单, 确认常规流程</li>
+</ol>
+
+<div class="checklist">
+<h4>Day 4 验证 ✓</h4>
+<ul>
+<li>☐ Power Automate 流创建成功</li>
+<li>☐ 提交表单 → email 收到</li>
+<li>☐ 提交含 "enterprise" → Teams 路由正确</li>
+</ul>
+</div>
+
+<hr>
+
+<h2><span class="day-num">D5</span>Day 5 · 实战项目 (公司介绍页 + 客户门户)</h2>
+
+<p class="day-time">2026-08-17 周一 · 150 分钟 · 目标: 完成简历可写项目</p>
+
+<h3>项目 1: 公司介绍页 (60 分钟)</h3>
+<ol>
+<li>用 Power Pages Copilot 1 句话生成完整站点: <strong>"Create a B2B SaaS company website for 'Javis Data' with 4 sections: hero, services (3 cards), about, contact form"</strong></li>
+<li>加 Dataverse 联系表单 (复用 Day 3 配置)</li>
+<li>加 Power Automate 审批流 (复用 Day 4 配置)</li>
+<li>SEO 优化: 加 meta description / OG image</li>
+</ol>
+
+<h3>项目 2: 客户门户 (90 分钟)</h3>
+<ol>
+<li>登录后页面: 用 Power Pages Studio 加 "Login" 组件</li>
+<li>配置 Azure AD B2C (身份验证) 或本地账号</li>
+<li>登录后显示: 客户订单列表 (从 Dataverse)</li>
+<li>加 "Submit ticket" 表单 (Dataverse Ticket 表)</li>
+</ol>
+
+<h3>部署到生产 (10 分钟)</h3>
+<ol>
+<li>Power Pages → 你的站点 → "Go Live" (生产环境)</li>
+<li>绑定自定义域名 (你公司域名)</li>
+<li>启用 HTTPS (免费)</li>
+</ol>
+
+<div class="checklist">
+<h4>Day 5 验证 ✓</h4>
+<ul>
+<li>☐ 公司介绍页上线, 4 sections 全显示</li>
+<li>☐ 联系表单能提交, Dataverse 收到数据</li>
+<li>☐ 客户门户能登录, 显示订单</li>
+<li>☐ 自定义域名 + HTTPS 启用</li>
+</ul>
+</div>
+
+<hr>
+
+<!-- Lieflat 图 3: 5 天进度时间轴 -->
+<style>
+.lf-timeline {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #faf8f2;
+  border-radius: 24px;
+  padding: 28px 32px 24px;
+  margin: 32px 0;
+  max-width: 720px;
+}
+.lf-timeline h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1c1c1a;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+  border: none;
+  padding: 0;
+}
+.lf-timeline .sub {
+  font-size: 12px;
+  color: #6a5f52;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.lf-timeline .day {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.lf-timeline .label {
+  width: 80px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1c1c1a;
+  text-align: right;
+}
+.lf-timeline .bar-wrap {
+  flex: 1;
+  height: 28px;
+  position: relative;
+  background: #ece9e1;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.lf-timeline .bar {
+  height: 100%;
+  background: #1c1c1a;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  color: #faf8f2;
+  font-size: 12px;
+  font-weight: 600;
+}
+.lf-timeline .bar.day-1 { background: #9ec5e8; }
+.lf-timeline .bar.day-2 { background: #6b9bc4; }
+.lf-timeline .bar.day-3 { background: #0078d4; }
+.lf-timeline .bar.day-4 { background: #4a6e94; }
+.lf-timeline .bar.day-5 { background: #1c1c1a; }
+.lf-timeline .source {
+  font-size: 10px;
+  color: #9a8e7e;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 16px;
+  text-align: right;
+}
+</style>
+
+<div class="lf-timeline">
+  <h2>Power Pages 5 天时间投入分布</h2>
+  <div class="sub">每天 1-2 小时 · 颜色越深, 难度越高</div>
+
+  <div class="day">
+    <div class="label">Day 1</div>
+    <div class="bar-wrap"><div class="bar day-1" style="width: 45%;">90 min · 生态 + 第 1 站</div></div>
+  </div>
+  <div class="day">
+    <div class="label">Day 2</div>
+    <div class="bar-wrap"><div class="bar day-2" style="width: 45%;">90 min · 3 个 Vibe 工具</div></div>
+  </div>
+  <div class="day">
+    <div class="label">Day 3</div>
+    <div class="bar-wrap"><div class="bar day-3" style="width: 60%;">120 min · Dataverse + 表单</div></div>
+  </div>
+  <div class="day">
+    <div class="label">Day 4</div>
+    <div class="bar-wrap"><div class="bar day-4" style="width: 45%;">90 min · Power Automate</div></div>
+  </div>
+  <div class="day">
+    <div class="label">Day 5</div>
+    <div class="bar-wrap"><div class="bar day-5" style="width: 75%;">150 min · 2 个项目上线</div></div>
+  </div>
+
+  <div class="source">SOURCE · Javis D+11 Power Pages 教程规划</div>
+</div>
+
+<hr>
+
+<h2>常见问题 FAQ</h2>
+
+<h3>Q1: Power Pages 收费吗?</h3>
+<p>Power Pages 许可证是 <strong>每用户每月 15-200 USD</strong>. 但 <strong>开发者计划免费 1 年</strong> (5 站), 适合学习. <strong>生产环境</strong>看公司 license.</p>
+
+<h3>Q2: Vibe Coding 跟 Power Pages Copilot 一样吗?</h3>
+<p><strong>不一样</strong>:
+- <strong>Power Pages Copilot</strong> = 微软官方, 只能在 Power Pages 平台内用
+- <strong>Vibe Coding</strong> = 通用概念, 包括 Cursor / Claude Code / v0 / Copilot
+- 建议 <strong>双线</strong>: Copilot 写平台配置, Claude Code 写 custom code</p>
+
+<h3>Q3: 学完能写简历吗?</h3>
+<p>能. 5 天做完后, 简历可以写:
+- "用 Power Pages + Vibe Coding (Copilot + Claude Code) 实现 2 个公司站点, 含联系表单和客户门户"
+- "用 Dataverse + Power Automate 实现端到端数据流, 表单提交 → 自动邮件 → 团队路由"</p>
+
+<h3>Q4: Power Pages 跟你 D+4 关系?</h3>
+<p>Power Pages 是 low-code, 跟你 D+4 LangGraph 完全不一样. 但 Power Pages 跟 <strong>Azure Functions + Durable Functions</strong> (你 D+11 学的) 是<strong>互补</strong>: Power Pages 前端, Azure Functions 后端. 两者结合 = 完整 web 应用.</p>
+
+<h3>Q5: D+10 阶段值得学吗?</h3>
+<p><strong>周末学</strong> (D+13/14-16). 不影响主线. 微软客户 (可口可乐 / 摩根大通 / Eli Lilly) 招人时, 知道 Power Pages = 加分项.</p>
+
+<hr>
+
+<h2>诚实总结</h2>
+
+<p>5 天下来, 你会:</p>
+<ol>
+<li><strong>理解</strong> Power Platform 生态 (Power Pages + Dataverse + Power Automate)</li>
+<li><strong>用</strong> 3 个 Vibe Coding 工具 (Copilot / Claude Code / Cursor)</li>
+<li><strong>创建</strong> Dataverse 表 + Power Pages 表单 (Day 3 是核心)</li>
+<li><strong>配</strong> Power Automate 业务流程 (审批 / 通知)</li>
+<li><strong>上线</strong> 1 个公司介绍页 + 1 个客户门户</li>
+</ol>
+
+<p><strong>前提</strong>: 你有 Microsoft 365 账号 + Power Pages 开发者计划.</p>
+
+<p style="color: var(--text-muted); font-size: 13px; margin-top: 40px;">
+本研究基于 Microsoft Learn 官方文档 + Power Pages 开发者计划 + Vibe Coding 工具链.
+所有 prompt 示例为简化版, 实际 Copilot 输出可能不同.
+诚实标注: 我没真实跑过 Power Pages, Day 3 Dataverse 部分可能需要更多调试时间.
+</p>
+
+</body>
+</html>

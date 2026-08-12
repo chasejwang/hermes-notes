@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0e1a"/>
+      <stop offset="100%" stop-color="#0d1422"/>
+    </linearGradient>
+    <linearGradient id="azure" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0078d4"/>
+      <stop offset="50%" stop-color="#1a8fff"/>
+      <stop offset="100%" stop-color="#50a3f7"/>
+    </linearGradient>
+    <linearGradient id="warm" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#b45837"/>
+      <stop offset="100%" stop-color="#d97a3f"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <!-- 装饰网格 -->
+  <g opacity="0.06">
+    <circle cx="200" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="400" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="600" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="800" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="1000" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="1200" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="1400" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="200" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="400" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="600" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="800" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="1000" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="1200" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="1400" cy="800" r="1.5" fill="#fff"/>
+  </g>
+
+  <!-- "P" 大字符 (Power Pages 风格) -->
+  <g transform="translate(180, 180)">
+    <text font-family="-apple-system, sans-serif" font-size="380" font-weight="800" fill="url(#azure)" opacity="0.18">P</text>
+  </g>
+
+  <!-- 标题区 -->
+  <text x="80" y="160" font-family="-apple-system, sans-serif" font-size="48" font-weight="800" fill="#fafaf5" letter-spacing="-0.02em">
+    Power Pages
+  </text>
+  <text x="80" y="220" font-family="-apple-system, sans-serif" font-size="32" font-weight="700" fill="url(#azure)" letter-spacing="-0.01em">
+    5 天上手 · Vibe Coding
+  </text>
+  <text x="80" y="258" font-family="-apple-system, sans-serif" font-size="18" font-weight="400" fill="#888">
+    微软 low-code 平台 · 用 AI 写网站 · D+11 教程
+  </text>
+
+  <!-- 副标题装饰线 -->
+  <line x1="80" y1="284" x2="280" y2="284" stroke="url(#warm)" stroke-width="3"/>
+
+  <!-- 元数据 -->
+  <g transform="translate(80, 320)" font-family="-apple-system, sans-serif" font-size="13" fill="#666">
+    <text>D+11 · 2026-08-12</text>
+    <text y="22">~4000 字 · 5 天 × 1-2 小时</text>
+  </g>
+
+  <!-- 5 天时间轴 -->
+  <g transform="translate(80, 400)">
+    <line x1="0" y1="40" x2="1440" y2="40" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="2 4"/>
+    <circle cx="0" cy="40" r="6" fill="#9ec5e8"/>
+    <text x="0" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#888" letter-spacing="0.08em">DAY 1</text>
+    <text x="0" y="80" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#aaa">生态</text>
+    <text x="0" y="96" font-family="-apple-system, sans-serif" font-size="10" fill="#666">90 min</text>
+
+    <circle cx="360" cy="40" r="6" fill="#6b9bc4"/>
+    <text x="360" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#888" letter-spacing="0.08em">DAY 2</text>
+    <text x="360" y="80" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#aaa">Vibe Tools</text>
+    <text x="360" y="96" font-family="-apple-system, sans-serif" font-size="10" fill="#666">90 min</text>
+
+    <circle cx="720" cy="40" r="8" fill="#0078d4"/>
+    <text x="720" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#888" letter-spacing="0.08em">DAY 3 ⭐</text>
+    <text x="720" y="80" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#aaa">Dataverse</text>
+    <text x="720" y="96" font-family="-apple-system, sans-serif" font-size="10" fill="#666">120 min</text>
+
+    <circle cx="1080" cy="40" r="6" fill="#4a6e94"/>
+    <text x="1080" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#888" letter-spacing="0.08em">DAY 4</text>
+    <text x="1080" y="80" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#aaa">Automate</text>
+    <text x="1080" y="96" font-family="-apple-system, sans-serif" font-size="10" fill="#666">90 min</text>
+
+    <circle cx="1440" cy="40" r="10" fill="url(#warm)"/>
+    <text x="1440" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="url(#warm)" letter-spacing="0.08em">DAY 5</text>
+    <text x="1440" y="80" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#aaa">Project</text>
+    <text x="1440" y="96" font-family="-apple-system, sans-serif" font-size="10" fill="#666">150 min</text>
+  </g>
+
+  <!-- 关键概念卡片 (右下) -->
+  <g transform="translate(960, 580)">
+    <rect width="560" height="240" rx="20" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)"/>
+    <text x="28" y="42" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#9a8e7e" letter-spacing="0.12em">3 个 Vibe Coding 工具</text>
+
+    <g font-family="-apple-system, sans-serif">
+      <circle cx="36" cy="80" r="4" fill="#0078d4"/>
+      <text x="50" y="84" font-size="14" font-weight="700" fill="#fafaf5">Power Pages Copilot</text>
+      <text x="50" y="100" font-size="11" fill="#888">微软官方 · 写平台配置</text>
+
+      <circle cx="36" cy="135" r="4" fill="#b45837"/>
+      <text x="50" y="139" font-size="14" font-weight="700" fill="#fafaf5">Claude Code</text>
+      <text x="50" y="155" font-size="11" fill="#888">你 D+4 经验 · 写 custom code</text>
+
+      <circle cx="36" cy="190" r="4" fill="#4a4138"/>
+      <text x="50" y="194" font-size="14" font-weight="700" fill="#fafaf5">Cursor</text>
+      <text x="50" y="210" font-size="11" fill="#888">通用 IDE · 写任意代码</text>
+    </g>
+  </g>
+
+  <!-- 底部核心信息 (左) -->
+  <g transform="translate(80, 640)">
+    <rect width="800" height="180" rx="20" fill="rgba(0,120,212,0.08)" stroke="url(#azure)" stroke-width="1"/>
+    <text x="28" y="40" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="url(#azure)" letter-spacing="0.12em">D+10 阶段 ROI</text>
+
+    <text x="28" y="84" font-family="-apple-system, sans-serif" font-size="16" font-weight="700" fill="#fafaf5">微软客户 (可口可乐 / 摩根大通 / Eli Lilly) 招人时, 知道 Power Pages = 加分项</text>
+
+    <g font-family="-apple-system, sans-serif" font-size="13" fill="#bbb" transform="translate(28, 120)">
+      <text y="0">Power Pages + Azure Functions (D+11 学的) = 完整 web 应用</text>
+      <text y="22">Power Pages + Dataverse + Power Automate = 端到端数据流</text>
+    </g>
+  </g>
+
+  <!-- 底部时间 -->
+  <text x="80" y="860" font-family="-apple-system, sans-serif" font-size="12" fill="#666" font-weight="500">
+    D+11 · 2026-08-12 · Javis Power Pages 教程 · 周末学
+  </text>
+
+  <!-- 右上 tag -->
+  <g transform="translate(1380, 80)">
+    <rect width="140" height="36" rx="18" fill="rgba(0,120,212,0.18)" stroke="rgba(0,120,212,0.4)" stroke-width="1"/>
+    <text x="70" y="23" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#50a3f7" text-anchor="middle" letter-spacing="0.1em">
+      VIBE TUTORIAL
+    </text>
+  </g>
+</svg>
