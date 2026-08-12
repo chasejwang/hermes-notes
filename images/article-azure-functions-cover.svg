@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0e1a"/>
+      <stop offset="100%" stop-color="#0f1419"/>
+    </linearGradient>
+    <linearGradient id="azure" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0078d4"/>
+      <stop offset="50%" stop-color="#1a8fff"/>
+      <stop offset="100%" stop-color="#50a3f7"/>
+    </linearGradient>
+    <linearGradient id="warm" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#b45837"/>
+      <stop offset="100%" stop-color="#d97a3f"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <!-- 装饰网格 -->
+  <g opacity="0.06">
+    <circle cx="200" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="400" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="600" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="800" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="1000" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="1200" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="1400" cy="100" r="1.5" fill="#fff"/>
+    <circle cx="200" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="400" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="600" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="800" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="1000" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="1200" cy="800" r="1.5" fill="#fff"/>
+    <circle cx="1400" cy="800" r="1.5" fill="#fff"/>
+  </g>
+
+  <!-- 大 "λ" 字符 (Lambda 符号, Azure Functions 风格) -->
+  <g transform="translate(150, 200)">
+    <text font-family="-apple-system, sans-serif" font-size="320" font-weight="800" fill="url(#azure)" opacity="0.18">λ</text>
+  </g>
+
+  <!-- 标题区 -->
+  <text x="80" y="160" font-family="-apple-system, sans-serif" font-size="48" font-weight="800" fill="#fafaf5" letter-spacing="-0.02em">
+    Azure Functions
+  </text>
+  <text x="80" y="220" font-family="-apple-system, sans-serif" font-size="32" font-weight="700" fill="url(#azure)" letter-spacing="-0.01em">
+    5 天上手手册
+  </text>
+  <text x="80" y="258" font-family="-apple-system, sans-serif" font-size="18" font-weight="400" fill="#888">
+    初学者快速学习路线 · 每天 1-2 小时 · D+11 学习计划
+  </text>
+
+  <!-- 副标题装饰线 -->
+  <line x1="80" y1="284" x2="280" y2="284" stroke="url(#warm)" stroke-width="3"/>
+
+  <!-- 5 天时间轴 -->
+  <g transform="translate(80, 340)">
+    <line x1="0" y1="40" x2="1440" y2="40" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="2 4"/>
+    <circle cx="0" cy="40" r="6" fill="#4a4138"/>
+    <text x="0" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#888" letter-spacing="0.08em">DAY 1</text>
+    <text x="0" y="80" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#aaa">HTTP</text>
+    <text x="0" y="96" font-family="-apple-system, sans-serif" font-size="10" fill="#666">60 min</text>
+
+    <circle cx="360" cy="40" r="6" fill="#6a5f52"/>
+    <text x="360" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#888" letter-spacing="0.08em">DAY 2</text>
+    <text x="360" y="80" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#aaa">4 Triggers</text>
+    <text x="360" y="96" font-family="-apple-system, sans-serif" font-size="10" fill="#666">90 min</text>
+
+    <circle cx="720" cy="40" r="8" fill="#9a8e7e"/>
+    <text x="720" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#888" letter-spacing="0.08em">DAY 3 ⭐</text>
+    <text x="720" y="80" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#aaa">Durable</text>
+    <text x="720" y="96" font-family="-apple-system, sans-serif" font-size="10" fill="#666">120 min</text>
+
+    <circle cx="1080" cy="40" r="6" fill="#6a5f52"/>
+    <text x="1080" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#888" letter-spacing="0.08em">DAY 4</text>
+    <text x="1080" y="80" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#aaa">Deploy</text>
+    <text x="1080" y="96" font-family="-apple-system, sans-serif" font-size="10" fill="#666">60 min</text>
+
+    <circle cx="1440" cy="40" r="10" fill="url(#warm)"/>
+    <text x="1440" y="20" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="url(#warm)" letter-spacing="0.08em">DAY 5</text>
+    <text x="1440" y="80" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#aaa">Project</text>
+    <text x="1440" y="96" font-family="-apple-system, sans-serif" font-size="10" fill="#666">150 min</text>
+  </g>
+
+  <!-- 卡片区 (右下角) - 关键概念 -->
+  <g transform="translate(960, 540)">
+    <rect width="560" height="280" rx="20" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)"/>
+    <text x="28" y="42" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#9a8e7e" letter-spacing="0.12em">4 个核心概念</text>
+
+    <g font-family="-apple-system, sans-serif">
+      <circle cx="36" cy="80" r="3" fill="url(#azure)"/>
+      <text x="50" y="84" font-size="14" font-weight="700" fill="#fafaf5">Function App</text>
+      <text x="50" y="100" font-size="11" fill="#888">装函数的容器</text>
+
+      <circle cx="36" cy="130" r="3" fill="url(#azure)"/>
+      <text x="50" y="134" font-size="14" font-weight="700" fill="#fafaf5">Function</text>
+      <text x="50" y="150" font-size="11" fill="#888">1 段代码 (Python / JS / C#)</text>
+
+      <circle cx="36" cy="180" r="3" fill="url(#azure)"/>
+      <text x="50" y="184" font-size="14" font-weight="700" fill="#fafaf5">Trigger</text>
+      <text x="50" y="200" font-size="11" fill="#888">什么事件启动函数</text>
+
+      <circle cx="36" cy="230" r="3" fill="url(#azure)"/>
+      <text x="50" y="234" font-size="14" font-weight="700" fill="#fafaf5">Binding</text>
+      <text x="50" y="250" font-size="11" fill="#888">函数 ↔ 外部服务的连接</text>
+    </g>
+  </g>
+
+  <!-- 底部装饰线 (左) - 核心信息 -->
+  <g transform="translate(80, 600)">
+    <rect width="800" height="220" rx="20" fill="rgba(180,88,55,0.08)" stroke="url(#warm)" stroke-width="1"/>
+    <text x="28" y="40" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="url(#warm)" letter-spacing="0.12em">D+4 LANGGRAPH → DURABLE FUNCTIONS</text>
+
+    <text x="28" y="84" font-family="-apple-system, sans-serif" font-size="16" font-weight="700" fill="#fafaf5">你 D+4 学过的 LangGraph 概念, 1:1 对应到 Durable Functions</text>
+
+    <g font-family="-apple-system, sans-serif" font-size="13" fill="#bbb" transform="translate(28, 120)">
+      <text y="0">StateGraph       →  Orchestrator function</text>
+      <text y="22">add_node        →  @activity_trigger</text>
+      <text y="44">fan-out (并行)  →  call_activity (no await)</text>
+    </g>
+
+    <text x="28" y="200" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="url(#warm)">
+      Day 3 跑通 "7 维度评分" orchestrator = 1 天能上手
+    </text>
+  </g>
+
+  <!-- 元数据 -->
+  <text x="80" y="860" font-family="-apple-system, sans-serif" font-size="12" fill="#666" font-weight="500">
+    D+11 · 2026-08-12 · Javis 初学者快速上手 · 5 天 × 1-2 小时
+  </text>
+
+  <!-- 右上 tag -->
+  <g transform="translate(1380, 80)">
+    <rect width="140" height="36" rx="18" fill="rgba(0,120,212,0.18)" stroke="rgba(0,120,212,0.4)" stroke-width="1"/>
+    <text x="70" y="23" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#50a3f7" text-anchor="middle" letter-spacing="0.1em">
+      LEARN NOTE
+    </text>
+  </g>
+</svg>

@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azure Functions 5 天上手手册 · D+11 学习计划</title>
+<style>
+  :root {
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --accent: #b45837;
+    --accent-2: #26827c;
+    --bg: #faf8f3;
+    --border: rgba(26, 24, 20, 0.12);
+    --code-bg: #1a1a2e;
+    --code-fg: #fafaf5;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", "STHeiti", "Helvetica Neue", "Inter", sans-serif; }
+  body { line-height: 1.7; font-size: 16px; padding: 32px 20px 80px; max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 38px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 12px; }
+  h1 .accent { color: var(--accent); }
+  .meta { color: var(--text-muted); font-size: 13px; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .meta span { margin-right: 14px; }
+  .meta .tag { background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  h2 { font-size: 28px; font-weight: 700; margin-top: 56px; margin-bottom: 16px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text); }
+  h2 .day-num { display: inline-block; width: 56px; height: 56px; line-height: 56px; background: var(--accent); color: #fff; border-radius: 50%; text-align: center; font-size: 18px; font-weight: 800; margin-right: 14px; vertical-align: middle; }
+  h3 { font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 12px; color: var(--accent-2); }
+  h4 { font-size: 16px; font-weight: 700; margin-top: 20px; margin-bottom: 8px; }
+  p { margin-bottom: 16px; }
+  strong { color: var(--accent); font-weight: 700; }
+  em { color: var(--text-muted); font-style: italic; }
+  ul, ol { margin: 12px 0 16px 24px; }
+  li { margin-bottom: 8px; }
+  code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; font-family: "SF Mono", Menlo, monospace; font-size: 14px; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 16px 20px; border-radius: 6px; overflow-x: auto; margin: 16px 0; font-size: 13px; line-height: 1.5; font-family: "SF Mono", Menlo, monospace; }
+  pre code { background: none; padding: 0; color: inherit; }
+  blockquote { border-left: 3px solid var(--accent); padding: 4px 0 4px 16px; margin: 20px 0; color: var(--text-muted); font-style: italic; }
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: rgba(180, 88, 55, 0.08); font-weight: 700; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .summary-box { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 16px 20px; margin: 24px 0; border-radius: 4px; }
+  .summary-box strong { display: block; margin-bottom: 8px; font-size: 14px; }
+  .checklist { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; margin: 20px 0; }
+  .checklist h4 { margin-top: 0; color: var(--accent-2); }
+  .checklist ul { margin-bottom: 0; }
+  .warn-box { background: #fff3f0; border: 1px solid #e8a896; border-left: 4px solid var(--accent); padding: 14px 18px; margin: 20px 0; border-radius: 4px; font-size: 14px; }
+  .compare-table { font-size: 13px; }
+  .compare-table th { background: rgba(38, 130, 124, 0.08); }
+  .day-time { color: var(--text-dim); font-size: 14px; font-weight: 600; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+
+<h1>Azure Functions <span class="accent">5 天上手手册</span></h1>
+
+<div class="meta">
+  <span class="tag">D+11 学习计划</span>
+  <span>2026-08-12</span>
+  <span>~4500 字</span>
+  <span>5 天 × 1-2 小时</span>
+</div>
+
+<blockquote>
+<strong>给 Javis 的快速上手</strong>。你 D+4 那套 LangGraph AI 投资系统是 serverless + graph orchestration 的**教科书案例**。Azure Functions + Durable Functions 跟 LangGraph 概念 1:1 对应, 你学 Azure 时其实是在用你 D+4 的知识。这篇 5 天计划, 每天 1-2 小时, 周五 (D+15) 跑通完整实战。
+</blockquote>
+
+<div class="summary-box">
+<strong>5 天总览</strong>
+Day 1: 概念 + 第 1 个 HTTP 函数 (1 小时) · Day 2: 4 个 Trigger (1.5 小时) · Day 3: Durable Functions = Azure 版 LangGraph (2 小时) · Day 4: 部署到 Azure (1 小时) · Day 5: 实战项目 GitHub Trending Monitor (2.5 小时)
+</div>
+
+<hr>
+
+<h2><span class="day-num">D1</span>Day 1 · 概念 + 第 1 个 HTTP 函数</h2>
+
+<p class="day-time">2026-08-12 周三 · 60 分钟 · 目标: 本地跑通 hello world</p>
+
+<h3>4 个核心概念 (5 分钟读完)</h3>
+<ul>
+<li><strong>Function App</strong> = 装函数的容器 (类似 microservice 集群)</li>
+<li><strong>Function</strong> = 1 段代码 (Python / JavaScript / C# / Java)</li>
+<li><strong>Trigger</strong> = 什么事件启动函数 (HTTP 请求 / 定时器 / 队列消息 / 文件上传)</li>
+<li><strong>Binding</strong> = 函数 ↔ 外部服务的连接 (声明式, 不用写连接代码)</li>
+</ul>
+
+<h3>装环境 (10 分钟)</h3>
+<pre><code># Mac
+brew tap azure/functions && brew install azure-functions-core-tools@4
+
+# 验证
+func --version  # 应该输出 4.x
+
+# 创建项目
+func init LocalFunctionProj --python -m V2
+cd LocalFunctionProj
+
+# 项目结构
+.
+├── function_app.py      # 你写代码
+├── host.json            # 函数运行时配置
+├── local.settings.json  # 本地连接字符串 (含 AzureWebJobsStorage)
+├── requirements.txt     # Python 依赖
+└── .vscode/             # VS Code 调试配置</code></pre>
+
+<h3>第 1 个 HTTP 函数 (15 分钟写代码 + 5 分钟测试)</h3>
+<p>编辑 <code>function_app.py</code>:</p>
+<pre><code>import azure.functions as func
+import datetime
+
+app = func.FunctionApp()
+
+@app.route(route="hello", auth_level=func.AuthLevel.ANONYMOUS)
+def hello_world(req: func.HttpRequest) -> func.HttpResponse:
+    name = req.params.get("name", "World")
+    now = datetime.datetime.now().isoformat()
+    return func.HttpResponse(
+        f"Hello {name}! Server time: {now}",
+        status_code=200
+    )</code></pre>
+
+<h3>启动 + 测试 (5 分钟)</h3>
+<pre><code>func start
+# 看到 "Your function is running at http://localhost:7071/api/hello"
+
+curl http://localhost:7071/api/hello
+# 输出: Hello World! Server time: 2026-08-12T...
+
+curl "http://localhost:7071/api/hello?name=Javis"
+# 输出: Hello Javis! Server time: 2026-08-12T...</code></pre>
+
+<div class="checklist">
+<h4>Day 1 验证 ✓</h4>
+<ul>
+<li>☐ <code>func --version</code> 输出 4.x</li>
+<li>☐ <code>func start</code> 成功启动</li>
+<li>☐ <code>curl</code> 拿到 200 + "Hello Javis!"</li>
+<li>☐ 改 <code>function_app.py</code> 加个新函数 (比如 <code>/api/time</code>), 重启验证</li>
+</ul>
+</div>
+
+<hr>
+
+<!-- Lieflat 图 1: 5 天时间轴 -->
+<style>
+.lf-timeline {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #faf8f2;
+  border-radius: 24px;
+  padding: 28px 32px 24px;
+  margin: 32px 0;
+  max-width: 720px;
+}
+.lf-timeline h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1c1c1a;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+  border: none;
+  padding: 0;
+}
+.lf-timeline .sub {
+  font-size: 12px;
+  color: #6a5f52;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.lf-timeline .day {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.lf-timeline .label {
+  width: 80px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1c1c1a;
+  text-align: right;
+}
+.lf-timeline .bar-wrap {
+  flex: 1;
+  height: 28px;
+  position: relative;
+  background: #ece9e1;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.lf-timeline .bar {
+  height: 100%;
+  background: #1c1c1a;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  color: #faf8f2;
+  font-size: 12px;
+  font-weight: 600;
+}
+.lf-timeline .bar.day-1 { background: #b8b0a3; }
+.lf-timeline .bar.day-2 { background: #9a8e7e; }
+.lf-timeline .bar.day-3 { background: #6a5f52; }
+.lf-timeline .bar.day-4 { background: #4a4138; }
+.lf-timeline .bar.day-5 { background: #1c1c1a; }
+.lf-timeline .source {
+  font-size: 10px;
+  color: #9a8e7e;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 16px;
+  text-align: right;
+}
+</style>
+
+<div class="lf-timeline">
+  <h2>Azure Functions 5 天时间投入分布</h2>
+  <div class="sub">每天 1-2 小时 · 颜色越深, 难度越高</div>
+
+  <div class="day">
+    <div class="label">Day 1</div>
+    <div class="bar-wrap"><div class="bar day-1" style="width: 30%;">60 min · 概念 + HTTP</div></div>
+  </div>
+  <div class="day">
+    <div class="label">Day 2</div>
+    <div class="bar-wrap"><div class="bar day-2" style="width: 45%;">90 min · 4 个 Trigger</div></div>
+  </div>
+  <div class="day">
+    <div class="label">Day 3</div>
+    <div class="bar-wrap"><div class="bar day-3" style="width: 60%;">120 min · Durable Functions</div></div>
+  </div>
+  <div class="day">
+    <div class="label">Day 4</div>
+    <div class="bar-wrap"><div class="bar day-4" style="width: 30%;">60 min · 部署</div></div>
+  </div>
+  <div class="day">
+    <div class="label">Day 5</div>
+    <div class="bar-wrap"><div class="bar day-5" style="width: 75%;">150 min · 实战项目</div></div>
+  </div>
+
+  <div class="source">SOURCE · Javis D+11 学习规划</div>
+</div>
+
+<hr>
+
+<h2><span class="day-num">D2</span>Day 2 · 4 个最常用 Trigger</h2>
+
+<p class="day-time">2026-08-13 周四 · 90 分钟 · 目标: 4 个 trigger 本地都能触发</p>
+
+<h3>1. HTTP Trigger (Day 1 已经会, 加 GET/POST 分支)</h3>
+<pre><code>@app.route(route="api/data", methods=["GET", "POST"])
+def handle_data(req: func.HttpRequest) -> func.HttpResponse:
+    if req.method == "GET":
+        return func.HttpResponse("Getting data", status_code=200)
+    else:
+        body = req.get_json()
+        return func.HttpResponse(f"Posted: {body}", status_code=201)</code></pre>
+
+<h3>2. Timer Trigger (替代 cron, 定时任务)</h3>
+<pre><code>@app.schedule(schedule="0 0 */6 * * *", arg_name="timer",
+              run_on_startup=False)
+def scheduled_job(timer: func.TimerRequest) -> None:
+    # 每 6 小时跑一次
+    # 你 D+4 那套量化回测可以放这里: 每 6 小时跑一次
+    print("Running scheduled job")</code></pre>
+
+<h3>3. Queue Trigger (队列消息, 类似 SQS)</h3>
+<pre><code>@app.queue_trigger(arg_name="msg", queue_name="my-queue",
+                   connection="AzureWebJobsStorage")
+def process_queue(msg: func.QueueMessage) -> None:
+    data = msg.get_json()
+    print(f"Got message: {data}")
+    # 处理逻辑: 比如更新数据库, 发送通知</code></pre>
+
+<p>队列发送方 (从其他函数发消息):</p>
+<pre><code>from azure.storage.queue import QueueClient
+import json
+
+queue = QueueClient.from_connection_string(
+    "DefaultEndpointsProtocol=https;AccountName=...",
+    "my-queue"
+)
+queue.send_message(json.dumps({"task": "score", "stock": "000001"}))</code></pre>
+
+<h3>4. Blob Trigger (文件上传触发, 替代 S3 event)</h3>
+<pre><code>@app.blob_trigger(arg_name="blob", path="uploads/{name}",
+                 connection="AzureWebJobsStorage")
+def process_blob(blob: func.InputStream):
+    print(f"New file: {blob.name}, size: {blob.length}")
+    # 处理 PDF / CSV / 图像 等</code></pre>
+
+<div class="checklist">
+<h4>Day 2 验证 ✓</h4>
+<ul>
+<li>☐ HTTP GET/POST 都返回正确</li>
+<li>☐ Timer 触发 (等 6 小时 OR 改 <code>*/1 * * * * *</code> 1 分钟一次)</li>
+<li>☐ Queue: 用 <code>queue.send_message</code> 发, function 收到</li>
+<li>☐ Blob: 上传文件到 <code>uploads/</code> 容器, function 触发</li>
+</ul>
+</div>
+
+<hr>
+
+<h2><span class="day-num">D3</span>Day 3 · Durable Functions = Azure 版 LangGraph</h2>
+
+<p class="day-time">2026-08-14 周五 · 120 分钟 · 目标: 跑通"7 维度评分" orchestrator</p>
+
+<h3>为什么 Day 3 最关键?</h3>
+<p>Durable Functions 是 Azure 版的 "graph of states"。<strong>跟你 D+4 学过的 LangGraph 概念 1:1 对应</strong>:</p>
+
+<table class="compare-table">
+<tr><th>LangGraph (你会的)</th><th>Durable Functions (今天学)</th><th>作用</th></tr>
+<tr><td><code>StateGraph</code></td><td><code>Orchestrator Function</code></td><td>整体编排</td></tr>
+<tr><td><code>add_node</code></td><td><code>Activity Function</code></td><td>单个步骤</td></tr>
+<tr><td><code>State (TypedDict)</code></td><td>Orchestrator context (持久化)</td><td>状态管理</td></tr>
+<tr><td><code>add_edge</code></td><td><code>call_activity</code> 顺序</td><td>依赖关系</td></tr>
+<tr><td>fan-out (并行)</td><td><code>call_activity</code> 并发 (不 await)</td><td>并行执行</td></tr>
+<tr><td>checkpoint</td><td>Durable storage (Azure 自动)</td><td>断点续传</td></tr>
+<tr><td><code>set_entry_point</code></td><td>HTTP Trigger → Start Orchestrator</td><td>启动</td></tr>
+</table>
+
+<p><strong>结论</strong>: 你 D+4 学 LangGraph 时, 已经学会了 Durable Functions 的核心概念, 1 天能上手。</p>
+
+<h3>实战: "D+4 系统移植" — 7 维度并行打分 orchestrator</h3>
+
+<p>把 D+4 那套 LangGraph 7 维度评分系统, 翻译成 Durable Functions:</p>
+<pre><code>import azure.functions as func
+import azure.durable_functions as df
+
+mybp = df.Blueprint()
+
+# ============ 7 个 Activity (每个 1 维度) ============
+
+@mybp.activity_trigger(input_name="stockCode")
+def activity_pe(stockCode: str) -> float:
+    """PE 因子"""
+    # 假装调用 akshare / yfinance
+    return 11.5  # placeholder
+
+@mybp.activity_trigger(input_name="stockCode")
+def activity_pb(stockCode: str) -> float:
+    """PB 因子"""
+    return 1.2
+
+@mybp.activity_trigger(input_name="stockCode")
+def activity_roe(stockCode: str) -> float:
+    """ROE 因子"""
+    return 18.3
+
+@mybp.activity_trigger(input_name="stockCode")
+def activity_momentum(stockCode: str) -> float:
+    """动量因子"""
+    return 0.15
+
+@mybp.activity_trigger(input_name="stockCode")
+def activity_vol(stockCode: str) -> float:
+    """波动率因子"""
+    return 0.32
+
+@mybp.activity_trigger(input_name="stockCode")
+def activity_yoy(stockCode: str) -> float:
+    """营收 YoY 因子"""
+    return 0.08
+
+@mybp.activity_trigger(input_name="stockCode")
+def activity_industry(stockCode: str) -> float:
+    """行业因子"""
+    return 0.05
+
+# ============ Scoring Activity (合并) ============
+
+@mybp.activity_trigger(input_name="scores")
+def activity_score(scores: dict) -> dict:
+    """7 维度合并打分"""
+    weights = {
+        "pe": 0.10, "pb": 0.20, "roe": 0.25,
+        "mom": 0.15, "vol": 0.10, "yoy": 0.10,
+        "industry": 0.10
+    }
+    total = sum(scores[k] * weights[k] for k in weights)
+    return {"scores": scores, "weighted_total": round(total, 4)}
+
+# ============ Orchestrator (像 LangGraph 的 StateGraph) ============
+
+@mybp.orchestration_trigger(context_name="context")
+def orchestrator_7dim(context: df.DurableOrchestrationContext):
+    stock_code = context.get_input()
+
+    # Fan-out 7 个 activity 并行 (LangGraph 没有这个 native, 要 asyncio.gather)
+    tasks = {
+        "pe":       context.call_activity("activity_pe", stock_code),
+        "pb":       context.call_activity("activity_pb", stock_code),
+        "roe":      context.call_activity("activity_roe", stock_code),
+        "mom":      context.call_activity("activity_momentum", stock_code),
+        "vol":      context.call_activity("activity_vol", stock_code),
+        "yoy":      context.call_activity("activity_yoy", stock_code),
+        "industry": context.call_activity("activity_industry", stock_code),
+    }
+
+    # Wait all (LangGraph 节点 wait)
+    scores = {k: t.result() for k, t in tasks.items()}
+
+    # Aggregate
+    return context.call_activity("activity_score", scores)
+
+# ============ HTTP 触发 (启动 orchestrator) ============
+
+@mybp.route(route="score/{stockCode}", auth_level=func.AuthLevel.ANONYMOUS)
+@mybp.durable_client_input(client_name="client")
+async def http_start(req: func.HttpRequest,
+                     client: df.DurableOrchestrationClient):
+    stock = req.route_params.get("stockCode")
+    instance_id = await client.start_new("orchestrator_7dim", None, stock)
+    return client.create_check_status_response(req, instance_id)
+
+# 注册 Blueprint
+app = func.FunctionApp()
+app.register_functions(mybp)</code></pre>
+
+<h3>本地测试 (10 分钟)</h3>
+<pre><code>func start
+
+# 启动 orchestrator, 拿到 instance_id
+curl -X POST http://localhost:7071/api/score/000001
+# 返回: {"id": "abc123", "statusQueryGetUri": "..."}
+
+# 查询结果
+curl http://localhost:7071/api/score/000001
+# 或浏览器访问 statusQueryGetUri
+# 返回: {"runtimeStatus": "Completed", "output": {...7 维度分数 + 总分...}}</code></pre>
+
+<div class="checklist">
+<h4>Day 3 验证 ✓</h4>
+<ul>
+<li>☐ Orchestrator 启动, 7 个 Activity 并行</li>
+<li>☐ <code>statusQueryGetUri</code> 拿到 Completed 状态</li>
+<li>☐ Output 包含 7 维度 + 加权总分</li>
+<li>☐ (Bonus) 改 1 个 activity 加 print, 看 fan-out 真的并行</li>
+</ul>
+</div>
+
+<div class="warn-box">
+<strong>⚠️ 关键概念: Durable storage</strong>
+Durable Functions 自动把 orchestrator 状态存到 Azure Storage, 中断后能从 checkpoint 恢复。这是 LangGraph 没有的能力, <strong>Azure Functions 跑 long-running 工作流的核心优势</strong>。
+</div>
+
+<hr>
+
+<!-- Lieflat 图 2: LangGraph vs Durable Functions 对应表 -->
+<style>
+.lf-compare {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #faf8f2;
+  border-radius: 24px;
+  padding: 28px 32px 24px;
+  margin: 32px 0;
+  max-width: 720px;
+}
+.lf-compare h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1c1c1a;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+  border: none;
+  padding: 0;
+}
+.lf-compare .sub {
+  font-size: 12px;
+  color: #6a5f52;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.lf-compare .pair {
+  display: grid;
+  grid-template-columns: 1fr 24px 1fr;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+.lf-compare .left, .lf-compare .right {
+  background: #1c1c1a;
+  color: #faf8f2;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: "SF Mono", Menlo, monospace;
+}
+.lf-compare .right { background: #6a5f52; }
+.lf-compare .arrow {
+  text-align: center;
+  font-size: 16px;
+  color: #9a8e7e;
+  font-weight: 700;
+}
+.lf-compare .label {
+  font-size: 11px;
+  color: #6a5f52;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: 1fr 24px 1fr;
+  gap: 8px;
+}
+.lf-compare .label .left { padding: 0 14px; }
+.lf-compare .label .right { padding: 0 14px; }
+.lf-compare .source {
+  font-size: 10px;
+  color: #9a8e7e;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 16px;
+  text-align: right;
+}
+</style>
+
+<div class="lf-compare">
+  <h2>LangGraph vs Durable Functions · 1:1 概念对应</h2>
+  <div class="sub">你 D+4 会的, 直接迁移到 Azure</div>
+
+  <div class="label">
+    <div class="left">LangGraph (Python)</div>
+    <div></div>
+    <div class="right">Durable Functions (Azure)</div>
+  </div>
+
+  <div class="pair">
+    <div class="left">StateGraph</div>
+    <div class="arrow">→</div>
+    <div class="right">Orchestrator</div>
+  </div>
+  <div class="pair">
+    <div class="left">add_node</div>
+    <div class="arrow">→</div>
+    <div class="right">@activity_trigger</div>
+  </div>
+  <div class="pair">
+    <div class="left">State (TypedDict)</div>
+    <div class="arrow">→</div>
+    <div class="right">context (持久化)</div>
+  </div>
+  <div class="pair">
+    <div class="left">add_edge</div>
+    <div class="arrow">→</div>
+    <div class="right">call_activity (await)</div>
+  </div>
+  <div class="pair">
+    <div class="left">fan-out (asyncio)</div>
+    <div class="arrow">→</div>
+    <div class="right">call_activity (no await)</div>
+  </div>
+  <div class="pair">
+    <div class="left">MemorySaver</div>
+    <div class="arrow">→</div>
+    <div class="right">Azure Storage (自动)</div>
+  </div>
+
+  <div class="source">SOURCE · Javis D+4 LangGraph 实战 + Azure 官方文档</div>
+</div>
+
+<hr>
+
+<h2><span class="day-num">D4</span>Day 4 · 部署到 Azure</h2>
+
+<p class="day-time">2026-08-15 周六 · 60 分钟 · 目标: 第 1 个云端 URL</p>
+
+<h3>前置 (10 分钟)</h3>
+<ol>
+<li>注册 Azure 账号: https://azure.microsoft.com/free (1 年免费, 需信用卡)</li>
+<li>安装 VS Code + 扩展: "Azure Functions" + "Azure Resources" + "Python"</li>
+<li>登录 VS Code (Azure 扩展 → Sign in to Azure)</li>
+</ol>
+
+<h3>部署 (30 分钟)</h3>
+<ol>
+<li>VS Code 打开 <code>LocalFunctionProj</code></li>
+<li>左侧 Azure 扩展 → Workspace → Function App → <strong>+ Create</strong></li>
+<li>配置:
+  <ul>
+    <li>Runtime: <strong>Python 3.11</strong></li>
+    <li>Region: <strong>East Asia</strong> (离你近)</li>
+    <li>OS: Linux</li>
+    <li>Plan: Consumption (Serverless) — <strong>免费</strong></li>
+  </ul>
+</li>
+<li>等 1-2 分钟创建完成</li>
+<li>右键 Function App → <strong>Deploy to Function App...</strong></li>
+<li>确认 (VS Code 会问你 1 次 "Deploy?")</li>
+</ol>
+
+<h3>验证 (15 分钟)</h3>
+<ol>
+<li>Azure 门户 (portal.azure.com) → 你的 Function App → Functions → hello_world → "Get Function Url"</li>
+<li>复制 URL, <code>curl &lt;URL&gt;?name=Javis</code></li>
+<li>看到 <code>Hello Javis! Server time: 2026-08-12T...</code></li>
+</ol>
+
+<div class="warn-box">
+<strong>⚠️ Azure 免费层 1 年</strong>。超出限制会停机, 不会扣费。但你 D+11 阶段建议: <strong>先一直用本地 emulator, 周末再上云</strong>, 避免不必要的云端消费。
+</div>
+
+<div class="checklist">
+<h4>Day 4 验证 ✓</h4>
+<ul>
+<li>☐ 拿到 Azure 门户 URL</li>
+<li>☐ <code>curl</code> 云端 URL 拿到 200</li>
+<li>☐ Azure 门户能看到 Function 执行的日志</li>
+<li>☐ (Bonus) Durable Functions orchestrator 也跑通云端</li>
+</ul>
+</div>
+
+<hr>
+
+<h2><span class="day-num">D5</span>Day 5 · 实战项目</h2>
+
+<p class="day-time">2026-08-16 周日 · 150 分钟 · 目标: 完成简历可写项目</p>
+
+<h3>项目: "GitHub Trending Monitor"</h3>
+<p>跟 D+11 CNBC 抓取逻辑一样, 每天自动监控 GitHub trending 30 仓库, 过滤 + 评分 + 存储。</p>
+
+<h3>需求拆解</h3>
+<table>
+<tr><th>组件</th><th>Trigger / 用途</th><th>对应 Azure 技术</th></tr>
+<tr><td>每日 9:00 触发</td><td>Timer</td><td><code>@app.schedule</code></td></tr>
+<tr><td>抓 GitHub trending</td><td>HTTP 请求</td><td><code>requests</code> in Activity</td></tr>
+<tr><td>30 仓库并行评分</td><td>Fan-out</td><td>Durable Functions Orchestrator</td></tr>
+<tr><td>存储历史</td><td>数据</td><td>Cosmos DB Binding</td></tr>
+<tr><td>异常邮件</td><td>通知</td><td>SendGrid Binding / Logic App</td></tr>
+<tr><td>查历史 API</td><td>HTTP 查询</td><td><code>@app.route</code> + Cosmos DB</td></tr>
+</table>
+
+<h3>最小可运行代码 (3 文件)</h3>
+
+<p><strong>function_app.py</strong>:</p>
+<pre><code>import azure.functions as func
+import azure.durable_functions as df
+import requests
+import json
+import os
+from datetime import datetime, timezone
+
+mybp = df.Blueprint()
+
+# ============ Activity 1: 抓 GitHub trending ============
+
+@mybp.activity_trigger(input_name="language")
+def fetch_trending(language: str) -> list:
+    """抓 1 个语言类目的 trending 仓库"""
+    url = f"https://github.com/trending/{language}"
+    # 简化: 用 GitHub API 搜 (实际可改 trending HTML 解析)
+    headers = {"Accept": "application/vnd.github+json"}
+    api_url = "https://api.github.com/search/repositories"
+    params = {
+        "q": f"language:{language} created:>{(datetime.now(timezone.utc).replace(day=1)).date()}",
+        "sort": "stars",
+        "order": "desc",
+        "per_page": 10
+    }
+    r = requests.get(api_url, headers=headers, params=params, timeout=10)
+    data = r.json()
+    repos = []
+    for item in data.get("items", []):
+        repos.append({
+            "name": item["full_name"],
+            "stars": item["stargazers_count"],
+            "language": item["language"],
+            "url": item["html_url"],
+            "description": (item["description"] or "")[:100]
+        })
+    return repos
+
+# ============ Activity 2: 评分 ============
+
+@mybp.activity_trigger(input_name="repo")
+def score_repo(repo: dict) -> dict:
+    """简单评分: stars + 1/年龄 (越新越好)"""
+    # 简化: 只看 stars 和创建时间
+    score = repo["stars"] * 0.7 + (1000 if repo["stars"] > 1000 else 0) * 0.3
+    repo["score"] = round(score, 2)
+    return repo
+
+# ============ Orchestrator: 拉 3 个语言, 各取 10 仓库, 共 30 个 ============
+
+@mybp.orchestration_trigger(context_name="context")
+def orchestrator_trending(context: df.DurableOrchestrationContext):
+    languages = ["python", "typescript", "javascript"]
+
+    # Fan-out 3 个语言
+    lang_tasks = {
+        lang: context.call_activity("fetch_trending", lang)
+        for lang in languages
+    }
+
+    # 收集 + flatten
+    all_repos = []
+    for lang, task in lang_tasks.items():
+        repos = task.result()
+        all_repos.extend(repos)
+
+    # Fan-out 评分 (30 个并行)
+    score_tasks = [context.call_activity("score_repo", r) for r in all_repos]
+
+    # 排序 + top 10
+    scored = [t.result() for t in score_tasks]
+    top_10 = sorted(scored, key=lambda r: r["score"], reverse=True)[:10]
+
+    return {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "total_repos": len(all_repos),
+        "top_10": top_10
+    }
+
+# ============ HTTP 启动 ============
+
+@mybp.route(route="run", auth_level=func.AuthLevel.ANONYMOUS)
+@mybp.durable_client_input(client_name="client")
+async def http_start(req: func.HttpRequest,
+                     client: df.DurableOrchestrationClient):
+    instance_id = await client.start_new("orchestrator_trending", None)
+    return client.create_check_status_response(req, instance_id)
+
+# ============ Timer 每日 9:00 触发 ============
+
+@mybp.schedule(schedule="0 0 9 * * *", arg_name="timer")
+@mybp.durable_client_input(client_name="client")
+async def scheduled_run(timer: func.TimerRequest,
+                       client: df.DurableOrchestrationClient):
+    await client.start_new("orchestrator_trending", None)
+
+# 注册
+app = func.FunctionApp()
+app.register_functions(mybp)</code></pre>
+
+<h3>测试 (30 分钟)</h3>
+<pre><code>func start
+
+# 手动触发
+curl -X POST http://localhost:7071/api/run
+# 返回: {"id": "xyz789", ...}
+
+# 查询结果 (返回可能需要 5-10 秒)
+sleep 10
+curl http://localhost:7071/api/run  # 实际应该用 statusQueryGetUri
+# 返回: 30 个仓库 + top 10</code></pre>
+
+<h3>部署到 Azure (30 分钟)</h3>
+<ol>
+<li>VS Code 右键 Function App → Deploy</li>
+<li>在 Azure 门户配置 Timer 触发: 每日 9:00 跑</li>
+<li>添加 Cosmos DB binding (存储历史, 进阶)</li>
+</ol>
+
+<div class="checklist">
+<h4>Day 5 验证 ✓</h4>
+<ul>
+<li>☐ 本地跑通, 拿到 30 仓库 + top 10</li>
+<li>☐ 部署到 Azure, 云端能跑</li>
+<li>☐ Timer 触发器配置好 (第二天验证)</li>
+<li>☐ README 写好 (简历用)</li>
+</ul>
+</div>
+
+<hr>
+
+<!-- Lieflat 图 3: 4 个 Trigger 类型对比 -->
+<style>
+.lf-trigger {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #faf8f2;
+  border-radius: 24px;
+  padding: 28px 32px 24px;
+  margin: 32px 0;
+  max-width: 720px;
+}
+.lf-trigger h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1c1c1a;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+  border: none;
+  padding: 0;
+}
+.lf-trigger .sub {
+  font-size: 12px;
+  color: #6a5f52;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.lf-trigger table {
+  width: 100%;
+  font-size: 12px;
+}
+.lf-trigger th, .lf-trigger td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #d6d2c5;
+}
+.lf-trigger th {
+  background: #1c1c1a;
+  color: #faf8f2;
+  text-align: left;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.lf-trigger .type-icon {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #faf8f2;
+  background: #1c1c1a;
+  letter-spacing: 0.06em;
+}
+.lf-trigger .type-icon.http { background: #4a4138; }
+.lf-trigger .type-icon.timer { background: #6a5f52; }
+.lf-trigger .type-icon.queue { background: #9a8e7e; }
+.lf-trigger .type-icon.blob { background: #b8b0a3; }
+.lf-trigger .source {
+  font-size: 10px;
+  color: #9a8e7e;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 16px;
+  text-align: right;
+}
+</style>
+
+<div class="lf-trigger">
+  <h2>4 个最常用 Trigger 对比</h2>
+  <div class="sub">Day 2 · 选哪个取决于 "什么事件触发"</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Trigger</th>
+        <th>触发事件</th>
+        <th>典型用途</th>
+        <th>复杂度</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="type-icon http">HTTP</span></td>
+        <td>API 请求</td>
+        <td>Web API / 微服务</td>
+        <td>★☆☆☆☆</td>
+      </tr>
+      <tr>
+        <td><span class="type-icon timer">TIMER</span></td>
+        <td>定时 (cron)</td>
+        <td>每日报告 / 批处理</td>
+        <td>★☆☆☆☆</td>
+      </tr>
+      <tr>
+        <td><span class="type-icon queue">QUEUE</span></td>
+        <td>队列消息</td>
+        <td>异步任务 / 解耦</td>
+        <td>★★☆☆☆</td>
+      </tr>
+      <tr>
+        <td><span class="type-icon blob">BLOB</span></td>
+        <td>文件上传</td>
+        <td>图像处理 / ETL</td>
+        <td>★★☆☆☆</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="source">SOURCE · Azure 官方文档 + Javis 实战经验</div>
+</div>
+
+<hr>
+
+<h2>常见问题 FAQ</h2>
+
+<h3>Q1: 我没有 Azure 账号, 能学吗?</h3>
+<p><strong>能</strong>。Day 1-3 + Day 5 全部本地跑 (用 Azurite emulator)。Day 4 部署是唯一需要 Azure 账号的步骤。你可以<strong>周末再注册 Azure 免费层</strong>。</p>
+
+<h3>Q2: Durable Functions 跟 LangGraph 哪个先学?</h3>
+<p><strong>你已经会 LangGraph</strong>。直接学 Durable Functions, 1 天能上手。如果你没学 LangGraph, 建议先学 LangGraph (Python, 3 天), 再学 Durable Functions (1 天)。</p>
+
+<h3>Q3: 学完这个能写简历吗?</h3>
+<p><strong>能</strong>。Day 5 项目做完, 简历可以写:</p>
+<ul>
+<li>"用 Azure Functions + Durable Functions 实现 GitHub Trending 监控, 每日 9:00 自动运行, 监控 30+ 仓库"</li>
+<li>"用 Durable Functions Orchestrator 实现 30 个仓库并行评分, 评分时间从 30s 降到 5s"</li>
+<li>"用 Azure Storage + Timer Trigger 实现 serverless 批处理 pipeline"</li>
+</ul>
+
+<h3>Q4: 这个跟 AWS Lambda 什么关系?</h3>
+<p>Azure Functions ≈ AWS Lambda, Durable Functions ≈ AWS Step Functions. 概念 80% 一样, API 不同。<strong>学会 Azure 1 周, AWS Lambda 3 天能上手</strong>。</p>
+
+<h3>Q5: 100 天冲刺期间值得学吗?</h3>
+<p><strong>周末学</strong> (D+13/14)。不影响主线 (求职 / 量化 / DP-600)。Azure 是<strong>加分项</strong>, 不是必需, 目标公司如果用 Azure 云就重要。</p>
+
+<hr>
+
+<h2>诚实总结</h2>
+
+<p>5 天下来, 你会:</p>
+<ol>
+<li><strong>理解</strong> Azure Functions 的 4 个核心概念 (Function App / Function / Trigger / Binding)</li>
+<li><strong>写</strong> 4 种 Trigger 的 HTTP / Timer / Queue / Blob 函数</li>
+<li><strong>用</strong> Durable Functions 跑 long-running orchestrator (从 D+4 LangGraph 直接翻译)</li>
+<li><strong>部署</strong> 到 Azure 云</li>
+<li><strong>做完</strong> 1 个简历级项目 (GitHub Trending Monitor)</li>
+</ol>
+
+<p><strong>前提</strong>: 你已经有 Python 基础 + 1 段 D+4 LangGraph 实战经验。<strong>你是最有优势的初学者</strong>。</p>
+
+<p style="color: var(--text-muted); font-size: 13px; margin-top: 40px;">
+本研究基于 Azure 官方文档 (learn.microsoft.com) + GitHub API 元数据 + Javis D+4 LangGraph 实战经验.
+所有代码示例为简化版, 实际部署需根据 Azure 订阅和 region 调整.
+诚实标注: Day 3 Durable Functions 概念偏难, 第 1 次可能 1-2 天才能跑通.
+</p>
+
+</body>
+</html>
