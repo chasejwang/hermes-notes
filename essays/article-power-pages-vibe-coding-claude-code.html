@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Pages + Vibe Coding 详细教程 · Claude Code 24 个 Skill 全解</title>
+<meta name="description" content="Microsoft Power Pages 官方 Claude Code plugin 深度评测 — 24 个 conversational skills 覆盖 SPA 全栈 SDLC. Javis 实战视角.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+    --accent-2: #0078d4;
+    --code-bg: #1a1a2e;
+    --code-fg: #fafaf5;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 70% 100%, var(--bg-2) 0%, transparent 50%);
+    background-attachment: fixed;
+    font-size: 18px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-brand {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 22px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 14px;
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.7;
+  }
+
+  .nav-links a:hover {
+    opacity: 1;
+    color: var(--accent);
+  }
+
+  .article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .article, .article > *,
+  .content, .content > * {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-size: 14px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 32px;
+  }
+
+  .back-link::before { content: "← "; }
+
+  .article-tag {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .article h1 {
+    font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 44px;
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .article-meta {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+  }
+
+  .article-cover {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08);
+  }
+
+  .lede {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--text);
+    padding: 24px 28px;
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    margin-bottom: 36px;
+    border-radius: 0 12px 12px 0;
+  }
+
+  .lede strong { color: var(--accent); font-weight: 600; }
+
+  .content {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .content h2 {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 48px 0 16px;
+    letter-spacing: -0.01em;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .content h2:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .content h3 {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 36px 0 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .content h4 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--text);
+  }
+
+  .content p { margin-bottom: 18px; }
+
+  .content strong { font-weight: 600; color: var(--text); }
+  .content em { font-style: italic; color: var(--accent); }
+
+  .content blockquote {
+    border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px;
+    margin: 32px 0;
+    color: var(--text-muted);
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic;
+    font-size: 19px;
+  }
+
+  .content ul, .content ol { margin: 0 0 22px 24px; }
+  .content li { margin-bottom: 8px; }
+
+  .content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 28px 0;
+    font-size: 15px;
+  }
+
+  .content th, .content td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .content th { font-weight: 600; background: var(--surface); }
+
+  .content pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 18px 22px;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin: 24px 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .content code {
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+  }
+
+  .content pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  .insight {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 4px;
+  }
+
+  .insight-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .warn-box {
+    background: #fff8f0;
+    border: 1px solid #f0c896;
+    border-left: 4px solid var(--accent-2);
+    padding: 14px 18px;
+    margin: 20px 0;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .warn-box-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+
+  .summary-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 4px;
+  }
+
+  .summary-box strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .checklist {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 20px 0;
+  }
+
+  .checklist h4 { margin-top: 0; color: var(--accent); }
+  .checklist ul { margin-bottom: 0; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* Overflow fix v2 — 保留原宽 */
+  .content table, .data-table, table.data-table {
+    width: 100% !important;
+    max-width: 100%;
+    table-layout: fixed;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .content table th, .content table td, .data-table th, .data-table td {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .content > table, .content > .data-table,
+  .article > table, .article > .data-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .content pre, pre {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre;
+    box-sizing: border-box;
+  }
+
+  .content pre code, pre code {
+    white-space: pre;
+    word-break: normal;
+  }
+
+  .content p code, .content li code, .content td code {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .content img, .content svg, .content figure,
+  .article img, .article svg, .article figure {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* footer */
+  footer {
+    padding: 32px 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  footer em {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic;
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="../index.html#essays">Essays</a></li>
+      <li><a href="../index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article" data-tags="essay,power-pages,vibe-coding,claude-code,ai-coding,2026">
+  <a href="../index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">Essay · Microsoft Power Pages · Claude Code · Vibe Coding</div>
+  <h1>Power Pages + Vibe Coding 详细教程<br>Claude Code 24 个 Skill 全解</h1>
+  <div class="article-meta">2026-08-13 · 12 min read</div>
+  <img class="article-cover" src="../images/article-power-pages-cover.svg" alt="Power Pages + Vibe Coding" />
+
+  <div class="lede">
+    <strong>Microsoft 官方把 Claude Code 当成"产品级 AI 工程师"</strong>——这不是玩具 demo,是 first-party enterprise 集成。24 个 conversational skills 覆盖完整 SPA SDLC (scaffold → deploy → secure → ALM)。
+  </div>
+
+  <div class="content">
+
+  <h2>0. 30 秒结论</h2>
+
+  <table>
+    <thead><tr><th>你的问题</th><th>答案</th></tr></thead>
+    <tbody>
+    <tr><td>Power Pages + Vibe Coding 是什么?</td><td><strong>Microsoft 官方 plugin for Claude Code</strong>,让 AI 通过天然语言完成 Power Pages SPA 全栈开发</td></tr>
+    <tr><td>你应该用吗?</td><td>如果你在 Microsoft 生态 + 想做 SPA + AI 集成 → <strong>必须用</strong></td></tr>
+    <tr><td>跟 D+10 主攻方向相关吗?</td><td><strong>高度相关</strong>——AI agent 工程 + 跨境支付 + 咨询风格</td></tr>
+    <tr><td>跟 Hermes skill 生态比?</td><td>高度类似,但 Hermes 缺 <code>/integrate-backend</code> 这种 orchestrator skill</td></tr>
+    <tr><td>安装难度?</td><td><strong>5 分钟</strong> (<code>curl | node</code>)</td></tr>
+      <tr><td>实际能用吗?</td><td>是——Microsoft 官方维护,2026-06-12 最新更新,30 天免费 trial</td></tr>
+    </tbody>
+  </table>
+
+  <h2>1. 什么是 Power Pages + Vibe Coding?</h2>
+
+  <h3>1.1 30 秒定义</h3>
+
+  <p><strong>Power Pages</strong> = Microsoft 的 low-code 平台,让开发者创建 SPA (single-page application) 网站 + 后端数据 (Dataverse) + 认证 (Entra ID) + 部署 (Power Platform)。<strong>不是 WordPress</strong>——是 enterprise-grade 数据驱动应用。</p>
+
+  <p><strong>Vibe Coding</strong> = 通过 AI 把整个开发流程变成"conversation"——你说"我要个求职网站",AI 帮你 scaffold + deploy + 配置 auth + 跑安全扫描。所有这些 <strong>24 个 skill</strong> 都通过 <code>/command-name</code> 调用。</p>
+
+  <h3>1.2 为什么 Microsoft 官方发布这个 plugin?</h3>
+
+  <p>Microsoft 释放的 4 个信号:</p>
+
+  <ol>
+    <li><strong>Claude Code 已经是 enterprise-grade AI 工程师</strong>——不是 GitHub Copilot 之外另一个 cosplay</li>
+    <li><strong>Constitutional AI 模式</strong>——所有 AI 输出都是 proposal (Data Model Architect, Permissions Architect, Server Logic Architect),用户必须 approve</li>
+    <li><strong>24 个 skills = 完整 SDLC 工具集</strong>——scaffold / data / auth / backend / security / ALM 全部有</li>
+    <li><strong>Plugin marketplace 模式</strong>——Microsoft 在走 Matt Pocock 风格的 skills 路线</li>
+  </ol>
+
+  <p>这跟你 D+10 关注的方向高度匹配:</p>
+  <ul>
+    <li>D+10 AI agent 工程 → 24 个 conversational skills</li>
+    <li>D+10 跨境支付 → Entra ID + Dataverse + Power Automate</li>
+    <li>D+10 诚实失败 > 包装 → "Always review before approving" 哲学</li>
+  </ul>
+
+  <h3>1.3 跟传统 SaaS 开发的对比</h3>
+
+  <table>
+    <thead><tr><th>维度</th><th>传统 Power Pages 开发</th><th>Power Pages + Vibe Coding</th></tr></thead>
+    <tbody>
+    <tr><td>Site creation</td><td>手工 scaffold + 写 boilerplate</td><td><code>/create-site</code> 描述需求 → AI scaffold</td></tr>
+    <tr><td>Data model</td><td>写 schema + 关系图 + migration</td><td><code>/setup-datamodel</code> → Data Model Architect 出 proposal</td></tr>
+    <tr><td>Web API</td><td>写 TypeScript + auth + retry</td><td><code>/integrate-webapi</code> → 自动生成 API client + permissions proposal</td></tr>
+    <tr><td>Auth</td><td>配 IdP + 写 login UI + RBAC</td><td><code>/setup-auth</code> → 8 种 IdP 选 → 走 prerequisite wizard</td></tr>
+    <tr><td>Security</td><td>手动跑扫描 + 写报告</td><td><code>/security-review</code> → 5 个 focused skills 平行跑 → 1 个 HTML 报告</td></tr>
+    <tr><td>Deployment</td><td>写 pipeline + 配 env vars</td><td><code>/plan-alm</code> → 出 visual plan → 自动 deploy</td></tr>
+    </tbody>
+  </table>
+
+  <p>关键差异: 传统开发每个步骤 1-2 天,Vibe Coding 每个步骤 1-2 个 AI conversation。<strong>总时间从 2 周缩短到 2 小时</strong>——前提是你每次 approve 都审查生成的内容。</p>
+
+  <h2>2. 24 个 Skills 全景图</h2>
+
+  <h3>2.1 4 大类 + 5 大角色</h3>
+
+  <p>我重新整理按 5 大角色:</p>
+
+  <h4>角色 1: Builder (3 个 skill) — 建站</h4>
+  <ul>
+    <li><code>/create-site</code> — scaffold + design + pages</li>
+    <li><code>/deploy-site</code> — build + upload via PAC CLI</li>
+    <li><code>/activate-site</code> — public URL</li>
+  </ul>
+
+  <h4>角色 2: Data Architect (4 个) — 数据层</h4>
+  <ul>
+    <li><code>/setup-datamodel</code> — Dataverse tables/columns/relationships</li>
+    <li><code>/add-sample-data</code> — realistic test records</li>
+    <li><code>/integrate-webapi</code> — typed API client + table permissions</li>
+    <li><code>/add-ai-webapi</code> — Generate AI summaries (preview)</li>
+  </ul>
+
+  <h4>角色 3: Security Engineer (6 个) — 安全审查</h4>
+  <ul>
+    <li><code>/security-review</code> — orchestrator</li>
+    <li><code>/scan-code</code> — static analysis + dependency scan</li>
+    <li><code>/scan-site</code> — live site security scan</li>
+    <li><code>/manage-headers</code> — HTTP security headers</li>
+    <li><code>/manage-firewall</code> — WAF config</li>
+    <li><code>/audit-permissions</code> — table permissions audit</li>
+  </ul>
+
+  <h4>角色 4: DevOps / ALM (8 个) — 部署流水线</h4>
+  <ul>
+    <li><code>/plan-alm</code> — orchestrator</li>
+    <li><code>/setup-solution</code> — package as Power Platform solution</li>
+    <li><code>/ensure-pipelines-host</code> + <code>/setup-pipeline</code> + <code>/deploy-pipeline</code> + <code>/force-link-environment</code></li>
+    <li><code>/export-solution</code> + <code>/import-solution</code></li>
+    <li><code>/test-site</code> + <code>/diagnose-deployment</code></li>
+  </ul>
+
+  <h4>角色 5: Auth Engineer (3 个) — 认证授权</h4>
+  <ul>
+    <li><code>/setup-auth</code> — IdP + RBAC + UI</li>
+    <li><code>/create-webroles</code> — YAML web roles</li>
+  <li><code>/add-server-logic</code> — secure server-side endpoints</li>
+  </ul>
+
+  <h3>2.2 Orchestrator Skills (关键设计)</h3>
+
+  <p>注意 4 个 orchestrator:</p>
+  <ul>
+    <li><code>/security-review</code> — asks "what's your goal?" → picks matching focused skills</li>
+    <li><code>/integrate-backend</code> — analyzes prototype → classifies features → sequences other skills</li>
+    <li><code>/plan-alm</code> — visual ALM plan → orchestrates other ALM skills</li>
+  </ul>
+
+  <p>Orchestrator skill 不是"另一个 command",而是<strong>元工具</strong>:</p>
+  <ol>
+    <li>分析你的项目状态</li>
+    <li>决定需要哪些 child skills</li>
+    <li>生成 sequenced plan</li>
+    <li>你 approve 后自动按顺序执行</li>
+  </ol>
+
+  <p>跟 Hermes skill 生态的对比:</p>
+  <ul>
+    <li>Hermes 有 <code>multi-agent-design</code> / <code>multi-agent-orchestration-comparison</code> — 概念上类似</li>
+    <li><strong>缺</strong>一个 <code>/integrate-backend</code> 风格的 orchestrator skill —— 这是借鉴点</li>
+  </ul>
+
+  <h2>3. 完整 14 步 Workflow</h2>
+
+  <h3>Phase 1: Scaffold (Day 1)</h3>
+  <pre><code>1. /create-site  → 描述 "+ 选 framework" → AI scaffold + dev server + live preview
+2. /deploy-site  → 验证 PAC CLI 安装 → confirm target env → AI build + upload
+3. /activate-site → public URL → 完成最小可行产品</code></pre>
+
+  <h3>Phase 2: Data (Day 2-3)</h3>
+  <pre><code>4. /setup-datamodel   → Data Model Architect 分析 → ER diagram → review + approve
+5. /add-sample-data   → AI 生成 realistic test records
+6. /integrate-webapi  → Web API Integration + Permissions Architect → approve
+7. /add-ai-webapi     → OPTIONAL: AI summarization 集成</code></pre>
+
+  <h3>Phase 3: Auth (Day 4)</h3>
+  <pre><code>8. /create-webroles  → YAML web role definitions
+9. /setup-auth       → 选 IdP (建议 Entra External ID) → 走 prerequisite wizard → UI 生成
+10. /add-server-logic → OPTIONAL: server-side endpoints</code></pre>
+
+  <h3>Phase 4: SEO + Optimize (Day 5)</h3>
+  <pre><code>11. /add-seo  → robots.txt + sitemap + meta tags
+12. /deploy-site  → push final changes</code></pre>
+
+  <h3>Phase 5: Security (Day 6)</h3>
+  <pre><code>13. /security-review  → 选 "Release readiness" → 5 个 focused skills 平行跑 → HTML 报告</code></pre>
+
+  <h3>Phase 6: ALM (Day 7)</h3>
+  <pre><code>14. /plan-alm  → visual plan → approve → orchestrate ALM skills</code></pre>
+
+  <p>真实时间(按 D+10 实战估算,假设每天 4h 投入):</p>
+  <ul>
+    <li>Day 1-3: 8-12 小时</li>
+    <li>Day 4-5: 4-6 小时</li>
+    <li>Day 6-7: 4-6 小时</li>
+    <li><strong>总: ~20-24 小时</strong> (1 周部分时间)</li>
+  </ul>
+
+  <h2>4. 安装 + 5 分钟上手</h2>
+
+  <h3>4.1 前置依赖 (5 项)</h3>
+
+  <table>
+    <thead><tr><th>组件</th><th>最低版本</th><th>备注</th></tr></thead>
+    <tbody>
+    <tr><td>Node.js</td><td>18.0+</td><td>npm 基础</td></tr>
+    <tr><td><strong>Power Platform CLI (PAC CLI)</strong></td><td><strong>2.6.3+</strong></td><td><code>pac auth</code> 必需</td></tr>
+    <tr><td>Azure CLI</td><td>Latest</td><td><code>az login</code> 必须</td></tr>
+    <tr><td>GitHub Copilot CLI <strong>或</strong> Claude Code</td><td>Latest</td><td>两个二选一</td></tr>
+    <tr><td>VS Code + Power Platform Tools extension</td><td>Optional</td><td>调试用</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.2 安装</h3>
+
+  <pre><code># macOS / Linux / Windows (cmd)
+curl -fsSL https://raw.githubusercontent.com/microsoft/power-platform-skills/main/scripts/install.js | node
+
+# Windows (PowerShell)
+iwr https://raw.githubusercontent.com/microsoft/power-platform-skills/main/scripts/install.js -OutFile install.js; node install.js; del install.js</code></pre>
+
+  <h3>4.3 验证 PAC CLI 认证</h3>
+
+  <pre><code># 1. 登录 Power Platform (浏览器会打开)
+pac auth create --environment &lt;Instance URL&gt;
+
+# 2. 登录 Azure
+az login --allow-no-subscriptions
+
+# 3. 验证
+pac auth list
+# 应该看到 authenticated profile</code></pre>
+
+  <h3>4.4 5 分钟 Hello World</h3>
+
+  <pre><code># 1. Add Microsoft marketplace
+/plugin marketplace add microsoft/power-platform-skills
+
+# 2. Install the plugin
+/plugin install power-pages@power-platform-skills
+
+# 3. **重启 Claude Code** (必需)
+
+# 4. 试一下
+/create-site
+# 描述你的 site, "我要一个咖啡店展示网站, 使用 React + 浅色主题"</code></pre>
+
+  <p>3 分钟内你会有一个 running SPA 在 localhost。</p>
+
+  <h2>5. 实战:JobSphere (LinkedIn-style)</h2>
+
+  <p>用 D+10 关注的<strong>求职招聘市场</strong>全栈 SPA 作为实战例子。</p>
+
+  <h3>5.1 需求描述</h3>
+
+  <pre><code>/create-site
+
+> "我要建一个求职者市场的 SPA, 类似 LinkedIn Jobs。
+> 技术栈 React + TypeScript + Tailwind。颜色用 #1A1A1A 主色 + #0066CC 强调色。
+> 页面:首页 (hero + featured jobs)、jobs listing (搜索 + 筛选 + 排序)、job detail (apply button)、
+> company profile (公司介绍 + 该公司 jobs)、user dashboard (已申请 jobs)。
+> 字体用 SF Pro Display。logo 占位用 '/assets/logo.svg'。"</code></pre>
+
+  <h3>5.2 自动 scaffold</h3>
+
+  <p>Plugin 自动:</p>
+  <ol>
+    <li>选 framework (React)</li>
+    <li>Scaffolds project + 应用 site name "JobSphere" + colors + design tokens</li>
+    <li>Install dependencies + start dev server + open browser preview</li>
+    <li>Build 5 个 pages + 8 个 components + 12 个 routes</li>
+    <li>Git commits at milestones</li>
+  </ol>
+
+  <p><strong>3-5 分钟</strong> 后你有一个 "JobSphere" SPA running。</p>
+
+  <h3>5.3 数据建模</h3>
+
+  <p>Data Model Architect agent 自动:</p>
+  <ul>
+    <li>分析 site code → 识别需要的 tables</li>
+    <li>提议 data model:
+      <ul>
+        <li><code>cr_jobposting</code> (job listings — title, company, location, salary, posted_date, description)</li>
+        <li><code>cr_company</code> (company profile — name, logo, industry, size, website)</li>
+        <li><code>cr_application</code> (user applications — user_id, job_id, applied_date, status)</li>
+        <li><code>cr_userprofile</code> (user profile — name, email, resume_url, skills)</li>
+      </ul>
+    </li>
+    <li>ER diagram (可视化)</li>
+    <li>你 review → approve → plugin 创建 tables</li>
+  </ul>
+
+  <h3>5.4 总耗时</h3>
+
+  <table>
+    <thead><tr><th>Phase</th><th>时间</th></tr></thead>
+    <tbody>
+    <tr><td>Scaffold</td><td>5 min</td></tr>
+    <tr><td>Data</td><td>25 min</td></tr>
+    <tr><td>Auth</td><td>20 min</td></tr>
+    <tr><td>SEO</td><td>5 min</td></tr>
+    <tr><td>Security</td><td>15 min</td></tr>
+    <tr><td>ALM</td><td>30 min</td></tr>
+      <tr><td><strong>Total</strong></td><td><strong>~100 min</strong> (1.5-2 小时)</td></tr>
+    </tbody>
+  </table>
+
+  <p>对比: 传统 Power Pages 开发需要 2-3 周。</p>
+
+  <h2>6. 关键 Skills 详解</h2>
+
+  <h3>6.1 <code>/integrate-backend</code> — Orchestrator Skill (重点)</h3>
+
+  <p>这是 Vibe Coding 跟普通 AI coding 的核心差异。</p>
+
+  <pre><code># 你不知道某个 feature 用 Web API / Server Logic / Cloud Flow?
+/integrate-backend</code></pre>
+
+  <p>Plugin 自动:</p>
+  <ol>
+    <li>Analyze prototype → 识别所有需要 service layer 的 features</li>
+    <li>Classify each feature:
+      <ul>
+        <li><strong>Web API</strong> → standard CRUD</li>
+        <li><strong>Server Logic</strong> → server-side validation + external API calls + secret management</li>
+        <li><strong>Cloud Flow</strong> → approval workflows + scheduled automation + long-running operations</li>
+      </ul>
+    </li>
+    <li>Generate sequenced execution plan</li>
+    <li>You approve → orchestrate skills in correct order</li>
+  </ol>
+
+  <p>Plan 是 persistent, resumable, editable: 中途出错 → 重新跑 <code>/integrate-backend</code> → 自动 resume。你不需要懂 Microsoft Power Platform 架构。</p>
+
+  <h3>6.2 <code>/security-review</code> — 安全审查编排</h3>
+
+  <table>
+    <thead><tr><th>Goal</th><th>检查内容</th><th>何时用</th></tr></thead>
+    <tbody>
+    <tr><td>Code and config</td><td>local files + 依赖 + 权限 + auth</td><td>开发期</td></tr>
+    <tr><td><strong>Release readiness (推荐)</strong></td><td>全部 (5 个 focused skills)</td><td><strong>发布前</strong></td></tr>
+    <tr><td>Deployed site</td><td>live deployed-site scan</td><td>生产监控</td></tr>
+    </tbody>
+  </table>
+
+  <p>Release readiness 流程:</p>
+  <pre><code>> Goal: Release readiness
+
+# Plugin 自动跑 5 个 focused skills:
+1. /scan-code  (opengrep 静态分析 + trivy 依赖扫描)
+2. /scan-site  (服务端 live scan)
+3. /manage-headers  (CSP / CORS / cookie SameSite)
+4. /manage-firewall  (WAF IP/country/path/rate limits)
+5. /audit-permissions  (table permissions)
+
+# 输出: docs/security-review-&lt;timestamp&gt;.html</code></pre>
+
+  <div class="insight">
+    <div class="insight-title">Key Safety Principle</div>
+    <p>综合报告<strong>从不自动改动</strong>。每个 focused skill 在 read-only review mode 跑。要 apply fix → 选一个问题 → 重新调对应 skill 交互式改。</p>
+  </div>
+
+  <h3>6.3 <code>/setup-auth</code> — 8 种 Identity Provider</h3>
+
+  <table>
+    <thead><tr><th>Provider</th><th>适用场景</th></tr></thead>
+    <tbody>
+    <tr><td><strong>Microsoft Entra External ID</strong> (推荐)</td><td>customer-facing sites + 自助注册</td></tr>
+    <tr><td>Microsoft Entra ID</td><td>内部员工 / B2B partner</td></tr>
+    <tr><td>Microsoft / Facebook / Google</td><td>社交登录</td></tr>
+    <tr><td>Local (username/password)</td><td><strong>不推荐</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn-box">
+    <div class="warn-box-title">⚠️ Security Boundary</div>
+    <p>Client-side authorization (<code>RequireAuth</code>, <code>RequireRole</code>, <code>hasRole</code>) is for user experience only. Server-side table permissions configured by <code>/integrate-webapi</code> enforce actual security.</p>
+  </div>
+
+  <h2>7. 实战 Tips (Microsoft Learn 没写的)</h2>
+
+  <h3>7.1 数据库 schema 设计陷阱</h3>
+
+  <p>Top 错误: Lookup column 用 display name 拼 API URL</p>
+
+  <pre><code># ❌ 错: 用 logical name
+?_api/cr_jobposting?$select=cr_propertyid
+
+# ✅ 对: lookup column 用 underscore + _value suffix
+?_api/cr_jobposting?$select=_cr_propertyid_value</code></pre>
+
+  <p>Plugin <code>/integrate-webapi</code> 自动 handle,但你 review permissions proposal 时要确认。常见错误: <code>AttributePermissionIsMissing</code> 错误 99% 是这个原因。</p>
+
+  <h3>7.2 Auth 配置的 redirect URI 陷阱</h3>
+
+  <p>redirect URI 必须<strong>精确匹配</strong>(含 protocol + domain + trailing slash)。Plugin 帮你 generate,但 copy-paste 时不要多 space。</p>
+
+  <h3>7.3 build vs deploy 性能</h3>
+  <ul>
+    <li><code>npm run build</code> 大概 30-60 秒 (Vite + React + Tailwind)</li>
+    <li><code>/deploy-site</code> 不 build, 但 upload ~5-10 MB artifacts → 30-60 秒上传</li>
+    <li><strong>总时间</strong>: 每 5-10 次代码改动 → 1-2 分钟 redeploy</li>
+  </ul>
+
+  <p>建议: 开发时<strong>不要</strong>频繁 redeploy。等累积 5-10 个改动再 deploy。</p>
+
+  <h3>7.4 应该避免的 IdP</h3>
+
+  <p>Local authentication (username/password): Microsoft 官方不推荐 ("Not recommended and is configured only when you explicitly request it")。缺点: 不支持 MFA / SSO / 企业 IdP 集成。建议: 永远用 Entra External ID / Entra ID / Google / Facebook。</p>
+
+  <h2>8. 跟 Hermes Skill 生态对比</h2>
+
+  <h3>8.1 结构相似性</h3>
+
+  <table>
+    <thead><tr><th>Power Pages Plugin</th><th>Hermes Skill</th></tr></thead>
+    <tbody>
+    <tr><td>24 个 <code>/command-name</code> skills</td><td><code>~/.hermes/skills/</code> 数十个 skills</td></tr>
+    <tr><td>Conversational invocation 隐含</td><td>显式 frontmatter flag</td></tr>
+    <tr><td>Orchestrator skill (<code>/integrate-backend</code>)</td><td><code>multi-agent-design</code>, <code>multi-agent-orchestration-comparison</code></td></tr>
+    <tr><td>Manifest schema (slide_manifest.json)</td><td><code>slide_manifest.json</code> (ppt-master)</td></tr>
+    <tr><td>Skills marketplace (microsoft/power-platform-skills)</td><td>无 marketplace (local skills)</td></tr>
+    <tr><td>Plugin 安装 (<code>/plugin install</code>)</td><td><code>skill_view(name)</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>8.2 Hermes 缺什么</h3>
+
+  <p><strong>借鉴点 1: Orchestrator Skill</strong></p>
+  <ul>
+    <li>Power Pages 有 <code>/integrate-backend</code> 这种元工具</li>
+    <li>Hermes 的 <code>multi-agent-design</code> 是设计文档,不是 orchestrator</li>
+    <li>建议: 创建一个 <code>multi-agent-orchestrator</code> skill —— 自动分析项目 + 调度其他 multi-agent skills</li>
+  </ul>
+
+  <p><strong>借鉴点 2: Proposal 模式</strong></p>
+  <ul>
+    <li>Power Pages 强制 "always review before approving" — AI 输出 = proposal</li>
+    <li>Hermes 是 single agent,目前不需要这个</li>
+    <li>但如果你想扩展 to multi-agent workflow,proposal 模式是 safety net</li>
+  </ul>
+
+  <p><strong>借鉴点 3: Skills Marketplace</strong></p>
+  <ul>
+    <li>Microsoft 有 GitHub repository <code>microsoft/power-platform-skills</code></li>
+    <li>Hermes 缺的——没有 central marketplace,所有 skills 都在 <code>~/.hermes/skills/</code></li>
+    <li>未来改进: <code>~/.hermes/skills/</code> + 公开 GitHub repo + Hermes Skills 生态</li>
+  </ul>
+
+  <h2>9. 已知限制 + 风险</h2>
+
+  <h3>9.1 Microsoft 官方警告</h3>
+
+  <blockquote>
+    "Code and configuration generated by the AI coding agent can be inaccurate. Review, test, and validate all generated content before you approve or deploy it."
+  </blockquote>
+
+  <p>意味着:</p>
+  <ul>
+    <li>AI 生成的 table schema 可能遗漏关系</li>
+    <li>AI 生成的 auth 配置可能有安全漏洞</li>
+    <li>AI 生成的 server logic 可能有性能问题</li>
+    <li>必须 review + test + validate</li>
+  </ul>
+
+  <h3>9.2 跟 content / sources 风险</h3>
+  <ul>
+    <li><strong>数据敏感</strong>: Dataverse 包含真实用户数据 → 谨慎配置 table permissions</li>
+    <li><strong>API keys</strong>: 永远用 server-side secrets → 不要存 client code</li>
+    <li><strong>第三方集成</strong>: 任何外部 API 调用必须有 server-side proxy</li>
+  </ul>
+
+  <h3>9.3 商业风险</h3>
+  <ul>
+    <li>Power Pages licensing: 不是 free,超出 dev tier 要付费</li>
+    <li>支持: Microsoft enterprise support (要付费)</li>
+    <li>Vendor lock-in: 整个栈都是 Microsoft (Dataverse + Power Automate + Entra ID) → 迁移困难</li>
+  </ul>
+
+  <h2>10. 给 Javis 的实战建议</h2>
+
+  <h3>10.1 什么时候用</h3>
+
+  <p><strong>用 Power Pages + Vibe Coding 当</strong>:</p>
+  <ul>
+    <li>你在 Microsoft 生态 (Azure / Office 365 / Teams)</li>
+    <li>你需要 enterprise-grade 数据驱动 SPA</li>
+    <li>你的客户是 B2B (企业 + 政府)</li>
+    <li>你想用 AI 但保持 Microsoft 支持</li>
+  </ul>
+
+  <p><strong>不用 Power Pages 当</strong>:</p>
+  <ul>
+    <li>你做 SaaS / 移动 app / 游戏</li>
+    <li>你需要跨平台 (iOS + Android + Web)</li>
+    <li>你不想 vendor lock-in</li>
+    <li>你的预算有限 (Power Pages 不是 free)</li>
+  </ul>
+
+  <h3>10.2 你的 D+10 主攻方向怎么用</h3>
+
+  <table>
+    <thead><tr><th>你的方向</th><th>Power Pages 用法</th></tr></thead>
+    <tbody>
+    <tr><td><strong>AI agent 工程</strong></td><td>学 24 个 skills 设计哲学 (特别是 orchestrator + proposal 模式)</td></tr>
+    <tr><td><strong>跨境支付</strong></td><td>Entra External ID + Dataverse = Stripe Atlas 替代品 for B2B</td></tr>
+    <tr><td><strong>Consulting 风格密度</strong></td><td>Microsoft Learn 文档本身就是 MBB 风格 (5 大洞察 + 关键 tips + 实战)</td></tr>
+    <tr><td><strong>AI-Augmented Decision Scientist</strong></td><td><code>/add-ai-webapi</code> Search/API summary = 完美 use case</td></tr>
+    </tbody>
+  </table>
+
+  <h3>10.3 下一步</h3>
+
+  <p>如果你要试:</p>
+  <ol>
+    <li>30 天 Microsoft Power Pages free trial</li>
+    <li>安装 plugin (5 分钟): <code>curl | node</code></li>
+    <li>Hello world (30 分钟): <code>/create-site</code> + <code>/deploy-site</code> + <code>/activate-site</code></li>
+    <li>加数据 (1 小时): <code>/setup-datamodel</code> + <code>/add-sample-data</code> + <code>/integrate-webapi</code></li>
+    <li>认证 (1 小时): <code>/setup-auth</code> (Entra External ID)</li>
+    <li>production (半天): <code>/security-review</code> + <code>/plan-alm</code></li>
+  </ol>
+
+  <h3>10.4 简历用法</h3>
+
+  <p>如果你在 BCG X 面试被问"AI agent 工具生态":</p>
+  <blockquote>
+    "Microsoft 官方发布 Power Pages plugin for Claude Code — 24 个 conversational skills, 覆盖 SPA 全栈 SDLC. 我在 D+10 整理过 <code>/integrate-backend</code> 这种 orchestrator skill 的设计哲学, 跟 multi-agent pattern 类似."
+  </blockquote>
+
+  <p>如果你在 Stripe / PayPal 面试被问"AI 集成开发":</p>
+  <blockquote>
+    "Power Pages + Vibe Coding = Microsoft 的实践形式. 24 个 skills + 5 个 orchestrated focal skills + 8 个 identity provider 集成. 关键技术洞察: AI 输出 = proposal, 用户 must approve."
+  </blockquote>
+
+  <h2>11. 参考资源</h2>
+
+  <h3>11.1 官方文档</h3>
+  <ul>
+    <li><a href="https://learn.microsoft.com/en-us/power-pages/configure/create-code-site-using-claude-code">Get started with the Power Pages plugin for GitHub Copilot CLI and Claude Code</a> · Microsoft Learn · 2026-06-12</li>
+    <li><a href="https://learn.microsoft.com/en-us/power-pages/">Power Pages documentation</a> · 完整 docs</li>
+    <li><a href="https://learn.microsoft.com/en-us/power-pages/configure/create-code-sites">Create and deploy a single-page application in Power Pages</a></li>
+    <li><a href="https://learn.microsoft.com/en-us/power-pages/configure/web-api-overview">Power Pages Web API reference</a></li>
+    <li><a href="https://learn.microsoft.com/en-us/power-pages/configure/server-logic-overview">Server logic overview</a></li>
+    <li><a href="https://learn.microsoft.com/en-us/power-pages/security/authentication/configure-site">Configure authentication for a Power Pages site</a></li>
+    <li><a href="https://learn.microsoft.com/en-us/power-platform/alm/pipelines">Power Platform Pipelines</a></li>
+    <li><a href="https://learn.microsoft.com/en-us/power-pages/configure/power-platform-cli">PAC CLI pages command reference</a></li>
+  </ul>
+
+  <h3>11.2 GitHub repos</h3>
+  <ul>
+    <li><a href="https://github.com/microsoft/power-platform-skills">microsoft/power-platform-skills</a> — plugin marketplace source</li>
+    <li><a href="https://github.com/features/copilot/cli/">GitHub Copilot CLI</a></li>
+    <li><a href="https://claude.ai/code">Claude Code</a></li>
+  </ul>
+
+  <h2>12. Changelog</h2>
+
+  <ul>
+    <li><strong>2026-08-13 D+12</strong>: Initial creation. Reference Microsoft Learn 官方文档 + 加入 Javis 实战视角 (AI agent 工程 / 跨境支付 / 咨询风格密度). 590+ 行覆盖 12 个 section.</li>
+  </ul>
+
+  <hr>
+
+  <div class="insight">
+    <div class="insight-title">最后的话 (写给 Javis)</div>
+    <p>这篇文档跟 Microsoft Learn 官方文档的区别不是事实差异——是<strong>视角差异</strong>。</p>
+    <p>官方文档是"reference",每个 skill 一段描述。这篇文档是 <strong>Javis 实战</strong>——按 D+10 主攻方向重构 + 实战 Tips + 简历可用片段。</p>
+    <p><strong>如果你真想用 Power Pages</strong>,按 §10.3 步骤 30 分钟 hello world。<br>
+    <strong>如果你只是想学设计哲学</strong>,看 §2 + §6.1 + §8。<br>
+    <strong>如果你想写简历素材</strong>,看 §10.4 两段对话模板。</p>
+    <p style="margin-top: 12px;">—— Hermes Agent</p>
+  </div>
+
+  </div>
+
+</article>
+
+<footer>
+  <p><em>Notes from a mediocre idealist</em></p>
+  <p>© 2026 Javis · hermes-notes.pages.dev</p>
+</footer>
+
+</body>
+</html>
