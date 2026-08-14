@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Databricks vs Snowflake vs BigQuery · 5 大反直觉洞察</title>
+<meta name="description" content="三家云数据仓库不是竞争对手 — 它们是 3 种架构哲学. 跨 vendor 价格 + ML + AI 集成实战对比. Javis D+10 实战选择视角.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+    --accent-2: #0078d4;
+    --code-bg: #1a1a2e;
+    --code-fg: #fafaf5;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 70% 100%, var(--bg-2) 0%, transparent 50%);
+    background-attachment: fixed;
+    font-size: 18px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-brand {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 22px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 14px;
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.7;
+  }
+
+  .nav-links a:hover {
+    opacity: 1;
+    color: var(--accent);
+  }
+
+  .article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .article, .article > *,
+  .content, .content > * {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-size: 14px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 32px;
+  }
+
+  .back-link::before { content: "← "; }
+
+  .article-tag {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .article h1 {
+    font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 44px;
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .article-meta {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+  }
+
+  .article-cover {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08);
+  }
+
+  .lede {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--text);
+    padding: 24px 28px;
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    margin-bottom: 36px;
+    border-radius: 0 12px 12px 0;
+  }
+
+  .lede strong { color: var(--accent); font-weight: 600; }
+
+  .content {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .content h2 {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 48px 0 16px;
+    letter-spacing: -0.01em;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .content h2:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .content h3 {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 36px 0 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .content h4 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--text);
+  }
+
+  .content p { margin-bottom: 18px; }
+  .content strong { font-weight: 600; color: var(--text); }
+  .content em { font-style: italic; color: var(--accent); }
+
+  .content blockquote {
+    border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px;
+    margin: 32px 0;
+    color: var(--text-muted);
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic;
+    font-size: 19px;
+  }
+
+  .content ul, .content ol { margin: 0 0 22px 24px; }
+  .content li { margin-bottom: 8px; }
+
+  .content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 28px 0;
+    font-size: 15px;
+  }
+
+  .content th, .content td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .content th { font-weight: 600; background: var(--surface); }
+
+  .content pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 18px 22px;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin: 24px 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .content code {
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+  }
+
+  .content pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  .insight {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 4px;
+  }
+
+  .insight-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .warn-box {
+    background: #fff8f0;
+    border: 1px solid #f0c896;
+    border-left: 4px solid var(--accent-2);
+    padding: 14px 18px;
+    margin: 20px 0;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .warn-box-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+
+  .summary-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 4px;
+  }
+
+  .summary-box strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* Overflow fix v2 */
+  .content table, .data-table, table.data-table {
+    width: 100% !important;
+    max-width: 100%;
+    table-layout: fixed;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .content table th, .content table td, .data-table th, .data-table td {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .content > table, .content > .data-table,
+  .article > table, .article > .data-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .content pre, pre {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre;
+    box-sizing: border-box;
+  }
+
+  .content pre code, pre code {
+    white-space: pre;
+    word-break: normal;
+  }
+
+  .content p code, .content li code, .content td code {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .content img, .content svg, .content figure,
+  .article img, .article svg, .article figure {
+    max-width: 100%;
+    height: auto;
+  }
+
+  footer {
+    padding: 32px 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  footer em {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic;
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="../index.html#essays">Essays</a></li>
+      <li><a href="../index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article" data-tags="essay,databricks,snowflake,bigquery,cloud-data-warehouse,comparison,ai-coding,2026">
+  <a href="../index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">Essay · AI Coding · Cloud Data Warehouse</div>
+  <h1>Databricks vs Snowflake vs BigQuery<br>5 大反直觉洞察</h1>
+  <div class="article-meta">2026-08-14 · 14 min read</div>
+  <img class="article-cover" src="../images/08-bigquery-art.svg" alt="Databricks vs Snowflake vs BigQuery" />
+
+  <div class="lede">
+    <strong>三家云数据仓库不是竞争对手</strong> — 它们是 3 种架构哲学. 多数组织 2026 年用 2 家 (Lakehouse + Data Warehouse 分离), 而不是 "挑一家".
+  </div>
+
+  <div class="content">
+
+  <h2>0. 30 秒结论</h2>
+
+  <table>
+    <thead><tr><th>你的问题</th><th>答案</th></tr></thead>
+    <tbody>
+    <tr><td>3 家核心差异?</td><td><strong>Databricks = Lakehouse</strong> (data lake + warehouse hybrid). <strong>Snowflake = Cloud-native DW</strong>. <strong>BigQuery = Serverless analytics</strong>.</td></tr>
+    <tr><td>哪家最易上手?</td><td><strong>BigQuery</strong> — 5 分钟建 dataset, 立即 query</td></tr>
+    <tr><td>哪家 ML 最强?</td><td><strong>Databricks</strong> — MLflow + Spark MLlib + Vector Search (2026)</td></tr>
+    <tr><td>哪家 SQL 最快?</td><td><strong>Snowflake</strong> (6 年优化), BigQuery 紧随其后</td></tr>
+    <tr><td>哪家最便宜?</td><td>看 workload. <strong>BigQuery on-demand</strong> for ad-hoc. <strong>Databricks</strong> / <strong>Snowflake</strong> for sustained.</td></tr>
+    <tr><td>D+10 该用哪个?</td><td><strong>BigQuery (当前 Payoneer) + Databricks (new pilot)</strong>. 不要 Snowflake 起步.</td></tr>
+    <tr><td>最大误区?</td><td>"便宜 = 数据量低" — 3 家都按 compute + storage 收费. 真正便宜 = right-sized architecture</td></tr>
+    </tbody>
+  </table>
+
+  <h2>1. 三家架构对比</h2>
+
+  <h3>Databricks: Lakehouse + Apache Spark</h3>
+
+  <pre>┌─────────────────────────────────────────────────────────┐
+│ Account (顶层)                                              │
+│ ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│ │ Workspace 1  │  │ Workspace 2  │  │ Unity Catalog│     │
+│ │  (control    │  │  (control    │  │   (governance)     │
+│ │   plane)     │  │   plane)     │  │              │     │
+│ └──────────────┘  └──────────────┘  └──────────────┘     │
+│       ↓                ↓                ↓                │
+│ ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│ │ Serverless   │  │ Classic      │  │ SQL Warehouse │     │
+│ │ Compute      │  │ Compute      │  │  (SQL 优化)  │     │
+│ │ (in DBX acct)│  │ (in YOUR AWS)│  │  (in DBX acct)│     │
+│ └──────────────┘  └──────────────┘  └──────────────┘     │
+│            ↓                ↓                ↓                │
+│            └──────────────┬─┴────────────────┘                │
+│                      ↓                                    │
+│            Delta Lake (存储 in S3)                        │
+│            + MLflow (ML lifecycle)                         │
+│            + Photon (C++ native SQL engine)                │
+└─────────────────────────────────────────────────────────┘</pre>
+
+  <p>关键字: <strong>Lakehouse</strong> (一份数据 = lake + warehouse) + <strong>开源</strong> (Spark / Delta / MLflow) + <strong>灵活 compute</strong> (3 种)</p>
+
+  <h3>Snowflake: 3 层分离的 Cloud-native Warehouse</h3>
+
+  <pre>┌─────────────────────────────────────────────────────────┐
+│ Cloud Services (元数据 / 鉴权 / 查询优化 / 治理)            │
+│ ┌──────────────────────────────────────────────────┐    │
+│ │ Database Storage (Central data repository, S3/Blob)│    │
+│ │   - Snowflake tables (internal columnar compressed)│    │
+│ │   - Apache Iceberg tables (external cloud storage)│    │
+│ │   - Hybrid tables (transactional + Unistore)       │    │
+│ └──────────────────────────────────────────────────┘    │
+│                      ↑                                    │
+│ ┌─────────────────────────────────────────────────┐     │
+│ │ Compute (Virtual Warehouses, MPP clusters)            │     │
+│ │   - XS / S / M / L / XL / 2XL / 3XL / 4XL            │     │
+│ │   - Multi-cluster auto-scaling                        │     │
+│ │   - Snowpark (Python/Java/Scala)                     │     │
+│ │   - Snowpark Connect for Spark (2026)                │     │
+│ └─────────────────────────────────────────────────┘     │
+└─────────────────────────────────────────────────────────┘</pre>
+
+  <p>关键字: <strong>Hybrid</strong> (shared-disk + shared-nothing) + <strong>3 层完全分离</strong> + <strong>Snowgrid</strong> (跨云跨区域)</p>
+
+  <h3>BigQuery: Serverless Analytics</h3>
+
+  <pre>┌─────────────────────────────────────────────────────────┐
+│ BigQuery (Google Cloud)                                  │
+│ ┌─────────────────────────────────────────────────────┐│
+│ │ Storage (Colossus) — Capacitor columnar format       ││
+│ │   - Auto-partitioned by ingestion time              ││
+│ │   - Range partitioning + clustering optional         ││
+│ │   - ~$20/TB active, ~$10/TB long-term              ││
+│ └─────────────────────────────────────────────────────┘│
+│                      ↑                                    │
+│ ┌─────────────────────────────────────────────────────┐│
+│ │ Dremel Query Engine (serverless compute)             ││
+│ │   - No infrastructure to manage                       ││
+│ │   - Auto-scaling per query                           ││
+│ │   - Slots = compute unit (on-demand or flat-rate)     ││
+│ │   - BigQuery ML (BQML) for ML in SQL                ││
+│ │   - Vertex AI integration for MLOps                  ││
+│ └─────────────────────────────────────────────────────┘│
+│                      ↑                                    │
+│ ┌─────────────────────────────────────────────────────┐│
+│ │ BiQuory (query cache) + Materialized Views           ││
+│ │   - Sub-second response for cached queries           ││
+│ │   - BI Engine for fast dashboards                   ││
+│ └─────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────┘</pre>
+
+  <p>关键字: <strong>Serverless</strong> (最 neutral — 你不管理 cluster) + <strong>Dremel</strong> (Google 15 年 query engine) + <strong>最易上手</strong> (5 分钟 query)</p>
+
+  <h2>2. 7 大维度对比</h2>
+
+  <h3>2.1 架构哲学</h3>
+
+  <table>
+    <thead><tr><th>维度</th><th>Databricks</th><th>Snowflake</th><th>BigQuery</th></tr></thead>
+    <tbody>
+    <tr><td>核心范式</td><td>Lakehouse (lake + warehouse)</td><td>Cloud-native DW</td><td>Serverless analytics</td></tr>
+    <tr><td>起源</td><td>Apache Spark (开源)</td><td>Snowflake (从头设计)</td><td>Google Dremel (2010)</td></tr>
+    <tr><td>存储格式</td><td>Delta Lake (开源)</td><td>Snowflake 表 (内部) + Iceberg (外部)</td><td>Capacitor (内部)</td></tr>
+    <tr><td>开源 commitment</td><td><strong>高</strong> (Spark, Delta, MLflow)</td><td>低 (Iceberg 是外部)</td><td>极低 (Dremel 内部)</td></tr>
+    <tr><td>Hybrid tx/analytics</td><td>通过 Delta Lake (limited)</td><td><strong>通过 Hybrid tables</strong> (强)</td><td>弱 (not designed for tx)</td></tr>
+    </tbody>
+  </table>
+
+  <p>关键洞察: <strong>Databricks 3 家里最 "open"</strong> — 你可以 export Delta Lake 到 S3 / Azure Data Lake / 任何地方. Snowflake + BigQuery 是 <strong>walled garden</strong>.</p>
+
+  <h3>2.2 性能</h3>
+
+  <table>
+    <thead><tr><th>维度</th><th>Databricks</th><th>Snowflake</th><th>BigQuery</th></tr></thead>
+    <tbody>
+    <tr><td>SQL 性能</td><td>Photon 加速 2-5x (默认 9.1 LTS+)</td><td>业界标杆 (6 年持续优化)</td><td>与 Snowflake 接近, Dremel 极致</td></tr>
+    <tr><td>大 query 性能</td><td>Spark distributed execution</td><td>MPP cluster</td><td>Dremel thousands of leaf nodes</td></tr>
+    <tr><td>并发</td><td>强 (cluster + autoscale)</td><td><strong>强</strong> (multi-cluster warehouse)</td><td><strong>极强</strong> (serverless auto-scale)</td></tr>
+    <tr><td>Latency</td><td>中 (3-5 min cluster startup classic)</td><td>中 (秒级 auto-suspend)</td><td><strong>极低</strong> (秒级, serverless)</td></tr>
+    <tr><td>Streaming</td><td><strong>强</strong> (Spark Structured Streaming)</td><td>中 (Snowpipe Streaming)</td><td>弱 (Dataflow 更适合)</td></tr>
+    </tbody>
+  </table>
+
+  <p>关键洞察: <strong>BigQuery 是 ad-hoc SQL 最快</strong> (Dremel 15 年优化). <strong>Databricks + Photon 是大 ETL 最快</strong>. <strong>Snowflake 是中等 BI workload 最稳</strong>.</p>
+
+  <h3>2.3 价格 (2026-08-14 公开数据)</h3>
+
+  <table>
+    <thead><tr><th>维度</th><th>Databricks</th><th>Snowflake</th><th>BigQuery</th></tr></thead>
+    <tbody>
+    <tr><td>Compute 收费</td><td>DBU + AWS EC2</td><td>Credits ($2-3 USD variable)</td><td>On-demand $6.25/TB scanned OR flat-rate</td></tr>
+    <tr><td>Storage</td><td>S3 实际价格 (你付 AWS)</td><td>Compressed TB ($23/TB/mo)</td><td>$20/TB active, $10 long-term</td></tr>
+    <tr><td>最低 spend</td><td>$0 (Community Edition) / $50+/mo</td><td>$0 (free trial $400) / $50+/mo</td><td>$0 (free tier 1 TB queried/month)</td></tr>
+    <tr><td>收费复杂度</td><td><strong>高</strong> (DBU + EC2 + S3 三层)</td><td>中 (per warehouse)</td><td><strong>低</strong> (per TB scanned)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.4 ML / AI 能力</h3>
+
+  <table>
+    <thead><tr><th>维度</th><th>Databricks</th><th>Snowflake</th><th>BigQuery</th></tr></thead>
+    <tbody>
+    <tr><td>ML lifecycle</td><td><strong>MLflow</strong> (Databricks 创造, 开源)</td><td>Snowflake ML (新手友好)</td><td>BigQuery ML (SQL-based)</td></tr>
+    <tr><td>Feature Store</td><td><strong>强</strong> (DBSQL + MLflow)</td><td>弱</td><td>基本 (Feature Store limited preview)</td></tr>
+    <tr><td>LLM integration</td><td><strong>Vector Search</strong> (2026) + Mosaic AI</td><td><strong>Cortex AI</strong> (OpenAI/Anthropic/Meta/Mistral/DeepSeek)</td><td>Vertex AI (Google models)</td></tr>
+    <tr><td>Open source model support</td><td><strong>强</strong> (hugging face integration)</td><td>中 (Cortex 主要是 closed-source)</td><td>中 (Vertex AI 主要是 Google)</td></tr>
+    <tr><td>Fine-tuning</td><td><strong>强</strong> (PyTorch + DeepSpeed)</td><td>弱 (refer to external platform)</td><td>强 (Vertex AI)</td></tr>
+    </tbody>
+  </table>
+
+  <p>关键洞察: <strong>Databricks 是 ML 战场之王</strong> — MLflow / Vector Search / Mosaic AI 全部自家. <strong>Snowflake Cortex</strong> 2026 才发力, 但 LLM 选择最全 (5 个 vendor). <strong>BigQuery ML</strong> 最简单 (SQL 写 ML), 但灵活性最低.</p>
+
+  <h3>2.5 AI Agent / 集成</h3>
+
+  <table>
+    <thead><tr><th>维度</th><th>Databricks</th><th>Snowflake</th><th>BigQuery</th></tr></thead>
+    <tbody>
+    <tr><td>Genie / AI 助手</td><td>Assistant + Buddy</td><td>Snowflake Cortex Analyst</td><td>Gemini in BigQuery</td></tr>
+    <tr><td>AI 集成深度</td><td><strong>深</strong> (Genie for SQL, ML, Vector Search)</td><td>中 (Cortex AI Functions)</td><td><strong>深</strong> (Gemini everywhere)</td></tr>
+    <tr><td>Vector Search</td><td><strong>强</strong> (2026 GA)</td><td>Snowflake Cortex Search</td><td>Vertex AI Vector Search</td></tr>
+    <tr><td>模型 Serving</td><td>Mosaic AI Model Serving</td><td>Cortex AI Functions (serverless)</td><td>Vertex AI Endpoints</td></tr>
+    </tbody>
+  </table>
+
+  <p>关键洞察: <strong>Snowflake Cortex</strong> 2026 年 LLM 集成最广 (5 个 vendor). <strong>BigQuery + Gemini</strong> 深度集成最好 (Google 生态). <strong>Databricks</strong> 自己掌控 ML 栈最全.</p>
+
+  <h3>2.6 部署 / 维护</h3>
+
+  <table>
+    <thead><tr><th>维度</th><th>Databricks</th><th>Snowflake</th><th>BigQuery</th></tr></thead>
+    <tbody>
+    <tr><td>Setup 难度</td><td>中 (workspace + IAM + S3)</td><td><strong>易</strong> (snowflake.com register)</td><td><strong>极易</strong> (GCP console)</td></tr>
+    <tr><td>Cluster 管理</td><td>必需 (classic) / 自动 (serverless)</td><td>必需 (warehouse size selection)</td><td><strong>不</strong> (serverless)</td></tr>
+    <tr><td>升级</td><td>手动 (Runtime selection)</td><td><strong>自动</strong></td><td><strong>自动</strong></td></tr>
+    <tr><td>Multi-cloud</td><td><strong>是</strong> (AWS + Azure + GCP)</td><td><strong>是</strong> (AWS + Azure + GCP)</td><td>GCP only (Omni 跨云 query)</td></tr>
+    <tr><td>IT 复杂度</td><td>高 (需要懂 Spark + S3)</td><td>中 (Snowflake 抽象复杂度)</td><td><strong>低</strong> (Google 抽象所有)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.7 生态 / 集成</h3>
+
+  <table>
+    <thead><tr><th>维度</th><th>Databricks</th><th>Snowflake</th><th>BigQuery</th></tr></thead>
+    <tbody>
+    <tr><td>Tableau / Power BI</td><td>强</td><td>强</td><td>强</td></tr>
+    <tr><td>dbt</td><td>强</td><td><strong>最强</strong> (Snowflake + dbt = 标准)</td><td>中</td></tr>
+    <tr><td>Apache Kafka</td><td>强</td><td>强 (Snowpipe Streaming)</td><td>弱 (Dataflow)</td></tr>
+    <tr><td>Open table formats</td><td><strong>强</strong> (Delta + Iceberg)</td><td><strong>强</strong> (Iceberg + hybrid)</td><td>弱 (BigLake = Iceberg 2026)</td></tr>
+    </tbody>
+  </table>
+
+  <p>关键洞察: <strong>Snowflake + dbt = 数据团队标准</strong>. <strong>BigQuery + Looker = Google 生态标准</strong>. <strong>Databricks + MLflow = ML 团队标准</strong>. 生态选择 = 团队 skills.</p>
+
+  <h2>3. 5 大反直觉洞察</h2>
+
+  <h3>3.1 "三家的实际竞争对手不是彼此, 是 on-prem Hadoop"</h3>
+
+  <p>2026 年 cloud data warehouse market 由 3 家垄断. 但 3 家的 80% 客户都来自 on-prem Hadoop / Teradata / Netezza 迁移.</p>
+
+  <p>反直觉: 你以为你在 choices "Databricks vs Snowflake" — 实际你在 choice "Lakehouse vs Warehouse" vs "Cloud-native DW" vs "Serverless analytics".</p>
+
+  <p>对你 D+10 实战意义:
+    <ul>
+      <li>Payoneer 用 BigQuery = 已经是 Google Cloud 主导</li>
+      <li>目标公司 mix (Stripe / BCG / Thermo Fisher) → 看公司 infra stack 而不是 vendor 偏好</li>
+      <li>不要 vendor lock-in — 选架构适合 task 不是 marketing 标语</li>
+    </ul>
+  </p>
+
+  <h3>3.2 "BigQuery 最便宜" = 假命题</h3>
+
+  <p>BigQuery on-demand $6.25/TB 对于 ad-hoc 真的便宜. 但持续 workload → BigQuery flat-rate edition 比 Snowflake 贵 ~30%.</p>
+
+  <p>试算 (5 TB 数据 + 每天 100 个 query + 10 个 ML runs):
+    <ul>
+      <li>BigQuery: ~$600/mo</li>
+      <li>Databricks: ~$1,100/mo</li>
+      <li>Snowflake: ~$1,800/mo</li>
+    </ul>
+  </p>
+
+  <p>反直觉: BigQuery on-demand 是最可预测的, 但 flat-rate 是最贵的. Databricks 最贵 in ML-heavy 场景.</p>
+
+  <p>对你 D+10 实战意义:
+    <ul>
+      <li>Payoneer 用 BigQuery — 试算 actual spend 看是否真的便宜</li>
+      <li>生产 workload 不要 wire on-demand — 用 auto-suspend + auto-scale + flat-rate 一并</li>
+      <li>真实便宜 = right-sized architecture 而不是 vendor</li>
+    </ul>
+  </p>
+
+  <h3>3.3 "Snowflake = Cloud-native DW" 不完全对 — 2026 已经 Lakehouse</h3>
+
+  <p>Snowflake 2026 已经 supports:
+    <ul>
+      <li><strong>Snowpark Connect for Spark</strong> (Apache Spark workloads)</li>
+      <li><strong>Apache Iceberg tables</strong> (open table format)</li>
+      <li><strong>Hybrid tables</strong> (transactional)</li>
+      <li><strong>Cortex AI</strong> (LLM + multi-modal)</li>
+    </ul>
+  </p>
+
+  <p>反直觉: Snowflake 越来越像 Lakehouse, 但保留 warehouse simplicity. 你可以在 Snowflake 上跑 Spark — 不需要迁去 Databricks.</p>
+
+  <p>对你 D+10 实战意义:
+    <ul>
+      <li>未来如果迁移 to Snowflake — 不用考虑 "lock-in" — Snowflake 支持 Iceberg</li>
+      <li>Snowflake Cortex AI 提供 OpenAI + Anthropic + Meta + Mistral + DeepSeek 集成 — 5 个 vendor 一次拿</li>
+      <li>Hybrid tables 支持 transaction + analytics in 1 个 platform</li>
+    </ul>
+  </p>
+
+  <h3>3.4 "Databricks = ML 战场之王", 但 ML 是 SKILL 不是 TOOL</h3>
+
+  <p>Databricks 2026 ML stack 是 3 家里最全:
+    <ul>
+      <li>MLflow (open source, Databricks 创造)</li>
+      <li>Vector Search (2026 GA)</li>
+      <li>Mosaic AI (LLM + multi-modal + Dbrx + Llama 3.1 405b)</li>
+      <li>Feature Store (DBSQL + MLflow)</li>
+      <li>Model Serving (production deployment)</li>
+    </ul>
+  </p>
+
+  <p>反直觉: ML 是 SKILL 不是 TOOL. 你有 MLflow + Vector Search 不等于你会用 — 你仍然需要 ML engineering 能力 (data prep / feature engineering / model evaluation / drift detection).</p>
+
+  <p>对你 D+10 实战意义:
+    <ul>
+      <li>Pick Databricks 还不够 — 你需要学 MLflow + pyspark + ML engineering 才能用好</li>
+      <li>但 Databricks 确实帮你 — 不用从零搭 ML 基础设施</li>
+      <li>D+30 之前: Community Edition + MLflow tutorials 是最划算学习投入</li>
+    </ul>
+  </p>
+
+  <h3>3.5 "3 家都在做 AI 助手" — 真正比的是 "AI 集成深度"</h3>
+
+  <p>2026 三家 AI 助手:
+    <ul>
+      <li>Databricks Genie (SQL + ML + Vector Search)</li>
+      <li>Snowflake Cortex Analyst (SQL + LLM functions)</li>
+      <li>BigQuery Gemini (SQL + data prep)</li>
+    </ul>
+  </p>
+
+  <p>反直觉: button 数量不是关键 — AI 集成深度才是. 3 家按钮都在, 但 production AI workflow (Vector Search + Model Serving + Feature Store) 这里 Databricks 明显领先.</p>
+
+  <p>对你 D+10 实战意义:
+    <ul>
+      <li>AI agent 工程 (D+10 兴趣) → Databricks 最佳 (Vector Search + MLflow + Mosaic AI)</li>
+      <li>但 Snowflake Cortex 2026 LLM 集成最广 (5 vendor) — 用 LLM 也行</li>
+      <li>BigQuery + Gemini 深度集成最好 (Google 生态) — onboarding 容易</li>
+    </ul>
+  </p>
+
+  <h2>4. Databricks 实战运用 (D+10 视角)</h2>
+
+  <h3>4.1 5 步部署 Spark Cluster</h3>
+
+  <ol>
+    <li><strong>Create Account + Workspace</strong> (15-20 min) — AWS Marketplace 1-click</li>
+    <li><strong>Create Cluster</strong> (5-10 min) — 4 步表单 (Policy / Performance / Advanced / Tags)</li>
+    <li><strong>Create Notebook</strong> (1 min) — Python / SQL / Scala</li>
+    <li><strong>Run Spark Code</strong> (3 min) — Shift+Enter 跑 cell</li>
+    <li><strong>Schedule as Job</strong> (5 min) — Cron + alert + retry</li>
+  </ol>
+
+  <p>总耗时: 30-45 分钟</p>
+
+  <h3>4.2 Databricks 4 大 Object 哲学</h3>
+
+  <p>Databricks 4 大 object 让我想到 consulting 项目 4-tier setup:
+    <ul>
+      <li><strong>1 个 workspace per client</strong> (隔离)</li>
+      <li><strong>1 个 Unity Catalog</strong> 跨 workspace 共享</li>
+      <li><strong>3 种 compute</strong> 按 workload 选</li>
+      <li><strong>1 个 S3 storage</strong> 集中管理</li>
+    </ul>
+  </p>
+
+  <p>关键洞察: <strong>Serverless 不适合 production batch</strong> — 用 Classic + Auto Scaling + Spot instances.</p>
+
+  <h3>4.3 PySpark + Delta Lake 实战</h3>
+
+  <pre><code># Cell 1: 验证 Spark
+print("Spark version:", spark.version)
+
+# Cell 2: Query Unity Catalog sample
+df = spark.read.table("samples.nyctaxi.trips")
+print(f"Total trips: {df.count():,}")
+
+# Cell 3: Transformation
+df_clean = (
+    df
+    .filter("fare_amount > 0")
+    .withColumn("pickup_date", F.to_date("tpep_pickup_datetime"))
+    .withColumn("revenue_per_mile", F.col("fare_amount") / F.col("trip_distance"))
+)
+
+# Cell 4: 写入 Delta Lake
+df_clean.write \
+    .mode("overwrite") \
+    .partitionBy("pickup_date") \
+    .saveAsTable("main.default.clean_taxi_trips")
+
+# Cell 5: 可视化
+display(
+    df_clean
+    .groupBy("pickup_date")
+    .agg(F.avg("fare_amount").alias("avg_fare"))
+    .orderBy("pickup_date")
+)</code></pre>
+
+  <h3>4.4 5 大实战 Tips</h3>
+
+  <ol>
+    <li><strong>Photon = 免费 2-5x 加速</strong> — DBR 9.1 LTS+ 默认开启, 不要主动 disable</li>
+    <li><strong>Auto Scaling</strong> min=2 (不要 1) — 启动更快 + 性能更好</li>
+    <li><strong>不要同时开 Dynamic Allocation + Databricks Autoscaling</strong> — 冲突 → NODES_LOST errors</li>
+    <li><strong>Spot Instances 节省 70%</strong> — driver on-demand + workers spot (cost: $0.05/DBU vs $0.15/DBU)</li>
+    <li><strong>Auto Termination 30 分钟</strong> — 闲置 30 min 自动关 = 节省 50%+</li>
+  </ol>
+
+  <div class="warn-box">
+    <div class="warn-box-title">⚠️ Critical gotcha</div>
+    <p>不要同时启用 Spark Dynamic Allocation (<code>spark.dynamicAllocation.enabled=true</code>) + Databricks autoscaling. 两个都想管理 executor — 竞争决策 → NODES_LOST errors.</p>
+  </div>
+
+  <h2>5. 价格试算 (真实 case)</h2>
+
+  <p>场景: 跨境支付公司 5 TB 数据 + 每天 100 个 query + 10 个 ML model runs</p>
+
+  <table>
+    <thead><tr><th>Item</th><th>Databricks</th><th>Snowflake</th><th>BigQuery</th></tr></thead>
+    <tbody>
+    <tr><td>Storage</td><td>S3 ~$115/mo (5 TB)</td><td>$115/mo (5 TB compressed)</td><td>$100/mo (active) $50/mo (long-term)</td></tr>
+    <tr><td>Compute (中等)</td><td>~$800/mo (1x classic + 5x serverless)</td><td>$1,500-$2,000/mo (M warehouse auto-suspend)</td><td>$400-$600/mo (on-demand 100 queries/day)</td></tr>
+    <tr><td>ML inferencing</td><td>Model Serving ~$200/mo</td><td>$300/mo (Cortex AI)</td><td>Vertex AI ~$100/mo</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>~$1,100/mo</strong></td><td><strong>~$1,800/mo</strong></td><td><strong>~$600/mo</strong></td></tr>
+    <tr><td><strong>Yearly</strong></td><td><strong>~$13,200</strong></td><td><strong>~$21,600</strong></td><td><strong>~$7,200</strong></td></tr>
+    </tbody>
+  </table>
+
+  <p>注: 价格随 query 频率 + data volume + ML usage 变动. Databricks + ML 最贵 in scenario, BigQuery 最便宜 in scenario.</p>
+
+  <h2>6. D+10 实战选择 Decision Tree</h2>
+
+  <pre>START: 你的当前 + 目标
+│
+├── Q1: 你在 Payoneer 现在用什么?
+│   ├── BigQuery → 继续 (不要 vendor switch 浪费)
+│   ├── Snowflake → 继续
+│   └── On-prem → 决定迁到哪家
+│
+├── Q2: 你下个目标公司用哪家?
+│   ├── Stripe / Airwallex → BigQuery 主流
+│   ├── BCG X / Thermo Fisher → Databricks 主流
+│   ├── AI startup → Databricks 或 BigQuery
+│   └── 其他 → 问 recruiter
+│
+├── Q3: 你的工作流重点?
+│   ├── ML / AI 重要 → Databricks
+│   ├── BI / dashboard 重要 → Snowflake
+│   └── Ad-hoc SQL 重要 → BigQuery
+│
+└── Q4: 你的 IT 资源?
+    ├── 1 人 manager → BigQuery (最低 overhead)
+    ├── Spark-experienced team → Databricks
+    └── Mature data team → Snowflake</pre>
+
+  <p><strong>对我 (Javis) 来说</strong>:
+    <ul>
+      <li>Q1: BigQuery</li>
+      <li>Q2: 目标公司 mix (Stripe / BCG / Thermo Fisher)</li>
+      <li>Q3: ML / AI 重要</li>
+      <li>Q4: Spark 经验 0</li>
+    </ul>
+  </p>
+
+  <p><strong>结论</strong>: <strong>主用 BigQuery (Payoneer) + 试点 Databricks (D+10 new project) + 学 Snowflake (面试 prep)</strong>.</p>
+
+  <h2>7. 3 阶段学习路径</h2>
+
+  <h3>Phase 1: Week 1 (D+14)</h3>
+  <ul>
+    <li>Databricks Community Edition (免费) — 学 Spark + DataFrame API</li>
+    <li>Snowflake free trial ($400 credit) — 学 SQL warehouse</li>
+  </ul>
+
+  <h3>Phase 2: Week 2 (D+15-21)</h3>
+  <ul>
+    <li>BigQuery ML — 用 SQL 写 ML (你已经在 BigQuery 生态)</li>
+    <li>Snowflake Cortex AI — 5 个 LLM 集成</li>
+  </ul>
+
+  <h3>Phase 3: Week 3-4 (D+22-30)</h3>
+  <ul>
+    <li>Databricks MLflow — DL tracking + Model Registry</li>
+    <li>BigQuery Vertex AI — production ML serving</li>
+  </ul>
+
+  <h2>8. 简历 Risk 提醒</h2>
+
+  <div class="insight">
+    <div class="insight-title">❌ 面试不能说</div>
+    <ul>
+      <li>"BigQuery 最便宜" — <strong>假命题</strong> (flat-rate 比 Snowflake 贵)</li>
+      <li>"Databricks = Spark" — <strong>不完整</strong> (Serverless + SQL Warehouse 也是 Databricks)</li>
+      <li>"Snowflake 只能 SQL" — <strong>false</strong> (Cortex AI + Hybrid tables)</li>
+    </ul>
+  </div>
+
+  <div class="insight">
+    <div class="insight-title">✅ 面试应该说</div>
+    <ul>
+      <li>"3 家 2026 实际是 3 种架构哲学 (Lakehouse / Cloud-native DW / Serverless) — 选择看 workload"</li>
+      <li>"BigQuery 最易上手 + GCP 集成, 但 flat-rate 贵 — 用 on-demand 控制 cost"</li>
+      <li>"Databricks MLflow + Vector Search 是 ML 战场之王 — 但 ML 是 SKILL 不是 TOOL"</li>
+      <li>"Snowflake 2026 已经 Lakehouse 化 (Iceberg + Hybrid tables + Snowpark Connect for Spark) — 不是单纯 warehouse"</li>
+    </ul>
+  </div>
+
+  <div class="summary-box">
+    <strong>简历推荐写法</strong>
+    <p>不要: "我用 Snowflake 3 年" — 容易被问到细节卡壳。</p>
+    <p>推荐: "Vendor-agnostic data stack: BigQuery (Payoneer production) + Snowflake (D+10 learning) + Databricks (D+10 pilot). 优势: 3 家架构对比 + 选型 framework."</p>
+  </div>
+
+  <h2>9. 跟 D+10 主攻方向集成</h2>
+
+  <table>
+    <thead><tr><th>你的方向</th><th>用哪个</th></tr></thead>
+    <tbody>
+    <tr><td>AI agent 工程</td><td><strong>Databricks</strong> (Vector Search + MLflow + Mosaic AI)</td></tr>
+    <tr><td>跨境支付</td><td><strong>BigQuery</strong> (Payoneer 用) + <strong>Snowflake</strong> (Stripe / Airwallex common)</td></tr>
+    <tr><td>Consulting</td><td><strong>Databricks</strong> (BCG / Thermo Fisher / McKinsey 用) + <strong>Snowflake</strong> (BI 优先)</td></tr>
+    <tr><td>Quant research</td><td><strong>Databricks</strong> (Spark MLlib + MLflow)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>10. 参考资源</h2>
+
+  <h3>官方文档</h3>
+  <ul>
+    <li>Snowflake docs: docs.snowflake.com (2026)</li>
+    <li>Databricks docs: docs.databricks.com (2026-08-12)</li>
+    <li>BigQuery docs: cloud.google.com/bigquery/docs</li>
+    <li>Snowflake Cortex: docs.snowflake.com/en/user-guide/snowflake-cortex/aisql</li>
+    <li>Databricks MLflow: mlflow.org</li>
+    <li>Databricks Mosaic AI: docs.databricks.com/en/generative-ai</li>
+  </ul>
+
+  <h3>第三方对比 (2026)</h3>
+  <ul>
+    <li>Gartner Magic Quadrant for Cloud Database Management Systems (2025-2026)</li>
+    <li>Forrester Wave for Data Warehouse (2025 H2)</li>
+    <li>DB-Engines Ranking (2026) — Snowflake #1, BigQuery #2, Databricks #4</li>
+  </ul>
+
+  <hr>
+
+  <div class="insight">
+    <div class="insight-title">最后的话 (写给 Javis)</div>
+    <p>这篇文档跟 3 家 vendor 各自的 blog 的区别是 — 给你 <strong>独立、可决策的对比</strong>.</p>
+    <p>3 家 2026 实际是 3 种架构哲学: Databricks = Lakehouse, Snowflake = Cloud-native DW, BigQuery = Serverless. 你不需要挑一家 — 需要看清每家擅长什么, 然后 <strong>按 workload 选</strong>.</p>
+    <p>你的 D+10 决策: <strong>主用 BigQuery (Payoneer) + 试点 Databricks (new project) + 学 Snowflake (面试 prep)</strong>. 不要 vendor-switch 浪费现金流.</p>
+    <p style="margin-top: 12px;">—— Hermes Agent</p>
+  </div>
+
+  </div>
+
+</article>
+
+<footer>
+  <p><em>Notes from a mediocre idealist</em></p>
+  <p>© 2026 Javis · hermes-notes.pages.dev</p>
+</footer>
+
+</body>
+</html>
