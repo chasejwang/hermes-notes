@@ -240,12 +240,146 @@
 
     <h3>3.1 架构</h3>
 
-<pre><code>┌──────────────┐         ┌────────────────────┐         ┌──────────────────┐
-│  BigQuery    │         │  Self-Hosted IR    │         │  Fabric          │
-│  (GCP)       │  ────▶  │  (Azure VM)        │  ────▶  │  OneLake         │
-│              │  jdbc   │  • OAuth 代理       │  Delta  │  Lakehouse       │
-│  pricing_prod│  Service│  • 网络出口 IP      │  write  │                  │
-└──────────────┘  Account└────────────────────┘         └──────────────────┘</code></pre>
+
+    <figure>
+      <div class="diagram-frame">
+        <svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cross-cloud-architecture-title cross-cloud-architecture-desc">
+          <title id="cross-cloud-architecture-title">BigQuery to OneLake cross-cloud architecture via Azure Data Factory and Self-Hosted Integration Runtime</title>
+          <desc id="cross-cloud-architecture-desc">Three layers with a self-hosted integration runtime bridging BigQuery on Google Cloud and a Fabric OneLake lakehouse on Azure. The runtime fetches BigQuery via JDBC service account, authenticates Fabric via OAuth, and writes Delta tables to OneLake. One focal node (OneLake) is highlighted in coral.</desc>
+
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/>
+            </marker>
+            <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/>
+            </marker>
+            <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/>
+            </marker>
+          </defs>
+
+          <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+          <g transform="translate(40, 80)">
+            <rect width="320" height="560" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="160" y="28" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">GOOGLE CLOUD</text>
+
+            <rect x="40" y="80" width="240" height="96" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+            <rect x="48" y="86" width="40" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+            <text x="68" y="95" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DW</text>
+            <text x="160" y="120" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">BigQuery</text>
+            <text x="160" y="136" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">pricing_prod</text>
+            <text x="160" y="160" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">payments · fx · billing</text>
+
+            <g transform="translate(40, 240)">
+              <rect width="240" height="80" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="5 4"/>
+              <text x="120" y="20" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Service Account</text>
+              <text x="120" y="36" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">jdbc-bq-sa@payoneer.iam</text>
+              <text x="120" y="56" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">roles/bigquery.dataViewer</text>
+            </g>
+
+            <g transform="translate(40, 360)">
+              <rect width="240" height="80" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="5 4"/>
+              <text x="120" y="20" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Private Service Connect</text>
+              <text x="120" y="36" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">psc.googleapis.com</text>
+              <text x="120" y="56" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">egress: 34.124.x.x</text>
+            </g>
+          </g>
+
+          <g transform="translate(440, 80)">
+            <rect width="400" height="560" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="200" y="28" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">AZURE — SELF-HOSTED IR</text>
+
+            <g transform="translate(40, 80)">
+              <rect width="320" height="160" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+              <rect x="48" y="86" width="52" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+              <text x="74" y="95" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">AZURE VM</text>
+              <text x="160" y="118" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Self-Hosted</text>
+              <text x="160" y="134" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Integration Runtime</text>
+              <text x="160" y="158" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">virtual-machine-ir:01</text>
+              <text x="160" y="180" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Microsoft.DataFactory</text>
+              <text x="160" y="194" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">runtime: Standard_E8s_v5</text>
+            </g>
+
+            <g transform="translate(40, 280)">
+              <rect width="320" height="120" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+              <rect x="48" y="286" width="40" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+            <text x="68" y="295" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">OAUTH</text>
+            <text x="160" y="320" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">OAuth 2.0 Service Principal</text>
+            <text x="160" y="340" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">spn-oneLake-writer</text>
+            <text x="160" y="362" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">fabric.WorkspaceContributor</text>
+            <text x="160" y="376" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">fabric.ItemWriter</text>
+          </g>
+
+            <g transform="translate(40, 440)">
+              <rect width="320" height="80" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="5 4"/>
+              <text x="160" y="22" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Egress · static IP</text>
+              <text x="160" y="40" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">20.123.45.67 / 32</text>
+              <text x="160" y="58" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">whitelist in BigQuery allowed list</text>
+            </g>
+          </g>
+
+          <g transform="translate(920, 80)">
+            <rect width="320" height="560" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="160" y="28" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">AZURE — FABRIC</text>
+
+            <g transform="translate(40, 80)">
+              <rect width="240" height="160" rx="6" fill="#eb6c36" fill-opacity="0.10" stroke="#eb6c36" stroke-width="1.5"/>
+              <rect x="48" y="86" width="56" height="12" rx="2" fill="透明" stroke="rgba(235,108,54,0.6)" stroke-width="0.8"/>
+            <text x="76" y="95" fill="#b8552a" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">FOCAL</text>
+            <text x="160" y="120" fill="#2d3142" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">OneLake Lakehouse</text>
+            <text x="160" y="138" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">payoneer_warehouse</text>
+            <text x="160" y="160" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">bronze · silver · gold</text>
+            <text x="160" y="180" fill="#eb6c36" font-size="9" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="middle">Delta tables · ACID</text>
+            <text x="160" y="200" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">payoneer_payments_delta</text>
+            <text x="160" y="214" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">payoneer_fx_delta</text>
+          </g>
+
+            <g transform="translate(40, 280)">
+              <rect width="240" height="96" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+              <rect x="48" y="286" width="36" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+              <text x="66" y="295" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">BI</text>
+              <text x="120" y="320" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Power BI</text>
+              <text x="120" y="336" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Direct Lake mode</text>
+              <text x="120" y="358" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">no data copy · sub-sec</text>
+            </g>
+
+            <g transform="translate(40, 420)">
+              <rect width="320" height="80" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="5 4"/>
+              <text x="120" y="22" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Data engineering</text>
+              <text x="120" y="40" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">PySpark · DLT · Great</text>
+              <text x="120" y="58" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Expectations · MLflow</text>
+            </g>
+
+            <text x="160" y="540" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">CONSUMERS</text>
+          </g>
+
+          <path d="M 280 240 L 320 240 L 320 280 L 360 280" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+          <path d="M 280 360 L 320 360 L 320 400 L 360 400" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+          <path d="M 400 400 L 420 400 L 420 240 L 440 240" fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+          <rect x="380" y="312" width="40" height="12" rx="2" fill="#f5f5f5"/>
+          <text x="400" y="321" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">HTTPS</text>
+
+          <path d="M 600 320 L 600 360" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+          <path d="M 600 440 L 600 480" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+          <path d="M 800 480 L 860 480 L 860 160 L 920 160" fill="none" stroke="#eb6c36" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow-accent)"/>
+          <rect x="822" y="312" width="76" height="12" rx="2" fill="#f5f5f5"/>
+          <text x="860" y="321" fill="#b8552a" font-size="8" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">DELTA WRITE</text>
+
+          <path d="M 1040 320 L 1040 360" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+          <path d="M 1160 360 L 1180 360 L 1180 220 L 1160 220" fill="none" stroke="#2e5aa8" stroke-width="1" stroke-dasharray="2 2" marker-end="url(#arrow-link)"/>
+          <rect x="1140" y="278" width="68" height="12" rx="2" fill="#f5f5f5"/>
+          <text x="1174" y="287" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO COPY</text>
+        </svg>
+      </div>
+      <figcaption><strong>图 1</strong> · 跨云数据湖架构。BigQuery (GCP) → Self-Hosted Integration Runtime (Azure VM) → OneLake Lakehouse (Fabric)。OAuth 2.0 service principal 写 Delta tables。珊瑚色节点 = focal: OneLake。粉色虚线 = HTTPS egress (132.45ms median)。</figcaption>
+    </figure>
 
     <h3>3.2 配置实战</h3>
 
@@ -321,12 +455,68 @@ OneLake Delta 表（持续写入）</code></pre>
 
     <h3>4.2 架构图</h3>
 
-<pre><code>┌──────────────┐   CDC    ┌────────────────┐   Stream   ┌─────────────────┐
-│  BigQuery    │  ──────▶ │  Event Hub     │  ────────▶ │  OneLake        │
-│  Change      │   Log    │  (Azure)       │   Consume  │  (Delta Live)   │
-│  Streams     │          │                │            │                 │
-└──────────────┘          └────────────────┘            └─────────────────┘
-   pricing_prod            bq-cdc-hub                       LH_BigQuery_CDC</code></pre>
+<figure>
+      <div class="diagram-frame">
+        <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cross-cloud-cdc-title cross-cloud-cdc-desc">
+          <title id="cross-cloud-cdc-title">BigQuery CDC via Event Hub to OneLake Delta Live Tables</title>
+          <desc id="cross-cloud-cdc-desc">Change data capture flow from BigQuery on GCP through Azure Event Hub to OneLake Delta Live tables. The orange node is the focal stream consumption layer.</desc>
+
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/>
+            </marker>
+            <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/>
+            </marker>
+          </defs>
+
+          <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+          <!-- BigQuery -->
+          <g transform="translate(40, 80)">
+            <rect width="200" height="160" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+            <rect x="48" y="86" width="40" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+            <text x="68" y="95" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DW</text>
+            <text x="100" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">BigQuery</text>
+            <text x="100" y="140" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">pricing_prod</text>
+            <text x="100" y="156" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Change Streams</text>
+            <text x="100" y="174" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">payments · fx</text>
+          </g>
+
+          <!-- Event Hub (orange focal) -->
+          <g transform="translate(280, 80)">
+            <rect width="180" height="160" rx="6" fill="#eb6c36" fill-opacity="0.10" stroke="#eb6c36" stroke-width="1.5"/>
+            <rect x="290" y="86" width="56" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.6)" stroke-width="0.8"/>
+            <text x="318" y="95" fill="#b8552a" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">FOCAL</text>
+            <text x="370" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Event Hub</text>
+            <text x="370" y="140" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">bq-cdc-hub</text>
+            <text x="370" y="160" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Standard tier</text>
+            <text x="370" y="174" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">auto-inflate</text>
+          </g>
+
+          <!-- OneLake Delta Live -->
+          <g transform="translate(500, 80)">
+            <rect width="200" height="160" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+            <rect x="508" y="86" width="60" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+            <text x="538" y="95" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DELTA LIVE</text>
+            <text x="600" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">OneLake</text>
+            <text x="600" y="140" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">LH_BigQuery_CDC</text>
+            <text x="600" y="160" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Streaming</text>
+            <text x="600" y="174" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">bronze · silver · gold</text>
+          </g>
+
+          <!-- Connectors -->
+          <path d="M 240 160 L 280 160" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+          <rect x="222" y="142" width="40" height="12" rx="2" fill="#f5f5f5"/>
+          <text x="242" y="151" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">CDC</text>
+
+          <path d="M 460 160 L 500 160" fill="none" stroke="#eb6c36" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+          <rect x="438" y="142" width="80" height="12" rx="2" fill="#f5f5f5"/>
+          <text x="478" y="151" fill="#b8552a" font-size="8" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">STREAM CONSUME</text>
+        </svg>
+      </div>
+      <figcaption><strong>图 2</strong> · Synapse Link for BigQuery 实时流。BigQuery Change Streams → Event Hub (Azure) → OneLake Delta Live Tables。延迟 ~30 秒。珊瑚色节点 = focal: Event Hub。</figcaption>
+    </figure>
 
     <h3>4.3 优缺点</h3>
 
@@ -346,13 +536,74 @@ OneLake Delta 表（持续写入）</code></pre>
 
     <h3>5.1 架构</h3>
 
-<pre><code>┌──────────────┐    JDBC    ┌──────────────────┐    Delta    ┌──────────────┐
-│  BigQuery    │  ────────▶ │  Databricks      │  ─────────▶ │  OneLake     │
-│              │            │  Spark Cluster   │   Mount     │              │
-│  pricing_prod│            │  (复杂 transform)│             │  LH_BigQuery │
-└──────────────┘            └──────────────────┘             └──────────────┘
-                                │
-                                └─ 可加 ML 特征工程 / 数据血缘</code></pre>
+<figure>
+      <div class="diagram-frame">
+        <svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cross-cloud-spark-title cross-cloud-spark-desc">
+          <title id="cross-cloud-spark-title">BigQuery to OneLake via Databricks Spark Cluster</title>
+          <desc id="cross-cloud-spark-desc">Spark on Databricks cluster with JDBC connector to BigQuery, complex transformations, and Delta write to OneLake. Optional ML feature engineering extension shown below the main path.</desc>
+
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/>
+            </marker>
+            <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/>
+            </marker>
+          </defs>
+
+          <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+          <!-- BigQuery -->
+          <g transform="translate(40, 80)">
+            <rect width="180" height="160" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+            <rect x="48" y="86" width="40" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+            <text x="68" y="95" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DW</text>
+            <text x="90" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">BigQuery</text>
+            <text x="90" y="140" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">pricing_prod</text>
+            <text x="90" y="160" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">complex nested</text>
+            <text x="90" y="174" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">ARRAY + STRUCT</text>
+          </g>
+
+          <!-- Databricks Spark Cluster (focal orange) -->
+          <g transform="translate(280, 40)">
+            <rect width="240" height="240" rx="6" fill="#eb6c36" fill-opacity="0.10" stroke="#eb6c36" stroke-width="1.5"/>
+            <rect x="288" y="46" width="56" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.6)" stroke-width="0.8"/>
+            <text x="316" y="55" fill="#b8552a" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">FOCAL</text>
+            <text x="400" y="84" fill="#2d3142" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Databricks</text>
+            <text x="400" y="100" fill="#2d3142" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Spark Cluster</text>
+            <text x="400" y="122" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">pyspark-dataframe</text>
+            <text x="400" y="142" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">complex transform</text>
+            <text x="400" y="160" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• ARRAY / STRUCT 解包</text>
+            <text x="400" y="174" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• UDF / pandas</text>
+            <text x="400" y="188" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• Great Expectations</text>
+            <text x="400" y="220" fill="#eb6c36" font-size="9" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="middle">━━━ OPTIONAL ━━━</text>
+            <text x="400" y="238" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">ML feature engineering</text>
+            <text x="400" y="252" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">+ lineage tracking</text>
+          </g>
+
+          <!-- OneLake -->
+          <g transform="translate(580, 80)">
+            <rect width="160" height="160" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+            <rect x="588" y="86" width="60" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+            <text x="618" y="95" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DELTA</text>
+            <text x="660" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">OneLake</text>
+            <text x="660" y="140" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">LH_BigQuery</text>
+            <text x="660" y="160" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">bronze · silver</text>
+            <text x="660" y="174" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">+ ML features</text>
+          </g>
+
+          <!-- Connectors -->
+          <path d="M 220 160 L 280 160" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+          <rect x="216" y="142" width="40" height="12" rx="2" fill="#f5f5f5"/>
+          <text x="236" y="151" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">JDBC</text>
+
+          <path d="M 520 160 L 580 160" fill="none" stroke="#eb6c36" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+          <rect x="500" y="142" width="100" height="12" rx="2" fill="#f5f5f5"/>
+          <text x="550" y="151" fill="#b8552a" font-size="8" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">DELTA MOUNT</text>
+        </svg>
+      </div>
+      <figcaption><strong>图 3</strong> · Spark on Databricks 中转（最灵活）。BigQuery JDBC → Spark Cluster (复杂 transform) → Delta Mount → OneLake Lakehouse。支持 ARRAY / STRUCT 嵌套 + ML 特征工程 + 数据血缘。珊瑚色节点 = focal: Databricks Spark Cluster。</figcaption>
+    </figure>
 
     <h3>5.2 适合场景</h3>
     <ul>
