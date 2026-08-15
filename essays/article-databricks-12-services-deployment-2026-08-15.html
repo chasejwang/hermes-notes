@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Databricks 12 Services 部署教程 · 4 大类 × 时间 + 难度 + 步骤</title>
+<meta name="description" content="Databricks 12+ 服务完整实战部署教程 — 4 大类 5 个服务 × 时间 + 难度 + step-by-step + 踩坑 + 跨境支付 RAG + Agent 端到端.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --border-strong: rgba(26, 24, 20, 0.16);
+    --accent: #b45837;
+    --accent-hover: #9c4a2c;
+    --accent-2: #0078d4;
+    --code-bg: #1a1a2e;
+    --code-fg: #fafaf5;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 70% 100%, var(--bg-2) 0%, transparent 50%);
+    background-attachment: fixed;
+    font-size: 18px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-brand {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 22px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 14px;
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.7;
+  }
+
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+
+  .article {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .article, .article > *,
+  .content, .content > * {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-size: 14px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 32px;
+  }
+
+  .back-link::before { content: "← "; }
+
+  .article-tag {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .article h1 {
+    font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+    font-size: 44px;
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .article-meta {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+  }
+
+  .article-cover {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 36px;
+    box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08);
+  }
+
+  .lede {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--text);
+    padding: 24px 28px;
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    margin-bottom: 36px;
+    border-radius: 0 12px 12px 0;
+  }
+
+  .lede strong { color: var(--accent); font-weight: 600; }
+
+  .content {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .content h2 {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 48px 0 16px;
+    letter-spacing: -0.01em;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .content h2:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .content h3 {
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 36px 0 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .content h4 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--text);
+  }
+
+  .content p { margin-bottom: 18px; }
+  .content strong { font-weight: 600; color: var(--text); }
+  .content em { font-style: italic; color: var(--accent); }
+
+  .content blockquote {
+    border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px;
+    margin: 32px 0;
+    color: var(--text-muted);
+    font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+    font-style: italic;
+    font-size: 19px;
+  }
+
+  .content ul, .content ol { margin: 0 0 22px 24px; }
+  .content li { margin-bottom: 8px; }
+
+  .content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 28px 0;
+    font-size: 15px;
+  }
+
+  .content th, .content td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .content th { font-weight: 600; background: var(--surface); }
+
+  .content pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 18px 22px;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin: 24px 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .content code {
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+  }
+
+  .content pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  .insight {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 4px;
+  }
+
+  .insight-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .warn-box {
+    background: #fff8f0;
+    border: 1px solid #f0c896;
+    border-left: 4px solid var(--accent-2);
+    padding: 14px 18px;
+    margin: 20px 0;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .warn-box-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+
+  .summary-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 4px;
+  }
+
+  .summary-box strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  .content table, .data-table, table.data-table {
+    width: 100% !important;
+    max-width: 100%;
+    table-layout: fixed;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .content table th, .content table td, .data-table th, .data-table td {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .content > table, .content > .data-table,
+  .article > table, .article > .data-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .content pre, pre {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre;
+    box-sizing: border-box;
+  }
+
+  .content pre code, pre code {
+    white-space: pre;
+    word-break: normal;
+  }
+
+  .content p code, .content li code, .content td code {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .content img, .content svg, .content figure,
+  .article img, .article svg, .article figure {
+    max-width: 100%;
+    height: auto;
+  }
+
+  footer {
+    padding: 32px 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  footer em {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-style: italic;
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="../index.html#essays">Essays</a></li>
+      <li><a href="../index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article" data-tags="essay,databricks,tutorial,implementation,ai-coding,ai-agents,mlflow,2026">
+  <a href="../index.html" class="back-link">Back to essays</a>
+  <div class="article-tag">Essay · AI Coding · Cloud Data Warehouse</div>
+  <h1>Databricks 12 Services 部署教程<br>4 大类 × 18 个服务 × 时间 + 难度</h1>
+  <div class="article-meta">2026-08-15 · 18 min read</div>
+  <img class="article-cover" src="../images/08-bigquery-art.svg" alt="Databricks 12 Services Deployment" />
+
+  <div class="lede">
+    <strong>12+ 服务 · 4 大类 · 295 KB 完整教程</strong> — Data Access / ML Lifecycle / AI Agent / 共用 — 每个服务 部署时间 / 难度 / step-by-step / 踩坑. 1 个工作日全学完.
+  </div>
+
+  <div class="content">
+
+  <h2>0. 30 秒结论</h2>
+
+  <table>
+    <thead><tr><th>你的问题</th><th>答案</th></tr></thead>
+    <tbody>
+    <tr><td>Databricks 有多少服务可用?</td><td><strong>12+ 个核心服务</strong> 跨 4 大类 (Data Access / ML Lifecycle / AI Agent / 共用)</td></tr>
+    <tr><td>最快上手的服务?</td><td><strong>Databricks SQL</strong> (5-10 min) — Serverless warehouse create + Photon 加速</td></tr>
+    <tr><td>部署时间最长?</td><td><strong>Feature Store (60 min)</strong> + <strong>Custom Agents (45-60 min)</strong> — 都需要懂 data model + MLflow tracing</td></tr>
+    <tr><td>跨境支付 use case?</td><td>RAG + Custom Agent + Agent Evaluation → <strong>~$1,000/月</strong> production cost</td></tr>
+    <tr><td>适合 Data Analyst?</td><td><strong>Databricks SQL + AI/BI Dashboards + Metric Views + Alerts</strong> + Notebooks</td></tr>
+    <tr><td>适合 Data Scientist?</td><td><strong>MLflow 3 + Model Registry + Model Serving + Feature Store + AutoML</strong></td></tr>
+    <tr><td>适合 AI Agent 工程师?</td><td><strong>Mosaic AI Foundation Models + Vector Search (= AI Search) + Custom Agents + Prompt Mgmt + Agent Eval</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h2>1. 2026 重大命名更新 (必看)</h2>
+
+  <p>在你学之前,先记 3 个 2026 改名 — 旧文档可能用旧名:</p>
+
+  <table>
+    <thead><tr><th>旧名</th><th>新名</th><th>改名时间</th></tr></thead>
+    <tbody>
+    <tr><td><strong>Repos</strong></td><td><strong>Git folders</strong></td><td>2026-03-11</td></tr>
+    <tr><td><strong>Jobs</strong></td><td><strong>Lakeflow Jobs</strong></td><td>2026-07-10</td></tr>
+    <tr><td><strong>Vector Search</strong></td><td><strong>AI Search</strong></td><td>2026-07-28 (项目重命名)</td></tr>
+    </tbody>
+  </table>
+
+  <p>含义: 旧文档 / 旧 example 可能用旧名. 搜索 docs 用新名.</p>
+
+  <h2>2. 12+ 服务速查表 (时间 + 难度)</h2>
+
+  <table>
+    <thead><tr><th>#</th><th>服务</th><th>类别</th><th>部署时间</th><th>难度</th><th>30 秒 TL;DR</th></tr></thead>
+    <tbody>
+    <tr><td>1</td><td>Databricks SQL</td><td>Data Access</td><td>5-10 min</td><td>⭐⭐</td><td>Serverless warehouse + Photon → 直接 query Delta Lake</td></tr>
+    <tr><td>2</td><td>AI/BI Dashboards</td><td>Data Access</td><td>30-45 min</td><td>⭐⭐⭐</td><td>Genie Code 自然语言生成 chart + filter cross-page</td></tr>
+    <tr><td>3</td><td>Metric Views</td><td>Data Access</td><td>45-60 min</td><td>⭐⭐⭐⭐</td><td>YAML 定义 net_revenue 跨 dashboard 复用</td></tr>
+    <tr><td>4</td><td>Alerts</td><td>Data Access</td><td>15-20 min</td><td>⭐⭐</td><td>Slack 集成 + Quartz cron + 4 个跨境支付 alert</td></tr>
+    <tr><td>5</td><td>MLflow 3 Tracking</td><td>ML Lifecycle</td><td>30 min</td><td>⭐⭐</td><td>Logged Models + 实验对比 + 跨境支付 fraud 完整代码</td></tr>
+    <tr><td>6</td><td>MLflow Model Registry</td><td>ML Lifecycle</td><td>40 min</td><td>⭐⭐⭐</td><td>Alias 治理 + 3 层 namespace + A/B test + 30 秒 rollback</td></tr>
+    <tr><td>7</td><td>Model Serving</td><td>ML Lifecycle</td><td>45 min</td><td>⭐⭐⭐</td><td>SDK/REST/UI 3 种 + Inference Table + 流量切分</td></tr>
+    <tr><td>8</td><td>Feature Store</td><td>ML Lifecycle</td><td>60 min</td><td>⭐⭐⭐⭐</td><td>Online Lakebase + Point-in-Time Join + Serving 自动 lookup</td></tr>
+    <tr><td>9</td><td>AutoML</td><td>ML Lifecycle</td><td>30 min</td><td>⭐⭐</td><td>Python API + 复用生成 code + 注册到 Registry</td></tr>
+    <tr><td>10</td><td>Mosaic AI Foundation Models</td><td>AI Agent</td><td>5-10 min</td><td>⭐</td><td>OpenAI-compatible API + DBRX/Llama 3.1/Mixtral + 3 种调用模式</td></tr>
+    <tr><td>11</td><td>Vector Search (= AI Search)</td><td>AI Agent</td><td>30-45 min</td><td>⭐⭐⭐</td><td>3 种 index + HNSW + RRF + SDK/UI 自动 embedding</td></tr>
+    <tr><td>12</td><td>Custom Agents</td><td>AI Agent</td><td>45-60 min</td><td>⭐⭐⭐⭐</td><td>LangGraph/LangChain 集成 + MLflow Tracing + production 部署</td></tr>
+    <tr><td>13</td><td>Prompt Management</td><td>AI Agent</td><td>15-20 min</td><td>⭐⭐</td><td>Version + manage prompts + 在 agent 里按版本调用</td></tr>
+    <tr><td>14</td><td>Agent Evaluation</td><td>AI Agent</td><td>30-45 min</td><td>⭐⭐⭐</td><td>LLM-as-a-judge + human feedback + MLflow 集成</td></tr>
+    <tr><td>15</td><td>Notebooks</td><td>共用</td><td>5 min</td><td>⭐</td><td>多语言 IDE + magic commands + dbutils + Git</td></tr>
+    <tr><td>16</td><td>Unity Catalog</td><td>共用</td><td>30 min</td><td>⭐⭐</td><td>3 层 namespace (catalog.schema.object) + 跨 data/model/feature</td></tr>
+    <tr><td>17</td><td>Git folders (原 Repos)</td><td>共用</td><td>20 min</td><td>⭐⭐</td><td>Git 集成 + clone + commit + PR workflow</td></tr>
+    <tr><td>18</td><td>Lakeflow Jobs (原 Jobs)</td><td>共用</td><td>15 min</td><td>⭐⭐</td><td>Cron schedule + retry + alert + cluster 自动启停</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>总部署时间</strong>: 假设你全做 (~10-12 小时 = 1 个工作日)</p>
+
+  <h2>3. 4 大类 (12+ 服务) 难度排序</h2>
+
+  <table>
+    <thead><tr><th>难度</th><th>服务数</th><th>学习时间</th><th>适合角色</th></tr></thead>
+    <tbody>
+    <tr><td>⭐⭐ (Easy)</td><td>6</td><td>5-30 min</td><td>Data Analyst 入门</td></tr>
+    <tr><td>⭐⭐⭐ (Medium)</td><td>7</td><td>30-45 min</td><td>Data Scientist 熟悉</td></tr>
+    <tr><td>⭐⭐⭐⭐ (Hard)</td><td>3</td><td>45-60 min</td><td>Advanced ML/AI 工程师</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4. 4 大常见组合 (per persona)</h2>
+
+  <h3>4.1 Data Analyst 组合 (5 服务, ~2.5 小时)</h3>
+  <pre><code>Databricks SQL + AI/BI Dashboards + Metric Views + Alerts + Notebooks
+→ "SQL-based self-service analytics"</code></pre>
+
+  <h3>4.2 Data Scientist 组合 (5 服务, ~4 小时)</h3>
+  <pre><code>MLflow 3 + Model Registry + Model Serving + Feature Store + AutoML
+→ "End-to-end ML lifecycle"</code></pre>
+
+  <h3>4.3 AI Agent 工程师组合 (5 服务, ~3.5 小时)</h3>
+  <pre><code>Mosaic AI Foundation Models + Vector Search + Custom Agents + Prompt Mgmt + Agent Eval
+→ "Production agent observability"</code></pre>
+
+  <h3>4.4 共用 (4 服务, ~1.5 小时)</h3>
+  <pre><code>Notebooks + Unity Catalog + Git folders (Repos) + Lakeflow Jobs (Jobs)
+→ "Cross-team collaboration + scheduling"</code></pre>
+
+  <h2>5. 关键洞察 (7 个)</h2>
+
+  <h3>5.1 Databricks SQL 是 5-10 分钟 — 多数服务最小可行部署</h3>
+  <p>大多数企业用户从 SQL warehouse 起步. 5 分钟 setup 不夸张 (Community Edition).</p>
+
+  <h3>5.2 MLflow 3 是 30-45 分钟 — Data Scientist 真正的入门门槛</h3>
+  <p>需要懂 experiment tracking + Python. 但一旦会,所有 ML lifecycle 服务都基于此.</p>
+
+  <h3>5.3 Mosaic AI Custom Agents 是 45-60 分钟 — 最高难度</h3>
+  <p>需要懂 LangGraph / LangChain + MLflow Tracing. 跨境支付 agent 用例需要思考 prompt + tool design.</p>
+
+  <h3>5.4 Notebooks + Unity Catalog 是任何角色必学 — 5-30 分钟</h3>
+  <p>这 2 个是 platform 基础. 其他 14 个服务都基于这 2 个.</p>
+
+  <h3>5.5 2026 命名更新重要</h3>
+  <p>Repos → Git folders (Mar 11), Jobs → Lakeflow Jobs (Jul 10), Vector Search → AI Search (Jul 28). 旧文档 / 旧 example 可能用旧名.</p>
+
+  <h3>5.6 真实踩坑 (vs 官方文档暗示)</h3>
+  <ul>
+    <li>⚠️ Chrome MCP navigation timeout (D+14 8-15 实证) — 用 curl fallback</li>
+    <li>⚠️ Databricks docs URL 经常 redirect → SPA 路由问题</li>
+    <li>⚠️ Firecrawl 配额耗尽 → 用 curl + HTMLParser</li>
+    <li>⚠️ Serverless SQL warehouse ≠ Classic cluster → 不要选错</li>
+    <li>⚠️ MLflow 3 Logged Models 概念没替代品 — 必须用</li>
+  </ul>
+
+  <h3>5.7 核心方法论: 8-14 vs 8-15 笔记互补</h3>
+  <ul>
+    <li>8-14 笔记: "是什么 / 现状 / 概述"</li>
+    <li>8-15 笔记: "怎么部署 / 多少时间 / 多少成本 / 哪里踩坑 / 跨境支付 use case"</li>
+    <li>8-14 + 8-15 互补 = 完整参考</li>
+  </ul>
+
+  <h2>6. 4 大类完整教程 (摘要)</h2>
+
+  <h3>6.1 Data Access 类 (Databricks SQL + AI/BI Dashboards + Metric Views + Alerts)</h3>
+
+  <p><strong>Databricks SQL</strong> — 5-10 分钟部署, ⭐⭐ 难度.</p>
+
+  <pre><code>from databricks import sql
+
+connection = sql.connect(
+    server_hostname="<workspace>.databricks.com",
+    http_path="/sql/1.0/warehouses/abc123",
+    access_token="<token>"
+)
+
+cursor = connection.cursor()
+cursor.execute("""
+  SELECT DATE_TRUNC('day', pickup_datetime) AS day, COUNT(*) AS trips
+  FROM samples.nyctaxi.trips
+  GROUP BY 1
+  ORDER BY 1
+""")
+results = cursor.fetchall()
+print(results)</code></pre>
+
+  <p><strong>踩坑 1</strong>: 4 KB SQL 配额 (Community Edition) — 升级 Premium.</p>
+  <p><strong>踩坑 2</strong>: Photon 关闭 (cluster 创建时手动选) — 失去 2-5x speedup.</p>
+  <p><strong>踩坑 3</strong>: WC (Cluster) vs SE (Serverless) 类型混淆 — 用错 config.</p>
+  <p><strong>踩坑 4</strong>: 跨 catalog 权限 miss — 报 "401 unauthorized". 用 GRANT 解决.</p>
+  <p><strong>踩坑 5</strong>: Serverless SQL 太慢 — 用户并发 > 100, 升级到 Pro/Classic.</p>
+  <p><strong>AI/BI Dashboards</strong> — 30-45 分钟, ⭐⭐⭐. Genie Code 自然语言生成 chart + filter cross-page.</p>
+  <p><strong>Metric Views</strong> — 45-60 分钟, ⭐⭐⭐⭐. 解决"什么是 revenue" 跨部门争论.</p>
+  <p><strong>Alerts</strong> — 15-20 分钟, ⭐⭐. 跨境支付 4 个 alert: 失败率 / 大额退款 / FX 波动 / slow query.</p>
+
+  <h3>6.2 ML Lifecycle 类 (MLflow 3 + Model Registry + Model Serving + Feature Store + AutoML)</h3>
+
+  <p><strong>MLflow 3 Tracking</strong> — 30 分钟, ⭐⭐. <strong>Logged Models</strong> 跨整个 lifecycle track 一个 model.</p>
+
+  <pre><code>import mlflow
+
+mlflow.set_experiment("/Users/javis/payment_fraud")
+
+with mlflow.start_run():
+    mlflow.log_param("model_type", "lightgbm")
+    mlflow.log_param("learning_rate", 0.05)
+
+    model = lgb.train(params, train_data)
+
+    mlflow.log_metric("auc", 0.92)
+    mlflow.log_metric("precision", 0.85)
+
+    mlflow.lightgbm.log_model(model, "model")
+    mlflow.log_artifact("confusion_matrix.png")</code></pre>
+
+  <p><strong>MLflow Model Registry</strong> — 40 分钟, ⭐⭐⭐. Alias 治理 (champion / challenger) + 3 层 namespace + A/B test + 30 秒 rollback.</p>
+  <p><strong>Model Serving</strong> — 45 分钟, ⭐⭐⭐. SDK/REST/UI 3 种创建 + Inference Table 自动记录 + 流量切分.</p>
+  <p><strong>Feature Store</strong> — 60 分钟, ⭐⭐⭐⭐. <strong>最难点</strong> — Online Lakebase + Point-in-Time Join + Serving 自动 lookup.</p>
+  <p><strong>AutoML</strong> — 30 分钟, ⭐⭐. Python API + 复用生成 code + 注册到 Registry.</p>
+
+  <h3>6.3 AI Agent 类 (Mosaic AI Foundation Models + Vector Search + Custom Agents + Prompt Mgmt + Agent Eval)</h3>
+
+  <p><strong>Mosaic AI Foundation Models</strong> — 5-10 分钟, ⭐. <strong>最简单的服务</strong>. OpenAI 兼容 client 即可调用 DBRX / Llama 3.1 / Mixtral / Claude / GPT.</p>
+
+  <pre><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key="<DATABRICKS_TOKEN>",
+    base_url="https://<workspace>.databricks.com/serving-endpoints"
+)
+
+response = client.chat.completions.create(
+    model="databricks-dbrx-instruct",
+    messages=[
+        {"role": "system", "content": "You are a payment support agent."},
+        {"role": "user", "content": "How do I dispute a charge?"}
+    ],
+    max_tokens=200
+)
+print(response.choices[0].message.content)</code></pre>
+
+  <p>3 种调用模式: <strong>Pay-per-token</strong> (default, 按 token) + <strong>Priority tier</strong> (低延迟, 高 cost) + <strong>Provisioned throughput</strong> (固定 latency, 固定 cost).</p>
+
+  <p><strong>Vector Search (= AI Search 2026 Jul 28)</strong> — 30-45 分钟, ⭐⭐⭐. 3 种 index: Delta Sync managed (推荐) / Delta Sync self-managed / Direct Vector Access. HNSW + RRF.</p>
+  <p><strong>Custom Agents</strong> — 45-60 分钟, <strong>⭐⭐⭐⭐ 最高难度</strong>. LangGraph / LangChain / OpenAI 集成 + MLflow Tracing 自动 + production 部署.</p>
+  <p><strong>Prompt Management</strong> — 15-20 分钟, ⭐⭐. Version + manage prompts + A/B test + 30 秒 rollback.</p>
+  <p><strong>Agent Evaluation</strong> — 30-45 分钟, ⭐⭐⭐. LLM-as-a-judge + human feedback + MLflow 集成.</p>
+
+  <h3>6.4 共用类 (Notebooks + Unity Catalog + Git folders + Lakeflow Jobs)</h3>
+
+  <p><strong>Notebooks</strong> — 5 分钟, ⭐. 多语言 IDE + magic commands + dbutils + widgets + Git.</p>
+
+  <pre><code># MAGIC %sql
+# MAGIC SELECT * FROM samples.nyctaxi.trips LIMIT 10;
+
+result = spark.sql("SELECT COUNT(*) FROM main.default.payments")
+display(result)</code></pre>
+
+  <p><strong>Unity Catalog</strong> — 30 分钟, ⭐⭐. 3 层 namespace (catalog.schema.object) 跨 data + model + feature 统一治理.</p>
+  <p><strong>Git folders (原 Repos, Mar 11 改名)</strong> — 20 分钟, ⭐⭐. Git 集成 + clone + commit + PR workflow.</p>
+  <p><strong>Lakeflow Jobs (原 Jobs, Jul 10 改名)</strong> — 15 分钟, ⭐⭐. Cron schedule + retry + alert + cluster 自动启停. <strong>2026 改名</strong> — search 时用 "Lakeflow Jobs" 不要 "Jobs".</p>
+
+  <h2>7. 完整 RAG + 跨境支付 Agent 端到端 (5 服务串联)</h2>
+
+  <p>这是 §6.3 AI Agent 5 服务的完整串联示例 — 跨境支付 (Payoneer) 客服 RAG + agent 完整代码:</p>
+
+  <pre><code># 1. Vector Search (AI Search) — 检索 FAQ
+from databricks.vector_search.client import VectorSearchClient
+
+client = VectorSearchClient()
+
+def retrieve_faq(question, top_k=3):
+    results = client.similarity_search(
+        index_name="main.finance.payment_faq_index",
+        query_text=question,
+        num_results=top_k
+    )
+    return "\n".join([r["faq_answer"] for r in results["result"]["data_array"]])
+
+# 2. Foundation Model + Prompt Mgmt — LLM 调用 with versioned prompt
+from openai import OpenAI
+import mlflow
+
+client = OpenAI(api_key=..., base_url="https://payoneer.datababricks.com/serving-endpoints")
+
+def query_llm(question, faq_context, prompt_version="latest"):
+    prompt = mlflow.load_prompt(
+        f"prompts:/payment_support_agent_prompt@{prompt_version}"
+    )
+    response = client.chat.completions.create(
+        model="databricks-dbrx-instruct",
+        messages=[
+            {"role": "system", "content": prompt.format(context=faq_context)},
+            {"role": "user", "content": question}
+        ],
+        max_tokens=300,
+        temperature=0.3
+    )
+    return response.choices[0].message.content
+
+# 3. Custom Agent — Agent with tool calling
+class PaymentSupportAgent(mlflow.pyfunc.ResponsesAgent):
+    @mlflow.trace
+    def predict(self, context, messages):
+        question = messages[-1]["content"]
+
+        # 3.1 RAG retrieval
+        faq_context = retrieve_faq(question)
+
+        # 3.2 LLM call
+        response = query_llm(question, faq_context)
+
+        # 3.3 Tool call if refund request
+        if "refund" in question.lower():
+            response += f"\n\n[系统追踪] 退款已启动..."
+
+        return response
+
+# 4. MLflow Tracing 自动 (Service 3 内置)
+# Production 部署后, MLflow UI 自动显示 agent trace
+
+# 5. Agent Evaluation — 自动评估
+results = mlflow.evaluate(
+    model="models:/payment_support_agent/Production",
+    data=eval_data,  # 20 个 test cases
+    evaluators=["faithfulness", "relevance", "safety"]
+)
+print(results.metrics)
+# {'faithfulness/v1/mean': 4.2, 'relevance/v1/mean': 4.5, ...}</code></pre>
+
+  <p>完整 workflow: <strong>Vector Search → Foundation Model + Prompt Mgmt → Custom Agent → MLflow Tracing 自动 → Agent Evaluation 自动</strong>.</p>
+
+  <p>每秒成本: <strong>~$0.005</strong> (DBRX + Vector Search + MLflow tracing). 1M calls/月 ≈ <strong>$1,000/月</strong>.</p>
+
+  <h2>8. 成本估算 (按 2026 Databricks 公开价格)</h2>
+
+  <table>
+    <thead><tr><th>模式</th><th>月费</th><th>适合</th></tr></thead>
+    <tbody>
+    <tr><td>Community Edition</td><td>$0</td><td>学习 / POC</td></tr>
+    <tr><td>Free Trial</td><td>$0 (14 天)</td><td>短期 pilot</td></tr>
+    <tr><td>Serverless PAYG</td><td>$0.22/DBU + AWS</td><td>小团队 / 试点</td></tr>
+    <tr><td>Premium (PAYG)</td><td>$0.55/DBU + AWS</td><td>标准 production</td></tr>
+    <tr><td>Enterprise</td><td>协商</td><td>大型 / 合规</td></tr>
+    </tbody>
+  </table>
+
+  <p>新手月成本估算 (5 TB data + 100 queries/day + 10 ML runs):</p>
+  <ul>
+    <li>1 Serverless SQL warehouse + 1 Notebooks: <strong>~$300-500/mo</strong></li>
+    <li>加 MLflow 3 + Model Serving: <strong>~$800-1500/mo</strong></li>
+    <li>加 Mosaic AI Vector Search + Custom Agents: <strong>~$1500-3000/mo</strong></li>
+  </ul>
+
+  <h2>9. 实盘 Payoneer 跨境支付 cost 试算</h2>
+
+  <p>场景: Payoneer 1M 笔/月 跨境支付客服 (5 服务 RAG + agent):</p>
+
+  <table>
+    <thead><tr><th>服务</th><th>Usage</th><th>Cost</th></tr></thead>
+    <tbody>
+    <tr><td>Foundation Model (DBRX)</td><td>500 tokens × 1M = 500M tokens</td><td><strong>$700/月</strong></td></tr>
+    <tr><td>Vector Search (AI Search)</td><td>100K FAQ + 1M queries</td><td><strong>$10/月</strong></td></tr>
+    <tr><td>Custom Agent (Model Serving)</td><td>Small endpoint + 5 iterations</td><td><strong>$120/月</strong></td></tr>
+    <tr><td>Prompt Management</td><td>5 versions</td><td><strong>$0</strong></td></tr>
+    <tr><td>Agent Evaluation</td><td>5 evals/month × 20 cases</td><td><strong>$50/eval</strong></td></tr>
+    <tr><td><strong>Total</strong></td><td></td><td><strong>~$880/月 + $50/eval</strong></td></tr>
+    </tbody>
+  </table>
+
+  <p>对比 Claude 3.5 Sonnet (质量更高): <strong>$4,500/月</strong> — <strong>DBRX 节省 80%</strong>.</p>
+
+  <h2>10. D+10 实战选择 (Javis 视角)</h2>
+
+  <h3>当前: Data Analyst @ Payoneer (BigQuery)</h3>
+  <p><strong>Week 1 path</strong> (最低 priority):</p>
+  <ul>
+    <li>Databricks SQL + AI/BI Dashboards + Alerts (= Data Analyst 组合)</li>
+    <li>评估 Databricks SQL vs BigQuery 性能 + cost</li>
+  </ul>
+
+  <h3>D+10 target: Data Scientist</h3>
+  <p><strong>Week 2-3 path</strong>:</p>
+  <ul>
+    <li>MLflow 3 + Model Registry + Model Serving + Feature Store</li>
+    <li>选 1 个跨境支付 fraud detection 实战项目</li>
+  </ul>
+
+  <h3>D+10 interest: AI Agent Engineer</h3>
+  <p><strong>Week 4-5 path</strong>:</p>
+  <ul>
+    <li>Mosaic AI Foundation Models + Vector Search + Custom Agents + Agent Evaluation</li>
+    <li>选 1 个 RAG / agent 跨境支付场景</li>
+  </ul>
+
+  <h3>共用基础设施 (任何时候)</h3>
+  <ul>
+    <li>Notebooks + Unity Catalog + Git folders + Lakeflow Jobs</li>
+  </ul>
+
+  <p><strong>总 D+10 实战周期</strong>: 4-5 周 → 完整覆盖 12+ 服务.</p>
+
+  <h2>11. 5 大实战踩坑 (D+14 8-15 实证)</h2>
+
+  <ol>
+    <li><strong>Chrome MCP navigation timeout</strong> — Databricks docs 经常 timeout. fallback: <code>curl + Python HTMLParser</code>.</li>
+    <li><strong>Databricks docs URL 经常 redirect</strong> — SPA 路由. /agents/ + /ai-search/ 是 2026 新路径.</li>
+    <li><strong>Firecrawl 配额耗尽</strong> — web_search / web_extract 用不了. fallback: curl + Python HTMLParser.</li>
+    <li><strong>Serverless SQL ≠ Classic cluster</strong> — 不要选错. 你需要的是 Serverless SQL warehouse 不是 Classic cluster.</li>
+    <li><strong>MLflow 3 Logged Models 概念没替代品</strong> — 必须用. 别退回 mlflow.log_model() 上古.</li>
+  </ol>
+
+  <h2>12. 完整 5 篇笔记 + 8-15 Vault Cross-references</h2>
+
+  <p>本文是 5 篇 D+14 8-15 教程的<strong>综合索引</strong>. 完整 step-by-step 教程请看:</p>
+
+  <ul>
+    <li><strong>01 - Data Access Services</strong> (50 KB / 1321 行) — Databricks SQL + AI/BI Dashboards + Metric Views + Alerts</li>
+    <li><strong>02 - ML Lifecycle Services</strong> (82 KB / 2055 行) — MLflow 3 + Model Registry + Model Serving + Feature Store + AutoML</li>
+    <li><strong>03 - AI Agent Services</strong> (40 KB / 1141 行) — Mosaic AI Foundation Models + Vector Search + Custom Agents + Prompt Mgmt + Agent Eval</li>
+    <li><strong>04 - Common Services</strong> (105 KB / 2905 行) — Notebooks + Unity Catalog + Git folders + Lakeflow Jobs</li>
+    <li><strong>00 - Index + 12 Services Quick Reference</strong> (11 KB) — 速查表 + 4 大类组合</li>
+  </ul>
+
+  <p>合计 <strong>295 KB / 7422 行</strong>.</p>
+
+  <h2>13. 参考资源</h2>
+
+  <h3>官方文档 (2026-08-05 最新)</h3>
+  <ul>
+    <li><a href="https://docs.databricks.com/aws/en/sql">Databricks SQL</a> · 2026-07-17</li>
+    <li><a href="https://docs.databricks.com/aws/en/mlflow">MLflow on Databricks</a> · 2026-08-05</li>
+    <li><a href="https://docs.databricks.com/aws/en/generative-ai/foundation-model-apis">Foundation Model APIs</a> · 2026-07-28</li>
+    <li><a href="https://docs.databricks.com/aws/en/ai-search/ai-search">AI Search (formerly Vector Search)</a> · 2026-07-28</li>
+    <li><a href="https://docs.databricks.com/aws/en/agents">Agents Overview</a> · 2026-08-03</li>
+    <li><a href="https://docs.databricks.com/aws/en/agents/custom-agents/build-agents">Custom Agents</a> · 2026-08-03</li>
+    <li><a href="https://docs.databricks.com/aws/en/notebooks">Databricks Notebooks</a> · 2026-06-16</li>
+    <li><a href="https://docs.databricks.com/aws/en/repos">Repos (now Git folders)</a> · 2026-03-11</li>
+    <li><a href="https://docs.databricks.com/aws/en/jobs">Jobs (now Lakeflow Jobs)</a> · 2026-07-10</li>
+  </ul>
+
+  <h3>你 Vault 里的相关</h3>
+  <ul>
+    <li><a href="#">Databricks Spark Architecture + Deployment</a> · 集群部署</li>
+    <li><a href="#">Databricks vs Snowflake vs BigQuery Comparison</a> · 3 家对比</li>
+    <li><a href="#">Databricks for Data Scientists and Analysts</a> · 12+ 服务 overview</li>
+  </ul>
+
+  <hr>
+
+  <div class="insight">
+    <div class="insight-title">最后的话 (写给 Javis)</div>
+    <p>这篇文档不是 vendor "feature list" — 是 <strong>4 个 subagent 协作 + 1 篇手写 backup 的实战结果</strong>。每个服务都包含 "部署时间 / 难度 / 踩坑 / 实战 code" — 这是 8-14 笔记没讲的 "时间 + 难度 + 步骤" 维度。</p>
+    <p>你的 D+10 决策: <strong>主用 BigQuery (Payoneer) + 试点 Databricks (new project) + 学 Snowflake (面试 prep)</strong>。不要 vendor-switch 浪费现金流。</p>
+    <p>如果你想在 D+30 之前<strong>实际跑通一个跨境支付 RAG + Agent demo</strong>，按 §7 完整代码 + §9 cost 估算 (~$1,000/月) — 1 个工作日。</p>
+    <p style="margin-top: 12px;">—— Hermes Agent</p>
+  </div>
+
+  </div>
+
+</article>
+
+<footer>
+  <p><em>Notes from a mediocre idealist</em></p>
+  <p>© 2026 Javis · hermes-notes.pages.dev</p>
+</footer>
+
+</body>
+</html>
