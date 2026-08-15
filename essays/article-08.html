@@ -5,242 +5,202 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>当 Google BigQuery 遇上 Microsoft OneLake：跨云数据湖的三条路径</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=SF+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <style>    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #ffffff;
-      --bg-soft: #f5f5f7;
-      --ink: #1d1d1f;
-      --ink-2: #424245;
-      --ink-3: #6e6e73;
-      --ink-4: #86868b;
+      --bg: #faf8f2;
+      --bg-1: #fff4e0;
+      --bg-2: #f4e4d4;
+      --surface: rgba(255, 251, 244, 0.7);
+      --text: #1a1814;
+      --text-muted: #6a5f52;
+      --text-dim: #9a8e7e;
+      --border: rgba(26, 24, 20, 0.08);
+      --border-strong: rgba(26, 24, 20, 0.16);
       --accent: #b45837;
-      --accent-tint: rgba(180, 88, 55, 0.08);
-      --accent-deep: #9c4a2c;
-      --rule: #d2d2d7;
-      --rule-soft: #e5e5ea;
+      --accent-hover: #9c4a2c;
     }
     html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display',
-                   'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-      font-size: 17px; line-height: 1.6;
-      color: var(--ink);
-      background: var(--bg-soft);
+      font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                   'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--bg);
+      background-image:
+        radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+        radial-gradient(at 80% 20%, var(--bg-2) 0%, transparent 60%);
+      background-attachment: fixed;
+      font-size: 17px;
       -webkit-font-smoothing: antialiased;
-      font-feature-settings: 'kern' 1, 'liga' 1;
-      padding: 0 0 80px;
+      text-rendering: optimizeLegibility;
     }
     .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-
-    /* ===== NAV (Apple minimum) ===== */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid var(--rule-soft);
-    }
-    .nav-inner {
-      max-width: 1080px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 24px;
-    }
-    .nav-brand {
-      font-size: 17px; font-weight: 600; color: var(--ink);
-      text-decoration: none; letter-spacing: -0.01em;
-    }
+    nav { position: sticky; top: 0; z-index: 100; background: var(--surface);
+      backdrop-filter: blur(16px) saturate(150%); border-bottom: 1px solid var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between;
+      height: 56px; max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    .nav-brand { font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+      font-size: 22px; font-weight: 500; font-style: italic;
+      color: var(--text); text-decoration: none; }
     .nav-links { display: flex; gap: 28px; list-style: none; }
-    .nav-links a {
-      font-size: 14px; color: var(--ink-2);
-      text-decoration: none; transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--accent); }
-    .nav-cta {
-      color: var(--accent) !important;
-      font-weight: 500 !important;
-    }
-
-    /* ===== ARTICLE LAYOUT ===== */
-    article {
-      max-width: 720px; margin: 0 auto;
-      padding: 64px 24px 0;
-    }
-    .back-link {
-      display: inline-block; font-size: 13px; color: var(--ink-3);
-      text-decoration: none; margin-bottom: 32px;
-      transition: color 0.2s;
-    }
+    .nav-links a { font-size: 14px; color: var(--text); text-decoration: none; opacity: 0.7; }
+    .nav-links a:hover { opacity: 1; color: var(--accent); }
+    .nav-cta { color: var(--accent) !important; font-weight: 500 !important; opacity: 1 !important; }
+    article { max-width: 720px; margin: 0 auto; padding: 80px 24px 80px; }
+    .back-link { display: inline-block; font-size: 14px; color: var(--text-muted);
+      text-decoration: none; margin-bottom: 32px; }
     .back-link::before { content: "← "; }
     .back-link:hover { color: var(--accent); }
-    .article-tag {
-      font-size: 11px; font-weight: 600; color: var(--accent);
-      letter-spacing: 0.08em; text-transform: uppercase;
-      margin-bottom: 12px;
-    }
+    .article-tag { font-size: 12px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px; }
     h1 {
-      font-size: 44px; font-weight: 700; line-height: 1.1;
-      letter-spacing: -0.025em; color: var(--ink);
-      margin-bottom: 16px;
+      font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+      font-size: 40px; font-weight: 400; line-height: 1.15;
+      letter-spacing: -0.02em; color: var(--text); margin-bottom: 20px;
     }
-    .article-meta {
-      font-size: 14px; color: var(--ink-3);
-      margin-bottom: 24px;
-      letter-spacing: 0;
-    }
+    .article-meta { font-size: 14px; color: var(--text-dim); margin-bottom: 32px; }
     .article-meta span { margin-right: 16px; }
-    .article-meta span:last-child { margin-right: 0; }
-    .article-cover {
-      width: 100%; aspect-ratio: 16/9;
-      object-fit: cover; border-radius: 12px;
-      margin-bottom: 32px;
-    }
-
-    /* ===== AUDIO BLOCK ===== */
-    .audio-block {
-      background: var(--bg);
-      border: 1px solid var(--rule-soft);
-      border-radius: 12px;
-      padding: 16px 20px;
-      margin: 28px 0 36px;
-    }
-    .audio-block .label {
-      font-size: 11px; font-weight: 600; color: var(--accent);
-      letter-spacing: 0.08em; text-transform: uppercase;
-      margin-bottom: 8px;
-    }
+    .article-cover { width: 100%; aspect-ratio: 3/4; object-fit: cover;
+      border-radius: 14px; margin-bottom: 36px;
+      box-shadow: 0 8px 32px rgba(180, 88, 55, 0.08); }
+    .audio-block { background: var(--surface);
+      backdrop-filter: blur(16px) saturate(150%);
+      border: 1px solid var(--border); border-radius: 14px;
+      padding: 20px 24px; margin: 36px 0;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                  0 8px 32px rgba(180, 88, 55, 0.06); }
+    .audio-block .label { font-size: 12px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
     .audio-block audio { width: 100%; height: 36px; }
-
-    /* ===== CONTENT ===== */
-    .content {
-      font-size: 17px; line-height: 1.7;
-      color: var(--ink);
-    }
+    .content { font-size: 18px; line-height: 1.75; color: var(--text); }
     .content h2 {
-      font-size: 26px; font-weight: 700; line-height: 1.2;
-      letter-spacing: -0.02em; color: var(--ink);
-      margin: 56px 0 16px;
+      font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+      font-size: 28px; font-weight: 500; line-height: 1.2;
+      letter-spacing: -0.01em; margin: 48px 0 16px;
+      padding-top: 16px; border-top: 1px solid var(--border);
     }
-    .content h2:first-child { margin-top: 0; }
+    .content h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
     .content h3 {
-      font-size: 19px; font-weight: 600; line-height: 1.3;
-      color: var(--ink);
-      margin: 36px 0 10px;
-      letter-spacing: -0.01em;
+      font-family: 'PP Editorial New', 'Lyon Text', Georgia, serif;
+      font-size: 22px; font-weight: 500; line-height: 1.25;
+      margin: 36px 0 10px; letter-spacing: -0.01em;
     }
     .content p { margin-bottom: 18px; }
-    .content strong { color: var(--ink); font-weight: 600; }
-    .content em { font-style: italic; color: var(--ink-2); }
+    .content strong { font-weight: 600; color: var(--text); }
+    .content em { font-style: italic; color: var(--accent); }
     .content code {
-      background: var(--bg-soft);
-      padding: 2px 6px; border-radius: 4px;
+      background: var(--surface); padding: 2px 6px;
+      border-radius: 4px; font-size: 0.9em;
       font-family: 'SF Mono', Monaco, Consolas, monospace;
-      font-size: 14px;
+    }
+    .content pre {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 22px;
+      overflow-x: auto; margin: 24px 0;
+      font-size: 14px; line-height: 1.6;
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
     }
     .content blockquote {
-      border-left: 3px solid var(--accent);
+      border-left: 2px solid var(--accent);
       padding: 4px 0 4px 20px;
-      margin: 28px 0;
-      color: var(--ink-2);
-      font-style: italic;
+      margin: 32px 0;
+      color: var(--text-muted);
+      font-family: 'PP Editorial New', Georgia, serif;
+      font-style: italic; font-size: 19px;
     }
-    .content ul, .content ol { margin: 0 0 20px 24px; }
+    .content ul, .content ol { margin: 0 0 22px 24px; }
     .content li { margin-bottom: 8px; }
-    .content table {
-      width: 100%; border-collapse: collapse;
-      margin: 28px 0; font-size: 15px;
-    }
-    .content th, .content td {
-      padding: 12px 14px; text-align: left;
-      border-bottom: 1px solid var(--rule-soft);
-    }
-    .content th {
-      font-weight: 600; background: var(--bg-soft);
-      color: var(--ink);
-    }
-
-    /* ===== DIAGRAM (Apple minimum style + Diagram Design editorial) ===== */
+    .content table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 15px; }
+    .content th, .content td { padding: 12px 14px; text-align: left;
+      border-bottom: 1px solid var(--border); }
+    .content th { font-weight: 600; background: var(--surface); }
     .diagram-frame {
-      background: var(--bg);
-      border: 1px solid var(--rule-soft);
-      border-radius: 12px;
-      padding: 24px;
-      margin: 36px 0 12px;
-      box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+      background: var(--bg) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 12px !important;
+      padding: 24px 28px;
+      margin: 36px 0 12px !important;
+      box-shadow: 0 1px 0 rgba(26, 24, 20, 0.02);
     }
     .diagram-eyebrow {
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--accent); margin-bottom: 4px;
     }
     .diagram-title {
-      font-size: 18px; font-weight: 600; color: var(--ink);
+      font-family: 'PP Editorial New', Georgia, serif;
+      font-size: 19px; font-weight: 500; color: var(--text);
       margin-bottom: 18px; letter-spacing: -0.01em;
     }
-    .diagram-grid {
-      display: grid;
-      gap: 12px;
-    }
+    .diagram-grid { display: grid; gap: 12px; }
     .diagram-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
     .diagram-grid.cols-2 { grid-template-columns: 1fr 1fr; }
     .diagram-node {
-      background: var(--bg-soft);
-      border: 1px solid var(--rule);
+      background: var(--bg) !important;
+      border: 1px solid var(--border) !important;
       border-radius: 8px;
       padding: 14px 16px;
     }
     .diagram-node.focal {
-      background: var(--accent-tint);
-      border: 1.5px solid var(--accent);
+      background: var(--surface) !important;
+      border: 1.5px solid var(--accent) !important;
       border-radius: 8px;
+      backdrop-filter: blur(8px);
     }
     .diagram-node .tag {
       display: inline-block;
-      font-size: 9px; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--ink-4);
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 9px; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-muted);
       padding: 2px 6px; border-radius: 2px;
-      background: rgba(0,0,0,0.04);
+      background: var(--surface);
+      border: 1px solid var(--border);
       margin-bottom: 8px;
     }
     .diagram-node.focal .tag {
       color: var(--accent);
-      background: rgba(180, 88, 55, 0.10);
+      background: var(--bg);
+      border-color: var(--border);
     }
     .diagram-node .name {
-      font-size: 14px; font-weight: 600;
-      color: var(--ink); margin-bottom: 4px;
+      font-family: 'PP Editorial New', Georgia, serif;
+      font-size: 15px; font-weight: 500;
+      color: var(--text); margin-bottom: 4px;
+      letter-spacing: -0.01em;
     }
     .diagram-node .meta {
-      font-size: 11px; color: var(--ink-3);
       font-family: 'SF Mono', Monaco, monospace;
+      font-size: 11px; color: var(--text-muted);
       line-height: 1.5;
     }
     .diagram-flow {
-      background: var(--bg-soft);
+      background: var(--surface);
+      backdrop-filter: blur(8px);
       padding: 18px 20px;
       border-radius: 8px;
-      font-size: 14px; color: var(--ink-2);
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 13px; color: var(--text);
       text-align: center;
       margin: 12px 0;
       border-left: 3px solid var(--accent);
     }
-    .diagram-flow strong { color: var(--ink); font-weight: 600; }
+    .diagram-flow strong { color: var(--accent); font-weight: 600; }
     figcaption {
-      font-size: 13px; color: var(--ink-3);
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 12px; color: var(--text-muted);
       margin: 8px 0 28px;
       padding-left: 10px;
       border-left: 2px solid var(--accent);
       line-height: 1.6;
     }
     figcaption strong {
-      color: var(--ink); font-weight: 600;
+      color: var(--accent); font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       font-size: 11px;
     }
-
-    /* ===== MOBILE ===== */
     @media (max-width: 760px) {
       body { padding-bottom: 60px; }
       article { padding: 40px 16px 0; }
@@ -249,7 +209,7 @@
       .diagram-grid.cols-3 { grid-template-columns: 1fr; }
       .diagram-grid.cols-2 { grid-template-columns: 1fr; }
     }
-  </style>
+</style>
 </head>
 <body>
 
