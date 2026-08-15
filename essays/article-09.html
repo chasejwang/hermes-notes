@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Power BI DirectLake × Power Apps/Automate：当数据可以自己动手</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -216,20 +217,56 @@
 
     <h3>2.1 Power BI 三种数据模式的对比</h3>
 
-<pre><code>┌────────────────────────────────────────────────────────────────────┐
-│                                                                    │
-│   Import Mode              DirectQuery            DirectLake       │
-│   ──────────               ────────────           ───────────      │
-│                                                                    │
-│   OneLake ──── ETL ────▶   Power BI               Power BI        │
-│                            Vertipaq               ────────────────▶│
-│   特点：                    特点：                  直接读 Delta   │
-│   • 性能最佳               • 数据实时              特点：          │
-│   • T+1 刷新               • 性能最差              • 性能≈ Import │
-│   • 占用内存大             • 查询压数据库          • 新鲜度秒级    │
-│   • 适合报表               • 适合实时仪表盘        • 适合决策驾驶舱│
-│                                                                    │
-└────────────────────────────────────────────────────────────────────┘</code></pre>
+<figure>
+      <div class="diagram-frame">
+        <svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="dax-compare-title dax-compare-desc">
+          <title id="dax-compare-title">Power BI three data modes: Import vs DirectQuery vs DirectLake</title>
+          <desc id="dax-compare-desc">Three-column comparison of Power BI data modes. Import mode copies data into Vertipaq in-memory store (T+1 refresh). DirectQuery pushes queries to source database (real-time). DirectLake reads Delta/Parquet directly from OneLake (sec-level freshness without import).</desc>
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/>
+            </marker>
+          </defs>
+          <rect width="100%" height="100%" fill="#f5f5f5"/>
+          <g transform="translate(40, 80)">
+            <rect width="200" height="180" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+            <rect x="48" y="86" width="40" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+            <text x="68" y="95" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">IMPORT</text>
+            <text x="100" y="124" fill="#2d3142" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Import Mode</text>
+            <text x="100" y="140" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">OneLake → ETL → Vertipaq</text>
+            <text x="100" y="160" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 性能最佳</text>
+            <text x="100" y="174" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• T+1 刷新</text>
+            <text x="100" y="188" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 占用内存大</text>
+            <text x="100" y="202" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 适合报表</text>
+          </g>
+          <g transform="translate(280, 80)">
+            <rect width="200" height="180" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+            <rect x="288" y="86" width="60" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+            <text x="318" y="95" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DIRECTQUERY</text>
+            <text x="340" y="124" fill="#2d3142" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">DirectQuery</text>
+            <text x="340" y="140" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Power BI → DB → result</text>
+            <text x="340" y="160" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 数据实时</text>
+            <text x="340" y="174" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 性能最差</text>
+            <text x="340" y="188" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 查询压数据库</text>
+            <text x="340" y="202" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 实时仪表盘</text>
+          </g>
+          <g transform="translate(520, 80)">
+            <rect width="200" height="180" rx="6" fill="#eb6c36" fill-opacity="0.10" stroke="#eb6c36" stroke-width="1.5"/>
+            <rect x="528" y="86" width="56" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.6)" stroke-width="0.8"/>
+            <text x="556" y="95" fill="#b8552a" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">FOCAL</text>
+            <text x="620" y="124" fill="#2d3142" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">DirectLake</text>
+            <text x="620" y="140" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Power BI ← Delta file</text>
+            <text x="620" y="160" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 性能 ≈ Import</text>
+            <text x="620" y="174" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 新鲜度秒级</text>
+            <text x="620" y="188" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 不 import data</text>
+            <text x="620" y="202" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 决策驾驶舱</text>
+          </g>
+          <text x="380" y="32" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">POWER BI · THREE DATA MODES</text>
+          <text x="380" y="304" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">DIRECTLAKE = IMPORT PERFORMANCE + DIRECTQUERY FRESHNESS</text>
+        </svg>
+      </div>
+      <figcaption><strong>图 1</strong> · Power BI 三种数据模式对比。Import 性能最佳但 T+1；DirectQuery 实时但性能差；DirectLake = Import 性能 + DirectQuery 新鲜度。珊瑚色节点 = focal: DirectLake。</figcaption>
+    </figure>
 
     <p><strong>DirectLake = Import 的性能 + DirectQuery 的新鲜度。</strong></p>
 
@@ -274,21 +311,77 @@ IT 改系统报价（1-2 天）
 
     <h3>3.2 方案</h3>
 
-<pre><code>┌──────────────────────────────────────────────────────────────┐
-│                                                              │
-│   Power Apps Canvas         Power Automate                   │
-│   (BP 移动端)               (审批流)                          │
-│   ────────────              ────────────                     │
-│   ┌──────────┐   提交   ┌─────────────────────────────┐     │
-│   │ 表单：    │ ───────▶ │ 1. 写 OneLake 调价申请表     │     │
-│   │ • 产品    │          │ 2. Teams Card 通知主管        │     │
-│   │ • 客户    │          │ 3. 主管 Adaptive Card 审批   │     │
-│   │ • 新价格  │          │ 4. 批准 → 调用 BigQuery 更新 │     │
-│   │ • 原因    │          │ 5. 通知 BP：调价已生效        │     │
-│   │ • 影响    │          │ 6. 触发 Power BI Alert        │     │
-│   └──────────┘          └─────────────────────────────┘     │
-│                                                              │
-└──────────────────────────────────────────────────────────────┘</code></pre>
+<figure>
+      <div class="diagram-frame">
+        <svg viewBox="0 0 880 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="price-copilot-process-title price-copilot-process-desc">
+          <title id="price-copilot-process-title">Price Copilot: Power Apps canvas form to Power Automate approval flow</title>
+          <desc id="price-copilot-process-desc">Process flow from field sales rep filling a canvas Power Apps form to Power Automate triggering OneLake write, Teams approval card, BigQuery update, and Power BI alert. Six sequential steps with bidirectional handoff.</desc>
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/>
+            </marker>
+            <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/>
+            </marker>
+          </defs>
+          <rect width="100%" height="100%" fill="#f5f5f5"/>
+          <text x="440" y="32" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">PRICE COPILOT · BP 调价审批流程</text>
+          <g transform="translate(40, 80)">
+            <rect width="180" height="220" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+            <rect x="48" y="86" width="48" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+            <text x="72" y="95" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">STEP 1</text>
+            <text x="130" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Power Apps</text>
+            <text x="130" y="138" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Canvas Form</text>
+            <text x="130" y="156" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">BP mobile · 移动端</text>
+            <text x="130" y="180" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">表单字段:</text>
+            <text x="130" y="196" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 产品</text>
+            <text x="130" y="210" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 客户 + 新价格</text>
+            <text x="130" y="224" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">• 原因 + 影响</text>
+            <text x="130" y="244" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">→ 提交</text>
+          </g>
+          <g transform="translate(280, 80)">
+            <rect width="280" height="220" rx="6" fill="#eb6c36" fill-opacity="0.10" stroke="#eb6c36" stroke-width="1.5"/>
+            <rect x="288" y="86" width="48" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.6)" stroke-width="0.8"/>
+            <text x="312" y="95" fill="#b8552a" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">FOCAL</text>
+            <text x="420" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Power Automate</text>
+            <text x="420" y="138" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">审批流</text>
+            <text x="420" y="158" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">pa-price-change-001</text>
+            <text x="420" y="180" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">1. 写 OneLake 调价申请表</text>
+            <text x="420" y="194" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">2. Teams Card 通知主管</text>
+            <text x="420" y="208" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">3. Adaptive Card 审批</text>
+            <text x="420" y="222" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">4. 批准 → BigQuery 更新</text>
+            <text x="420" y="236" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">5. 通知 BP：调价已生效</text>
+            <text x="420" y="250" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">6. 触发 Power BI Alert</text>
+          </g>
+          <g transform="translate(620, 80)">
+            <rect width="220" height="100" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+            <rect x="628" y="86" width="48" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+            <text x="652" y="95" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DELTA</text>
+            <text x="730" y="124" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">OneLake</text>
+            <text x="730" y="140" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">pricing_audit_log</text>
+            <text x="730" y="160" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Delta table · append-only</text>
+          </g>
+          <g transform="translate(620, 200)">
+            <rect width="220" height="100" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+            <rect x="628" y="206" width="36" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+            <text x="646" y="215" fill="rgba(45,49,66,0.8)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">BI</text>
+            <text x="730" y="244" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Power BI Alert</text>
+            <text x="730" y="260" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">data refresh alert</text>
+            <text x="730" y="280" fill="#7a8399" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">→ BP / 销售主管</text>
+          </g>
+          <path d="M 220 180 L 280 180" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+          <rect x="226" y="170" width="40" height="12" rx="2" fill="#f5f5f5"/>
+          <text x="246" y="179" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SUBMIT</text>
+          <path d="M 560 130 L 620 130" fill="none" stroke="#eb6c36" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+          <rect x="535" y="120" width="76" height="12" rx="2" fill="#f5f5f5"/>
+          <text x="573" y="129" fill="#b8552a" font-size="8" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">DELTA WRITE</text>
+          <path d="M 560 250 L 620 250" fill="none" stroke="#eb6c36" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow-accent)"/>
+          <rect x="538" y="240" width="76" height="12" rx="2" fill="#f5f5f5"/>
+          <text x="576" y="249" fill="#b8552a" font-size="8" font-weight="600" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">TRIGGER</text>
+        </svg>
+      </div>
+      <figcaption><strong>图 2</strong> · Price Copilot 调价审批流程。Power Apps Canvas 表单 → Power Automate 6 步审批 → OneLake Delta 写 → Power BI Alert。珊瑚色节点 = focal: Power Automate。</figcaption>
+    </figure>
 
     <h3>3.3 关键技术点</h3>
 
