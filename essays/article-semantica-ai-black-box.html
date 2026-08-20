@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 决策需要黑匣子：为什么 Semantica 是开源的 Palantir</title>
+<meta name="description" content="Open Source Palantir for AI Agents — Semantica 给大模型决策装上飞行记录仪和推理法庭,让企业 AI 审计可追溯、可解释、可合规。">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f2;
+    --bg-1: #fff4e0;
+    --bg-2: #f4e4d4;
+    --surface: rgba(255, 251, 244, 0.7);
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --border: rgba(26, 24, 20, 0.08);
+    --accent: #b45837;
+    --accent-2: #2e6da4;
+    --code-bg: #1a1a2e;
+    --code-fg: #fafaf5;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Söhne', 'Inter', -apple-system, BlinkMacSystemFont,
+                 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--text);
+    margin: 0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 30% 0%, var(--bg-1) 0%, transparent 50%),
+      radial-gradient(at 70% 100%, var(--bg-2) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  /* Editorial serif for headings */
+  .article h1, .content h2, .content h3 {
+    font-family: 'PP Editorial New', 'Lyon Text', 'Newsreader', Georgia, serif;
+  }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 16px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .nav-brand {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-size: 20px; color: var(--text); text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 24px; list-style: none; padding: 0; margin: 0; }
+  .nav-links a { color: var(--text); text-decoration: none; font-size: 14px; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* Article container */
+  .article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+  .back-link {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+  }
+  .back-link:hover { color: var(--accent); }
+  .article-tag {
+    font-family: 'Söhne', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .article h1 {
+    font-size: 44px;
+    line-height: 1.15;
+    font-weight: 400;
+    margin: 0 0 16px;
+    color: var(--text);
+  }
+  .article-meta {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 32px;
+    font-family: 'Söhne', sans-serif;
+  }
+  .article-cover {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 14px;
+    margin-bottom: 40px;
+    box-shadow: 0 12px 32px rgba(180, 88, 55, 0.08);
+    background: white;
+    display: block;
+  }
+
+  /* Lede */
+  .lede {
+    font-family: 'PP Editorial New', Georgia, serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--text-muted);
+    border-left: 3px solid var(--accent);
+    padding: 8px 0 8px 24px;
+    margin: 0 0 48px;
+    line-height: 1.5;
+  }
+  .lede strong { color: var(--text); font-weight: 500; font-style: normal; }
+
+  /* Content */
+  .content h2 {
+    font-size: 28px;
+    font-weight: 500;
+    margin: 56px 0 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .content h3 {
+    font-size: 22px;
+    font-weight: 500;
+    margin: 32px 0 12px;
+  }
+  .content h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--text);
+  }
+  .content p { margin: 0 0 20px; }
+  .content strong { color: var(--text); font-weight: 600; }
+  .content em { color: var(--text-muted); }
+  .content a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(180, 88, 55, 0.3);
+  }
+  .content a:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  /* Lists */
+  .content ul, .content ol { margin: 0 0 20px; padding-left: 24px; }
+  .content li { margin-bottom: 8px; }
+  .content li::marker { color: var(--accent); }
+
+  /* Inline code */
+  .content code {
+    font-family: 'Geist Mono', 'SF Mono', 'Menlo', monospace;
+    font-size: 0.88em;
+    background: rgba(180, 88, 55, 0.08);
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* Code blocks */
+  .content pre {
+    font-family: 'Geist Mono', 'SF Mono', monospace;
+    font-size: 14px;
+    line-height: 1.55;
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 20px 24px;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin: 24px 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .content pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+  /* Subtle syntax highlight (matches Apple-cream palette) */
+  .content pre .k { color: #ff9a7a; }            /* keyword */
+  .content pre .s { color: #b8d4a0; }            /* string */
+  .content pre .c { color: #6a7088; font-style: italic; } /* comment */
+  .content pre .n { color: #d4a8e0; }            /* number */
+  .content pre .v { color: #fafaf5; }            /* variable */
+  .content pre .p { color: #888; }              /* punctuation */
+
+  /* Insight box */
+  .insight {
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 0 8px 8px 0;
+    backdrop-filter: blur(8px);
+  }
+  .insight strong {
+    color: var(--accent);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .insight p { margin: 0; color: var(--text); }
+
+  /* Warn box */
+  .warn-box {
+    background: rgba(180, 88, 55, 0.06);
+    border-left: 4px solid var(--accent-2);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .warn-box strong {
+    color: var(--accent-2);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .warn-box p { margin: 0; }
+
+  /* Summary box */
+  .summary-box {
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 20px 24px;
+    margin: 32px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .summary-box h4 {
+    margin: 0 0 12px;
+    color: var(--accent);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .summary-box ul { margin: 0; padding-left: 20px; }
+  .summary-box li { margin-bottom: 6px; }
+
+  /* Tables */
+  .content table {
+    width: 100% !important;
+    max-width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .content table th {
+    background: var(--surface);
+    color: var(--text);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid var(--accent);
+  }
+  .content table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .content table tr:last-child td { border-bottom: 0; }
+  .content table tr:nth-child(even) td { background: rgba(255, 244, 224, 0.3); }
+
+  /* Blockquote */
+  .content blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 8px 0 8px 20px;
+    margin: 24px 0;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* Section number badge */
+  .section-num {
+    display: inline-block;
+    font-family: 'Geist Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-right: 8px;
+  }
+
+  /* Footer */
+  footer {
+    max-width: 720px;
+    margin: 80px auto 40px;
+    padding: 24px 20px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 14px;
+    border-top: 1px solid var(--border);
+  }
+  footer p { margin: 4px 0; }
+  footer em { font-style: italic; }
+
+  /* === OVERFLOW FIX v2 (mandatory) === */
+  .content table, .data-table, table.data-table {
+    width: 100% !important;
+    max-width: 100%;
+    table-layout: fixed;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .content table th, .content table td, .data-table th, .data-table td {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .content > table, .content > .data-table,
+  .article > table, .article > .data-table {
+    display: block;
+    overflow-x: auto;
+  }
+  .content pre, pre {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre;
+    box-sizing: border-box;
+  }
+  .content pre code, pre code {
+    white-space: pre;
+    word-break: normal;
+  }
+  .content p code, .content li code, .content td code {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .content img, .content svg, .content figure,
+  .article img, .article svg, .article figure {
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-brand">a few quiet things</a>
+    <ul class="nav-links">
+      <li><a href="../index.html#essays">Essays</a></li>
+      <li><a href="../index.html#about">About</a></li>
+    </ul>
+  </div>
+</nav>
+
+<article class="article" data-tags="essay,ai-governance,semantica,provenance,decision-intelligence,2026">
+  <a href="../index.html" class="back-link">← Back to essays</a>
+  <div class="article-tag">Essay · AI Governance · Open Source</div>
+  <h1>AI 决策需要黑匣子：<br>为什么 Semantica 是开源的 Palantir</h1>
+  <div class="article-meta">2026-08-20 · 18 min read · 对企业 AI 审计、监管合规、决策追溯感兴趣的人</div>
+
+  <img class="article-cover" src="../images/article-semantica-cover.svg" alt="AI 决策可追溯架构 — Semantica 黑匣子示意图" />
+
+  <div class="lede">
+    <strong>给 AI 决策装上飞行记录仪。</strong> 当 LLM 开始替企业做决策 —— 审批贷款、拒绝申请、推荐用药 —— 没有人能解释"为什么"的那一刻，监管、用户和公司本身就已经输了一半。Semantica 是 9,500 颗星的开源项目，它把每一个 AI 决策记录成可追溯、可审计、符合 W3C PROV-O 标准的图节点，让事后 3 个月还能完整回放。
+  </div>
+
+  <div class="content">
+
+    <h2><span class="section-num">0.</span>30 秒结论</h2>
+
+    <p>如果只看一句话：<em>Semantica 是 AI 决策的"黑匣子 + 法官"。</em>它不替你做决策，那是 LLM 的活；它给每一次决策装上飞行记录仪、给每一次推理装上逻辑链条，让企业能在监管问"为什么"的时候，能用 W3C PROV-O 标准的图证据回答。</p>
+
+    <p>如果你正在做下面任何一件事，这篇文章值得读到最后：</p>
+
+    <ul>
+      <li>在金融、医疗、法律、政府场景部署 LLM agent，需要事后能解释决策</li>
+      <li>运营多 agent 系统（如 TradingAgents 类），需要审计每一笔决策的因果链</li>
+      <li>考虑过 Snowflake Cortex / Databricks Genie / Vanna AI，但发现它们都不解决"为什么"问题</li>
+      <li>对企业 AI 治理框架（EU AI Act、中国《生成式 AI 服务管理办法》）的合规要求感到焦虑</li>
+    </ul>
+
+    <div class="insight">
+      <strong>核心论断</strong>
+      <p>"AI 能做决策"在 2024 年已经解决；"AI 决策可被审计"在 2026 年才是真问题。Semantica 是这个问题的开源答案。</p>
+    </div>
+
+    <h2><span class="section-num">1.</span>商业痛点：为什么"决策审计"突然重要了</h2>
+
+    <h3>1.1 三个真实场景的恐惧</h3>
+
+    <p>想象三个场景：</p>
+
+    <p><strong>场景 A —— 消费金融</strong>。你的 AI 风控模型每天拒掉 1,000 笔贷款。其中 100 个用户申诉"凭什么拒我？"监管问"你的拒贷标准一致吗？有没有歧视？"—— 你翻出模型权重，发现里面是 1.2 亿个参数，谁也解释不清楚为什么这个人被拒、那个人通过。</p>
+
+    <p><strong>场景 B —— 辅助医疗诊断</strong>。AI 给出"建议复查肺结节"的结论。患者家属问"为什么是结节不是炎症？"医生说"AI 说的"。3 个月后误诊了，谁负责？</p>
+
+    <p><strong>场景 C —— 内容平台</strong>。AI 自动删了 10 万条 / 天的违规内容。商家申诉"我内容没违规凭什么删？"客服翻不出当时 AI 的 reasoning，因为 LLM 调用完上下文就丢了。</p>
+
+    <p>三个场景的共同点：<strong>决策是不可解释的、不可回放的、不可审计的。</strong>当 AI 决策直接影响人的金钱、健康、言论，事后无法回答"为什么"是不可接受的。</p>
+
+    <h3>1.2 监管驱动 —— EU AI Act 已经生效</h3>
+
+    <p>2024 年 8 月，<em>EU AI Act</em> 正式生效，对"高风险 AI 系统"（信贷、保险、医疗、招聘、教育、执法等）提出了强制性的"算法可解释、决策可追溯、人工可监督"要求。</p>
+
+    <p>中国紧随其后，《生成式人工智能服务管理暂行办法》（2023）虽然没有直接写"决策审计"，但要求"提供者应当对生成式人工智能服务的使用情况及相关日志数据进行记录和保存"。</p>
+
+    <p>翻译成工程语言：<strong>你需要在每次 LLM 决策时记录"谁（agent）、何时（timestamp）、基于什么（输入数据 + 检索 + 工具调用）、得到什么（输出）、后果（用户反馈）—— 并且这条记录要在 3 个月后还能完整还原。</strong></p>
+
+    <h3>1.3 现有方案的真空</h3>
+
+    <p>WrenAI、Text-to-SQL 工具（Vanna、Snowflake Cortex Analyst、Databricks Genie）解决的是"自然语言查数据"，<strong>不是"AI 决策可审计"</strong>。LangChain、LangGraph 是"搭 agent 工作流"的框架，<strong>不解决决策持久化与审计</strong>。Palantir 商业版做决策治理但年费数十万美元。</p>
+
+    <p>这就是 Semantica 在 2025 年开始火起来的原因 —— 它精准切入"开源 AI 决策治理"这一空白。</p>
+
+    <div class="warn-box">
+      <strong>为什么"日志"不够用</strong>
+      <p>普通日志（log line）只能记录"AI 在 t 时刻调用了 LLM，得到字符串 Y"。它无法回答：(a) 这个决策依赖了哪些历史决策？(b) 推理链条是否成立？(c) 三个月后能不能用同一份证据回放当时的推理？Semantica 把日志升级为"决策图节点 + W3C PROV-O + 哈希链"，本质是给日志加了"DNA 双螺旋"结构。</p>
+    </div>
+
+    <h2><span class="section-num">2.</span>技术解法：Semantica 怎么做到决策可追溯</h2>
+
+    <h3>2.1 一句话架构</h3>
+
+    <p>Semantica 的核心架构可以浓缩成一句话：</p>
+
+    <blockquote>"决策是一等图节点，不是日志行。"</p>
+
+    <p>传统做法把 AI 决策写进日志（text file、log database）。Semantica 把决策写成图（graph node），节点之间通过"因果关系"（causal relationship）链接，整个图能用 SPARQL / Cypher 查询、能导出 W3C PROV-O 标准格式、能做反向追溯。</p>
+
+    <h3>2.2 三个核心技术机制</h3>
+
+    <h4>机制 1：决策是图节点（Decision-as-Node）</h4>
+
+    <p>每次 AI 决策通过 <code>ContextGraph.record_decision()</code> 写入图，节点包含：</p>
+
+<pre><code><span class="p">decision_id</span> = <span class="k">graph</span>.record_decision(
+    category=<span class="s">"loan_denial"</span>,           <span class="c"># 决策类别</span>
+    scenario=<span class="s">"DTI=31%, income=$85k"</span>,  <span class="c"># 当时场景</span>
+    reasoning=<span class="s">"income meets threshold..."</span>, <span class="c"># LLM 输出</span>
+    outcome=<span class="s">"proceed_to_underwriting"</span>,
+    confidence=<span class="n">0.88</span>,                   <span class="c"># 置信度</span>
+    metadata={<span class="s">"applicant_id"</span>: <span class="s">"A-7291"</span>}
+)</code></pre>
+
+    <p>关键设计：这些字段不是 schema-on-read 的自由文本，而是 <code>ProvenanceEntry</code> dataclass，<strong>17 个强类型字段</strong>，覆盖 W3C PROV-O 标准里 Entity / / Agent / Activity / Bundle / Invalidation 全部概念。</p>
+
+    <h4>机制 2：三类封闭因果边（★ 强制语义学）</h4>
+
+    <p>节点之间通过 <code>add_causal_relationship()</code>  链接，<strong>只接受三种标签</strong>：</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 24%">标签</th>
+          <th style="width: 38%">语义</th>
+          <th>适用场景</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>CAUSED</code></td>
+          <td>直接导致（"earnings beat" → "买入 NVDA"）</td>
+          <td>硬因果链</td>
+        </tr>
+        <tr>
+          <td><code>INFLUENCED</code></td>
+          <td>间接影响（"宏观数据" → "买入 NVDA"）</td>
+          <td>软因果链</td>
+        </tr>
+        <tr>
+          <td><code>PRECEDENT_FOR</code></td>
+          <td>作为先例（"2024 类似交易" → "这次决策"）</td>
+          <td>可借鉴的过去</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="insight">
+      <strong>为什么是封闭的？</strong>
+      <p>开放标签会让图查询退化成字符串匹配，效率低且无法推理。Semantica 在源码 <code>context_graph.py:2734</code> 硬编码 whitelist，强制开发者"必须想清楚这是 CAUSED 还是 INFLUENCED"—— 这种"语义学约束"是给图治理带来秩序的关键。</p>
+    </div>
+
+    <h4>机制 3：哈希链防篡改</h4>
+
+    <p>这是 Semantica 最精彩的设计。<code>ProvenanceEntry.checksum</code> 字段是 SHA-256 哈希，<strong>包含了上一条的 checksum</strong>：</p>
+
+<pre><code>checksum_n = sha256(
+    content_n
+    + previous_checksum_(n-1)    <span class="c"># ← 关键</span>
+)</code></pre>
+
+    <p>效果：</p>
+
+    <ul>
+      <li><strong>删除任何一条</strong>：链断了，后续所有 checksum 不匹配</li>
+      <li><strong>修改任何一条</strong>：checksum 变了不匹配</li>
+      <li><strong>在中间插入</strong>：<code>sequence_id</code> 不连续（必须 +1），被检测</li>
+    </ul>
+
+    <p><code>verify_chain()</code> 给出三层独立信号：</p>
+
+<pre><code><span class="k">def</span> <span class="v">verify_chain</span>():
+    <span class="k">for</span> <span class="v">entry</span> <span class="k">in</span> <span class="v">entries</span>:
+        <span class="k">if</span> <span class="k">not</span> <span class="v">verify_checksum</span>(<span class="v">entry</span>):
+            <span class="c"># 信号 1：本行内容被改</span>
+        <span class="k">if</span> <span class="v">entry</span>.<span class="v">sequence_id</span> != <span class="v">expected</span> + <span class="n">1</span>:
+            <span class="c"># 信号 2：有 entry 被删除</span>
+        <span class="k">if</span> <span class="v">entry</span>.<span class="v">previous_checksum</span> != <span class="v">expected_previous</span>:
+            <span class="c"># 信号 3：链断</span></code></pre>
+
+    <p>对比传统 audit log：传统 log 假设"数据库本身不会被攻破"，Semantica <strong>即使数据库被攻破</strong>，也能检测出篡改。</p>
+
+    <h3>2.3 Polyglot 持久层：7 个图存储 + 6 个向量库</h3>
+
+    <p>Semantica 不绑定单一存储：</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 20%">类别</th>
+          <th style="width: 40%">支持的后端</th>
+          <th>何时选</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>RDF 三元组</strong></td>
+          <td>Oxigraph / Blazegraph / Apache Jena / Eclipse RDF4J / Anzo</td>
+          <td>需要 W3C 语义网标准</td>
+        </tr>
+        <tr>
+          <td><strong>LPG 属性图</strong></td>
+          <td>Neo4j / FalkorDB / Apache AGE / AWS Neptune</td>
+          <td>已有图数据库栈</td>
+        </tr>
+        <tr>
+          <td><strong>向量库</strong></td>
+          <td>FAISS / Qdrant / Weaviate / Milvus / Pinecone / PgVector</td>
+          <td>需要 RAG / 相似度搜索</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>这是 Semantica 的"Data locality"承诺 —— "你的数据可以留在你现有的图数据库里，不必迁移到 Semantica 自带的存储"。</p>
+
+    <h3>2.4 完整能力栈（10 大模块）</h3>
+
+    <p>下面是 Semantica 在 README 里列出的全栈能力：</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 22%">能力</th>
+          <th>一句话说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Context Graphs</strong></td>
+          <td>智能体知道/决策/推理的结构化图</td>
+        </tr>
+        <tr>
+          <td><strong>Decision Intelligence</strong></td>
+          <td>每个决策 = 一等图节点，可溯源、可查、可因果链</td>
+        </tr>
+        <tr>
+          <td><strong>AI Governance</strong></td>
+          <td>SHACL 约束 / 冲突检测 / 合规规则 / OWL / SKOS 词表</td>
+        </tr>
+        <tr>
+          <td><strong>Full Auditability</strong></td>
+          <td>W3C PROV-O + 哈希链，可导出 RDF/CSV/JSON</td>
+        </tr>
+        <tr>
+          <td><strong>Deterministic Reasoning</strong></td>
+          <td>Forward chain / Rete / Datalog / SPARQL（不依赖 LLM）</td>
+        </tr>
+        <tr>
+          <td><strong>Knowledge Pipeline</strong></td>
+          <td>多源 ingestion + NER + 关系抽取 + KG 构造</td>
+        </tr>
+        <tr>
+          <td><strong>Enterprise Data</strong></td>
+          <td>Databricks (Unity Catalog + Delta Lake) / Snowflake 原生</td>
+        </tr>
+        <tr>
+          <td><strong>Graph Analytics</strong></td>
+          <td>中心性 / 社区检测 / 链接预测 / 最短路径</td>
+        </tr>
+        <tr>
+          <td><strong>Polyglot Storage</strong></td>
+          <td>RDF + LPG + 向量库，热插拔</td>
+        </tr>
+        <tr>
+          <td><strong>Visualization</strong></td>
+          <td>浏览器交互式图探索 + 决策时间线</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2><span class="section-num">3.</span>它能赋能什么 —— 6 个真实场景</h2>
+
+    <p>不是"AI 决策可审计"听起来高大上，我们来看看谁真的在用、解决什么问题：</p>
+
+    <h3>场景 1：金融监管审计</h3>
+
+    <p>信贷 AI 每天拒 1,000 笔。监管问"为什么"—— 用 Semantica 直接 SPARQL 查询决策图：</p>
+
+<pre><code><span class="k">SELECT</span> ?<span class="v">decision</span> ?<span class="v">reason</span>
+<span class="k">WHERE</span> {
+    ?<span class="v">decision</span> <span class="k">a</span> <span class="s">:LoanDenial</span> ;
+              <span class="s">:reasoning</span> ?<span class="v">reason</span> .
+}
+<span class="k">LIMIT</span> <span class="n">100</span></code></pre>
+
+    <p>答案直接给监管，3 分钟搞定。</p>
+
+    <h3>场景 2：医疗诊断决策溯源</h3>
+
+    <p>AI 给医生"建议复查"的依据是什么？用 Semantica 把 NER 提取的实体（症状 + 检验值 + 历史类似病例）+ 推理链 + 关联决策全部展示给医生。医生能信任，<strong>责任划分清晰</strong>。</p>
+
+    <h3>场景 3：多 Agent 系统的共享 Context 层</h3>
+
+    <p>5 个 LLM agent 协作（你公司可能跑过类似多 agent 系统）。它们各自的 in-memory state 难共享，调试时一问"为什么这个 agent 这么决定"就卡住。</p>
+
+    <p>Semantica 作为 shared context layer —— Agent A 写入决策图，Agent B 立刻看到 + trace。Agno / CrewAI 已原生支持，<strong>零代码改动</strong>。</p>
+
+    <h3>场景 4：内容审核 / 风控申诉处理</h3>
+
+    <p>内容平台 AI 自动删违规内容。用户申诉"凭什么删我"—— 客服翻不出 reasoning，因为 LLM 调用完上下文丢了。</p>
+
+    <p>用 Semantica：每次删除 = 一次决策入图，申诉处理人 1 键回放"当时 AI 用的规则版本 + 引用的法规条款 + LLM 的 reasoning + 类似内容历史决定"。</p>
+
+    <h3>场景 5：研发知识管理（Context Graph 当企业大脑）</h3>
+
+    <p>公司 100 个工程师 + 5 个 LLM agent —— Semantica 把所有代码决策、架构讨论、Bug 修复都建成图。新员工加入，"为什么用了 PostgreSQL？"<code>graph_rag</code> 一查就找到历史决策 + 因果链。替代 Confluence / Notion（更工程化）。</p>
+
+    <h3>场景 6：跟 TradingAgents / WrenAI 叠加（AI 决策审计 + 自动化）</h3>
+
+    <p>如果你已经在跑多 agent 决策系统（TradingAgents 那类），Semantica 是<strong>完美审计后端</strong>：</p>
+
+<pre><code><span class="c"># TradingAgents 生成决策</span>
+<span class="v">trade_decision</span> = <span class="v">trading_agents</span>.<span class="v">propagate</span>(<span class="s">"NVDA"</span>, <span class="s">"2026-05-10"</span>)
+
+<span class="c"># Semantica 立刻记录</span>
+<span class="v">graph</span>.<span class="v">record_decision</span>(
+    category=<span class="s">"trade"</span>,
+    scenario=<span class="v">trade_decision</span>.<span class="v">scenario</span>,
+    reasoning=<span class="v">trade_decision</span>.<span class="v">reasoning</span>,
+    outcome=<span class="v">trade_decision</span>.<span class="v">action</span>,
+    confidence=<span class="v">trade_decision</span>.<span class="v">confidence</span>
+)
+
+<span class="c"># 3 个月后审计问"为什么买 NVDA"</span>
+<span class="v">chain</span> = <span class="v">graph</span>.<span class="v">trace_decision_chain</span>(<span class="v">decision_id</span>)    <span class="c"># 完整回放</span>
+<span class="v">rules_ok</span> = <span class="v">graph</span>.<span class="v">check_decision_rules</span>(...)     <span class="c"># 当时合规吗</span>
+<span class="v">graph</span>.<span class="v">export_prov</span>(...)                        <span class="c"># 出 W3C PROV-O 给监管</span></code></pre>
+
+    <p>三层组合是黄金栈：WrenAI 查数据 → TradingAgents 决策 → Semantica 审计。</p>
+
+    <h2><span class="section-num">4.</span>优劣势：诚实评估</h2>
+
+    <h3>优势（7 个）</h3>
+
+    <ol>
+      <li><strong>W3C PROV-O 标准</strong>：不是私有格式，监管 / 法务 / 审计师都能用现成工具（Protege、SPARQL endpoint）</li>
+      <li><strong>哈希链防篡改</strong>：sequence_id + previous_checksum 双保险，监管级可信</li>
+      <li><strong>Polyglot 持久化</strong>：7 个图存储后端，"数据不放出去"承诺</li>
+      <li><strong>决策是一等图节点</strong>：不是 log line，是真能 SPARQL/Cypher 查询的图节点</li>
+      <li><strong>LLM 可选的推理</strong>：Rete / Datalog / SPARQL 引擎不依赖 LLM，保证推理一致性</li>
+      <li><strong>MCP server 完整</strong>：Agno / CrewAI 原生支持，开箱即用</li>
+      <li><strong>MIT 商用</strong>：vs Palantir 商业版 $10万+/年，Semantica 是真开源</li>
+    </ol>
+
+    <h3>劣势（6 个）</h3>
+
+    <ol>
+      <li><strong>不是 query engine</strong>：想要"自然语言查数据"得自己接 WrenAI，Semantica 不擅长 NL2SQL</li>
+      <li><strong>没有交易信号</strong>：它只记录 + 审计决策，不帮你"该不该买"</li>
+      <li><strong>GitHub 9.5k stars</strong>：比 TradingAgents 98k 小一个数量级，生态小</li>
+      <li><strong>学习曲线陡</strong>：W3C PROV-O + Rete + Datalog + SHACL 都是学术概念，<em>上手 1-2 周</em></li>
+      <li><strong>文档偏学术</strong>：README 像论文，不像 product docs，<em>新人 onboarding 难</em></li>
+      <li><strong>性能瓶颈</strong>：每次决策 30-50ms 哈希链开销，高频场景不友好</li>
+    </ol>
+
+    <div class="warn-box">
+      <strong>该不该用 Semantica？</strong>
+      <p>用：金融/医疗/法律/政府强监管行业、多 agent 系统需要审计层、AI 决策需事后追溯。</p>
+      <p>不用：纯查询场景（用 WrenAI）、决策量 < 100/月（过度设计）、不在强监管行业。</p>
+    </div>
+
+    <h2><span class="section-num">5.</span>实战路径 —— 读者怎么动手</h2>
+
+    <p>如果你看完想试试，分 4 步：</p>
+
+    <h3>Step 1：验证基础（10 分钟）</h3>
+
+    <pre><code><span class="c"># 安装</span>
+<span class="v">pip</span> <span class="v">install</span> <span class="s">semantica</span>
+
+<span class="c"># 验证（看 Python 版本 + faiss + config 都 ok）</span>
+<span class="v">semantica</span> <span class="v">doctor</span>
+<span class="c"># Python 3.11.9         pass</span>
+<span class="c"># semantica 0.6.5       pass</span>
+<span class="c"># faiss vector store    pass</span>
+<span class="c"># Config file           pass    ~/.semantica/config.yaml</span></code></pre>
+
+    <h3>Step 2：跑最小 demo（30 分钟）</h3>
+
+    <pre><code><span class="k">from</span> <span class="v">semantica.context</span> <span class="k">import</span> <span class="v">ContextGraph</span>
+
+<span class="v">graph</span> = <span class="v">ContextGraph</span>(<span class="v">advanced_analytics</span>=<span class="k">True</span>)
+
+<span class="c"># 记录一个决策</span>
+<span class="v">decision_id</span> = <span class="v">graph</span>.<span class="v">record_decision</span>(
+    category=<span class="s">"vendor_selection"</span>,
+    scenario=<span class="s">"Choose cloud provider for HIPAA workload"</span>,
+    reasoning=<span class="s">"AWS offers BAA, mature HIPAA tooling, and existing team expertise"</span>,
+    outcome=<span class="s">"selected_aws"</span>,
+    confidence=<span class="n">0.93</span>,
+)
+
+<span class="c"># 问"为什么"</span>
+<span class="v">chain</span>     = <span class="v">graph</span>.<span class="v">trace_decision_chain</span>(<span class="v">decision_id</span>)    <span class="c"># 因果链</span>
+<span class="v">similar</span>   = <span class="v">graph</span>.<span class="v">find_similar_decisions</span>(<span class="s">"cloud vendor"</span>, <span class="v">max_results</span>=<span class="n">5</span>)  <span class="c"># 相似先例</span>
+<span class="v">impact</span>    = <span class="v">graph</span>.<span class="v">analyze_decision_impact</span>(<span class="v">decision_id</span>)    <span class="c"># 下游影响</span>
+<span class="v">compliant</span> = <span class="v">graph</span>.<span class="v">check_decision_rules</span>({<span class="s">"category"</span>: <span class="s">"vendor_selection"</span>})  <span class="c"># 合规检查</span></code></pre>
+
+    <h3>Step 3：接到你的多 agent 系统（半天）</h3>
+
+    <p>如果你已经在跑 LangGraph / Agno / CrewAI：</p>
+
+    <ol>
+      <li>在 agent 决策点调 <code>graph.record_decision()</code></li>
+      <li>用 <code>graph.add_causal_relationship()</code> 链接相邻决策</li>
+      <li>接 MCP server：<code>wren serve mcp</code> 暴露决策图给其他 agent</li>
+    </ol>
+
+    <h3>Step 4：生产化（1 周）</h3>
+
+    <ol>
+      <li>替换 InMemoryStorage 为 Neo4j / Oxigraph</li>
+      <li>配 <code>~/.semantica/config.yaml</code> 选 ontology 词表</li>
+      <li>接公司 SSO + 审计 dashboard</li>
+      <li>每周跑 <code>verify_chain()</code> 检测篡改</li>
+    </ol>
+
+    <div class="summary-box">
+      <h4>读者清单：Semantica 适合谁</h4>
+      <ul>
+        <li>✅ 你在金融/医疗/法律/政府行业部署 LLM agent</li>
+        <li>✅ 你跑多 agent 系统（TradingAgents / Agno / CrewAI 类）需要审计层</li>
+        <li>✅ 你的客户 / 用户会申诉 AI 决策</li>
+        <li>✅ 你的系统每月 >1000 个 AI 决策需要审计</li>
+        <li>❌ 你只是想要"自然语言查数据"（用 WrenAI）</li>
+        <li>❌ 你的 AI 决策 < 100 个/月</li>
+        <li>❌ 你需要的是实时交易信号，不是审计</li>
+      </ul>
+    </div>
+
+    <h2><span class="section-num">6.</span>写在最后</h2>
+
+    <p>AI 能做决策在 2024 年已经解决（GPT-4、Claude 3.5、Gemini 2.0 都够用）。AI 决策<strong>可被审计、可被解释、可被监管</strong>在 2026 年才是真问题。</p>
+
+    <p>Palantir 商业版用数十万美元帮企业解决了这个问题，但绝大多数团队根本付不起这个钱。Semantica 用 MIT 协议 + 9,500 颗星 + W3C PROV-O 标准 + 哈希链，<strong>把 AI 决策审计的门槛从 10 万美元降到 0 美元</strong>。</p>
+
+    <p>这是开源世界对闭源巨头的又一次胜利。但更重要的，它给了 AI 治理一个"不要等技术完美了再上"的现实选择 —— 现在你就可以开始记录、开始审计、开始给每一次 AI 决策装上飞行记录仪。</p>
+
+    <p>当你下一次部署 LLM agent 做重要决策之前，先问自己：3 个月后，监管 / 用户 / 你自己，<strong>能不能回答"为什么"</strong>？</p>
+
+    <p>如果答案是"不能"，那 Semantica 可能是你下一个该装的东西。</p>
+
+  </div>
+</article>
+
+<footer>
+  <p><em>Notes from a mediocre idealist</em></p>
+  <p>© 2026 · hermes-notes.pages.dev</p>
+</footer>
+
+</body>
+</html>
