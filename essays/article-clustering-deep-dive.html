@@ -105,7 +105,8 @@
   <li><a href="#L3">L3 · DBSCAN / HDBSCAN: 噪声识别</a></li>
   <li><a href="#L5">L5 · UMAP 降维: 高维聚类的钥匙</a></li>
   <li><a href="#L7">L7 · 商业落地: ROI 计算</a></li>
-  <li><a href="#appendix">附录 · 5 个脚本 + Checklist</a></li>
+  <li><a href="#appendix">附录 A · 5 个脚本 + Checklist</a></li>
+  <li><a href="#appendix-b">附录 B · 聚类指标怎么读 (3 层评估)</a></li>
 </ol>
 </div>
 
@@ -603,6 +604,173 @@ python3 -m venv .venv
   <li><strong>1 个月</strong>: 读 1 篇 UMAP 论文 + 把分群接到下游 LR/XGBoost 看 Churn 提升</li>
   <li><strong>3 个月</strong>: 做完整聚类项目 (RFM + CLV + 营销 ROI + 上线监控)</li>
 </ul>
+
+<hr>
+
+<h2 id="appendix-b"><span class="layer-num">B</span>附录 B · 聚类指标怎么读 (3 层评估)</h2>
+
+<p class="day-time">把"分得好不好"拆成 3 层判断 · 数学层 → 业务层 → 上线层</p>
+
+<h3>B.1 核心观点: 聚类好坏要 3 关都过</h3>
+
+<blockquote>
+聚类评估不像 LR/XGBoost 那样只看 AUC。<strong>聚类是"无监督",没有标签可以对</strong>。所以必须从 3 个层次分别评估:
+<br><br>
+<strong>数学层</strong>: 分得齐不齐? (算法内部视角)
+<br>
+<strong>业务层</strong>: 分得有意义吗? (业务可解读)
+<br>
+<strong>上线层</strong>: 分得稳定吗? (线上可监控)
+</blockquote>
+
+<h3>B.2 第 1 层: 数学层指标 (算法视角)</h3>
+
+<h4>B.2.1 Silhouette Score · 最常用</h4>
+
+<p><strong>公式</strong>:</p>
+
+<pre><code>s(i) = (b(i) - a(i)) / max(a(i), b(i))
+
+a(i) = 客户 i 到自己簇内其他点的平均距离  (越小越紧)
+b(i) = 客户 i 到最近的其他簇点的平均距离  (越大越分得开)</code></pre>
+
+<p><strong>解读阈值</strong>:</p>
+
+<table>
+  <tr><th>范围</th><th>解读</th><th>业务含义</th></tr>
+  <tr><td>0.71 - 1.0</td><td>簇结构强</td><td>教科书例子才有,真实数据罕见</td></tr>
+  <tr><td><strong>0.51 - 0.70</strong></td><td><strong>合理</strong></td><td><strong>商业项目 ≥0.5 就够用</strong></td></tr>
+  <tr><td><strong>0.26 - 0.50</strong></td><td><strong>弱结构</strong></td><td><strong>真实业务常见,要结合其他指标</strong></td></tr>
+  <tr><td>< 0.25</td><td>无结构</td><td>聚类意义不大,换算法或加特征</td></tr>
+</table>
+
+<p><strong>我们的真实数字</strong> (Telco K-Means K=2): <strong class="metric">0.4795</strong> — 弱结构,但在 Churn 场景够用。</p>
+
+<div class="tip-box">
+<strong>常见误区</strong>: Silhouette 不是越高越好! K=2 永远最高 (二分类最容易分开),但 K=2 不一定是最有业务价值的分群。要把 Silhouette 和 Elbow + 业务理解一起看。
+</div>
+
+<h4>B.2.2 Davies-Bouldin Index (DBI ·越小越好)</h4>
+
+<p><strong>公式</strong>: 每个簇的"散度 / 簇间距离"的平均值。</p>
+
+<p><strong>解读</strong>: DBI < 0.5 优秀, 0.5-1.0 好, > 1.5 差。<strong>和 Silhouette 互补</strong>,通常一起用。</p>
+
+<h4>B.2.3 Inertia / SSE (Elbow 选 K 用)</h4>
+
+<p><strong>没有绝对阈值</strong>,只看"拐点"。从陡降到平台的位置就是最佳 K。</p>
+
+<h3>B.3 第 2 层: 业务层指标 (业务视角)</h3>
+
+<h4>B.3.1 簇大小比例 · 别有"孤儿簇"</h4>
+
+<p><strong>好的聚类</strong>: 每簇 ≥ 5% 客户 (每个分群都有营销意义)</p>
+
+<p><strong>差聚类</strong>: 一个簇 90% 客户,其他加起来 10% (没分出来)</p>
+
+<p><strong>我们的真实数据</strong> (Telco K=4):</p>
+
+<table>
+  <tr><th>簇</th><th>客户数</th><th>占比</th><th>判断</th></tr>
+  <tr><td>0 高价值核心</td><td>1,904</td><td>27.1%</td><td>✅</td></tr>
+  <tr><td>1 新低消费</td><td>1,696</td><td>24.1%</td><td>✅</td></tr>
+  <tr><td>2 中价值 (月付高费)</td><td>2,273</td><td>32.3%</td><td>✅</td></tr>
+  <tr><td>3 中价值 (老低费)</td><td>1,159</td><td>16.5%</td><td>✅</td></tr>
+</table>
+
+<h4>B.3.2 簇特征差异度 · 簇间特征值 ≥ 2x</h4>
+
+<p><strong>好的聚类</strong>: 不同簇在某关键特征上差异 ≥ 2x</p>
+
+<p><strong>我们的真实数据</strong>:</p>
+<pre><code>Tenure 差异:        簇 0 = 59.5 月, 簇 1 = 10.3 月  → 5.8x ✅
+MonthlyCharges 差异: 簇 0 = $93.31, 簇 1 = $31.78     → 2.9x ✅
+Churn 率差异:       簇 2 = 48%, 簇 3 = 5%             → 9.6x ✅ 强信号</code></pre>
+
+<h4>B.3.3 Churn 率差异 · Churn 场景特化</h4>
+
+<p><strong>好的聚类</strong>: 不同簇的 Churn 率差异 ≥ 1.5x,<strong>说明聚类抓到了"流失倾向"信号</strong>。</p>
+
+<p><strong>差聚类</strong>: 所有簇 Churn 率都差不多 (聚类只反映"自然分群",但不反映业务目标)</p>
+
+<h3>B.4 第 3 层: 上线层指标 (生产视角)</h3>
+
+<h4>B.4.1 轮廓稳定性 (Bootstrapping)</h4>
+
+<pre><code>for i in range(10):
+    km = KMeans(n_clusters=4, random_state=i)
+    labels_i = km.fit_predict(X_scaled)
+
+# 算每个客户 10 次分到同一簇的比例
+stable_ratio = (counts == 10).mean()
+# &gt; 90% 稳定, 簇结构可信
+# &lt; 70% 不稳定, 不能上线</code></pre>
+
+<h4>B.4.2 PSI 漂移 (月度监控)</h4>
+
+<table>
+  <tr><th>PSI 值</th><th>状态</th><th>动作</th></tr>
+  <tr><td>< 0.1</td><td>稳定</td><td>继续监控</td></tr>
+  <tr><td>0.1 - 0.25</td><td>轻微漂移</td><td>观察 + 增加监控频率</td></tr>
+  <tr><td><strong>> 0.25</strong></td><td><strong>严重漂移</strong></td><td><strong>必须重训模型</strong></td></tr>
+</table>
+
+<h3>B.5 3 层评估速查表</h3>
+
+<table>
+  <tr><th>层次</th><th>指标</th><th>判断标准</th><th>失败时怎么办</th></tr>
+  <tr><td rowspan="3"><strong>数学层</strong></td><td>Silhouette</td><td>> 0.5</td><td>换算法 (K-Means → HDBSCAN)</td></tr>
+  <tr><td>DBI</td><td>< 1.0</td><td>加特征 / 重新标准化</td></tr>
+  <tr><td>Inertia</td><td>看拐点</td><td>减小 K (合并孤儿簇)</td></tr>
+  <tr><td rowspan="3"><strong>业务层</strong></td><td>簇大小</td><td>每簇 ≥ 5%</td><td>减小 K</td></tr>
+  <tr><td>特征差异</td><td>簇间 ≥ 2x</td><td>换 HDBSCAN / UMAP+HDBSCAN</td></tr>
+  <tr><td>Churn 差异</td><td>≥ 1.5x</td><td>聚类只反映自然分群,接 LR/XGBoost</td></tr>
+  <tr><td rowspan="2"><strong>上线层</strong></td><td>Bootstrapping 稳定性</td><td>> 90%</td><td>调 random_state 或换算法</td></tr>
+  <tr><td>PSI 月度</td><td>< 0.1</td><td>漂移 > 0.25 重训</td></tr>
+</table>
+
+<h3>B.6 5 步评估流程</h3>
+
+<div class="checklist">
+<h4>✅ Step 1: Silhouette > 0.5?</h4>
+<ul><li>是 → 继续 · 否 → 换算法 / 加特征 / 重新标准化</li></ul>
+</div>
+
+<div class="checklist">
+<h4>✅ Step 2: 每簇 ≥ 5%?</h4>
+<ul><li>是 → 继续 · 否 → 减小 K (合并孤儿簇)</li></ul>
+</div>
+
+<div class="checklist">
+<h4>✅ Step 3: 簇间特征差异 ≥ 2x?</h4>
+<ul><li>是 → 继续 · 否 → 换 HDBSCAN / UMAP+HDBSCAN</li></ul>
+</div>
+
+<div class="checklist">
+<h4>✅ Step 4: Churn 率 / 业务标签簇间差异 ≥ 1.5x?</h4>
+<ul><li>是 → 聚类抓到了业务信号 ✅ · 否 → 聚类只反映自然分群,接 LR/XGBoost</li></ul>
+</div>
+
+<div class="checklist">
+<h4>✅ Step 5: Bootstrapping 稳定率 > 90%?</h4>
+<ul><li>是 → 可以上线 · 否 → 调 random_state 或换算法</li></ul>
+</div>
+
+<h3>B.7 我们刚才的聚类评估</h3>
+
+<table>
+  <tr><th>检查项</th><th>我们的数据</th><th>判断</th></tr>
+  <tr><td>Silhouette (K=2)</td><td>0.4795</td><td>⚠️ 弱结构 (但 Churn 场景够用)</td></tr>
+  <tr><td>DBI (K=2)</td><td>0.854</td><td>✅ 中等</td></tr>
+  <tr><td>簇大小</td><td>24-32%</td><td>✅ 每簇 ≥ 5%</td></tr>
+  <tr><td>特征差异 (Tenure)</td><td>5.8x</td><td>✅ 差异清晰</td></tr>
+  <tr><td>Churn 率差异</td><td>5% vs 48% (9.6x)</td><td>✅ 强信号</td></tr>
+  <tr><td>Bootstrapping</td><td>未跑</td><td>❓ 留作下一步</td></tr>
+</table>
+
+<div class="tip-box">
+<strong>结论</strong>: 我们的聚类对 Churn 业务<strong>有意义</strong> — 数学层 Silhouette 0.4795 中等,但业务层 Churn 差异 9.6x 是强信号。如果后续接 LR/XGBoost,可以用"分群编号"作为新特征,AUC 预计 +2-5%。
+</div>
 
 <hr>
 
