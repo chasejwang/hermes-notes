@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商业分析四大支柱 · 聚类 / 关联 / 逻辑回归 / 决策树 详解</title>
+<style>
+  :root {
+    --text: #1a1814;
+    --text-muted: #6a5f52;
+    --text-dim: #9a8e7e;
+    --accent: #b45837;
+    --accent-2: #7a6a55;
+    --bg: #faf8f3;
+    --border: rgba(26, 24, 20, 0.12);
+    --code-bg: #1a1a2e;
+    --code-fg: #fafaf5;
+    --surface: rgba(255, 251, 244, 0.7);
+    --good: #4a7c4e;
+    --bad: #b45837;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", "STHeiti", "Helvetica Neue", "Inter", sans-serif; }
+  body { line-height: 1.7; font-size: 16px; padding: 32px 20px 80px; max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 38px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 12px; }
+  h1 .accent { color: var(--accent); }
+  .meta { color: var(--text-muted); font-size: 13px; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .meta span { margin-right: 14px; }
+  .meta .tag { background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  h2 { font-size: 28px; font-weight: 700; margin-top: 56px; margin-bottom: 16px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text); }
+  h2 .chap-num { display: inline-block; width: 48px; height: 48px; line-height: 48px; background: var(--accent); color: #fff; border-radius: 50%; text-align: center; font-size: 16px; font-weight: 800; margin-right: 14px; vertical-align: middle; }
+  h3 { font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 12px; color: var(--accent); }
+  h4 { font-size: 16px; font-weight: 700; margin-top: 20px; margin-bottom: 8px; }
+  p { margin-bottom: 16px; }
+  strong { color: var(--accent); font-weight: 700; }
+  em { color: var(--text-muted); font-style: italic; }
+  ul, ol { margin: 12px 0 16px 24px; }
+  li { margin-bottom: 8px; }
+  code { background: #f0ece2; padding: 2px 6px; border-radius: 3px; font-family: "SF Mono", Menlo, monospace; font-size: 14px; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 16px 20px; border-radius: 6px; overflow-x: auto; margin: 16px 0; font-size: 13px; line-height: 1.5; font-family: "SF Mono", Menlo, monospace; }
+  pre code { background: none; padding: 0; color: inherit; }
+  blockquote { border-left: 3px solid var(--accent); padding: 4px 0 4px 16px; margin: 20px 0; color: var(--text-muted); font-style: italic; }
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: rgba(180, 88, 55, 0.08); font-weight: 700; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .summary-box { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 16px 20px; margin: 24px 0; border-radius: 4px; }
+  .summary-box strong { display: block; margin-bottom: 8px; font-size: 14px; }
+  .checklist { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; margin: 20px 0; }
+  .checklist h4 { margin-top: 0; color: var(--accent); }
+  .checklist ul { margin-bottom: 0; }
+  .warn-box { background: #fff8f0; border: 1px solid #f0c896; border-left: 4px solid var(--accent-2); padding: 14px 18px; margin: 20px 0; border-radius: 4px; font-size: 14px; }
+  .tip-box { background: #f5f8f3; border: 1px solid #c4d4be; border-left: 4px solid var(--good); padding: 14px 18px; margin: 20px 0; border-radius: 4px; font-size: 14px; }
+  .nav-toc { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; margin: 20px 0 32px; }
+  .nav-toc strong { display: block; margin-bottom: 10px; font-size: 14px; }
+  .nav-toc ol { margin: 0 0 0 20px; }
+  .nav-toc li { margin-bottom: 4px; }
+  .nav-toc a { color: var(--accent); text-decoration: none; }
+  .nav-toc a:hover { text-decoration: underline; }
+  .algo-card { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px; margin: 12px 0; }
+  .algo-card h4 { margin-top: 0; color: var(--accent); }
+  .metric-good { color: var(--good); font-weight: 700; }
+  .metric-bad { color: var(--bad); font-weight: 700; }
+  .pill { display: inline-block; padding: 2px 8px; background: #f0ece2; border-radius: 10px; font-size: 12px; color: var(--text-muted); margin-right: 4px; }
+  .pill-accent { background: rgba(180, 88, 55, 0.1); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<h1>商业分析 <span class="accent">四大支柱</span> · 聚类 / 关联 / 逻辑回归 / 决策树</h1>
+
+<div class="meta">
+  <span class="tag">D+18 教程</span>
+  <span>2026-08-24</span>
+  <span>~14000 字</span>
+  <span>面向数据科学家</span>
+  <span>真实数据集 · 可运行代码</span>
+</div>
+
+<blockquote>
+给数据科学家的算法实战手册。聚类 / 关联 / LR / 决策树四个最常用的商业分析算法,基于 2024-2026 GitHub 高 star 真实项目 + 公开 benchmark,每个算法配真实数据集 + 调优代码 + 上线避坑清单。
+</blockquote>
+
+<div class="summary-box">
+<strong>四个算法的核心定位</strong>
+<ul>
+  <li><strong>聚类</strong>: 无监督,发现数据里的隐藏群体 (HDBSCAN / K-Means / BERTopic)</li>
+  <li><strong>关联分析</strong>: 无监督,挖掘物品共现规律 (FP-Growth / Apriori / ECLAT)</li>
+  <li><strong>逻辑回归</strong>: 有监督,可解释预测 (LR + WOE / 双模型 Uplift)</li>
+  <li><strong>决策树/Boosting</strong>: 有监督,冲精度上限 (XGBoost / LightGBM / CatBoost + SHAP)</li>
+</ul>
+</div>
+
+<div class="nav-toc">
+<strong>目录</strong>
+<ol>
+  <li><a href="#chap1">聚类分析 · 客户分群 + 异常检测</a></li>
+  <li><a href="#chap2">关联分析 · 捆绑销售 + 购物篮</a></li>
+  <li><a href="#chap3">逻辑回归 · 信用评分 + 流失预测</a></li>
+  <li><a href="#chap4">决策树/Boosting · 风控 + 精准营销</a></li>
+  <li><a href="#chap5">商业问题 → 算法决策树</a></li>
+  <li><a href="#appendix">附录 · 数据集 + Checklist</a></li>
+</ol>
+</div>
+
+<hr>
+
+<h2 id="chap1"><span class="chap-num">1</span>聚类分析 · 客户分群 + 异常检测</h2>
+
+<p class="day-time">核心问题 · "客户/商品/店铺自然分成几类?" · 无监督,无标签</p>
+
+<h3>1.1 业务场景速览</h3>
+
+<table>
+  <tr><th>场景</th><th>聚类用法</th><th>真实项目参考</th></tr>
+  <tr><td>客户分群</td><td>RFM 模型替代品</td><td>pramodkondur/Customer-Segmentation-RFM-CLV</td></tr>
+  <tr><td>商品聚类</td><td>电商 SKU 归一</td><td>Shopee / Pinterest 内部实现</td></tr>
+  <tr><td>异常检测</td><td>hdbscan -1 标签 = 噪声</td><td>PayPal 反欺诈</td></tr>
+  <tr><td>门店分层</td><td>连锁店 A/B/C 店型识别</td><td>优衣库 / 星巴克选址</td></tr>
+  <tr><td>NLP 主题</td><td>评论/工单主题发现</td><td>BERTopic (★7.8k)</td></tr>
+</table>
+
+<h3>1.2 三大主流算法对比</h3>
+
+<div class="algo-card">
+<h4>A. K-Means · 最经典,但有 3 个坑</h4>
+<ul>
+  <li><strong>优势</strong>: 速度快、sklearn 一行调用、可解释</li>
+  <li><strong>3 个坑</strong>: (1) 必须预设 K 值 (3) 对异常值敏感 (4) 假设球形簇</li>
+  <li><strong>适合</strong>: 已知大致分组数 + 数据量 10万 - 1000 万 + 簇形状规则</li>
+</ul>
+</div>
+
+<div class="algo-card">
+<h4>B. HDBSCAN · 变密度聚类,风控首选 ⭐</h4>
+<ul>
+  <li><strong>优势</strong>: <span class="metric-good">无需预设 K</span>,自动识别噪声,变密度鲁棒</li>
+  <li><strong>准确率</strong>: FCPS 数据集上比 DBSCAN 准确率提升 15-25% (无需调参)</li>
+  <li><strong>GitHub</strong>: scikit-learn-contrib/hdbscan (★3.1k),2026 仍 commit</li>
+  <li><strong>适合</strong>: 不知道有几类 + 含异常点 + 簇大小差异大</li>
+</ul>
+</div>
+
+<div class="algo-card">
+<h4>C. 谱聚类 · 高维嵌入向量</h4>
+<ul>
+  <li><strong>优势</strong>: 能抓非凸形状</li>
+  <li><strong>劣势</strong>: O(N³) 复杂度,不适合 100万+ 数据</li>
+  <li><strong>代表</strong>: wq2012/SpectralCluster (Google Meet 说话人分离,DER 7-9% SOTA)</li>
+  <li><strong>适合</strong>: < 10万 高维向量 + 形状不规则</li>
+</ul>
+</div>
+
+<h3>1.3 实战代码 · UCI Online Retail II</h3>
+
+<p>数据集: 2009-2011 英国在线零售,1M 笔交易,541K 客户。基于 RFM + HDBSCAN 做客户分群。</p>
+
+<pre><code>import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import silhouette_score
+import hdbscan
+from umap import UMAP
+
+# 1. 加载 + RFM 构造
+df = pd.read_csv("online_retail_II.csv", encoding="latin-1")
+df = df[~df["InvoiceNo"].astype(str).str.startswith("C")]  # 去掉退货
+df = df.dropna(subset=["CustomerID"])
+
+snapshot = df["InvoiceDate"].max() + pd.Timedelta(days=1)
+rfm = df.groupby("CustomerID").agg({
+    "InvoiceDate": lambda x: (snapshot - x.max()).days,  # Recency
+    "InvoiceNo": "nunique",                                # Frequency
+    "Quantity": lambda x: (x * df.loc[x.index, "UnitPrice"]).sum()  # Monetary
+}).rename(columns={"InvoiceDate": "Recency", "InvoiceNo": "Frequency", "Quantity": "Monetary"})
+
+# 2. IQR 过滤异常值 (聚类对极端值敏感)
+for col in ["Recency", "Frequency", "Monetary"]:
+    q1, q3 = rfm[col].quantile([0.05, 0.95])
+    rfm = rfm[(rfm[col] >= q1) & (rfm[col] <= q3)]
+
+# 3. 标准化 (K-Means/HDBSCAN 必备)
+X = StandardScaler().fit_transform(rfm)
+
+# 4. UMAP 降维 (3 维 → 2-3 维)
+X_umap = UMAP(n_components=2, n_neighbors=30, random_state=42).fit_transform(X)
+
+# 5. HDBSCAN 聚类
+clusterer = hdbscan.HDBSCAN(min_cluster_size=100, min_samples=10)
+labels = clusterer.fit_predict(X_umap)
+
+# 6. 评估
+print(f"簇数: {len(set(labels)) - (1 if -1 in labels else 0)}")
+print(f"噪声比例: {(labels == -1).mean():.2%}")
+print(f"Silhouette: {silhouette_score(X_umap, labels):.3f}")
+# &gt;0.5 为佳
+
+# 7. 业务解读
+rfm["cluster"] = labels
+cluster_profile = rfm.groupby("cluster").agg({
+    "Recency": "mean", "Frequency": "mean", "Monetary": "mean"
+}).round(0)
+print(cluster_profile)
+</code></pre>
+
+<h3>1.4 真实业务结果</h3>
+
+<p>在 UCI Online Retail II 数据集上的真实 RFM+HDBSCAN 分群结果 (摘自 pramodkondur 项目,1.06x ROI):</p>
+
+<table>
+  <tr><th>簇</th><th>Recency (天)</th><th>Frequency</th><th>Monetary (£)</th><th>占比</th><th>营销动作</th></tr>
+  <tr><td>0 高价值</td><td>14</td><td>12</td><td>4,580</td><td>8%</td><td>VIP 专属优惠 + 提前上新</td></tr>
+  <tr><td>1 中活跃</td><td>45</td><td>5</td><td>1,200</td><td>22%</td><td>常规 EDM 推送</td></tr>
+  <tr><td>2 低频</td><td>120</td><td>2</td><td>340</td><td>35%</td><td>召回邮件 + 折扣券</td></tr>
+  <tr><td>3 沉睡</td><td>280</td><td>1</td><td>80</td><td>28%</td><td>放弃,只发系统通知</td></tr>
+  <tr><td>-1 噪声</td><td>—</td><td>—</td><td>—</td><td>7%</td><td>人工审核 (可能是羊毛党/异常)</td></tr>
+</table>
+
+<p><strong>避坑</strong>: K-Means 必须先标准化 + UMAP 降维;HDBSCAN 直接跑高维数据会失败。商业落地后必须做 <code>PSI 监控</code>(每月),保证线上分群稳定。</p>
+
+<hr>
+
+<h2 id="chap2"><span class="chap-num">2</span>关联分析 · 捆绑销售 + 购物篮</h2>
+
+<p class="day-time">核心问题 · "A 和 B 经常一起买吗?" · 无监督,找共现规律</p>
+
+<h3>2.1 业务场景速览</h3>
+
+<table>
+  <tr><th>场景</th><th>真实案例</th><th>业务提升</th></tr>
+  <tr><td>捆绑销售</td><td>啤酒+尿布 (沃尔玛经典)</td><td>客单价 +15-30%</td></tr>
+  <tr><td>交叉推荐</td><td>"买了 X 的人也买了 Y"</td><td>CTR +20-40%</td></tr>
+  <tr><td>促销组合</td><td>设计套餐 / 满减门槛</td><td>毛利率 +5-10%</td></tr>
+  <tr><td>商品陈列</td><td>实体店货架摆放</td><td>连带率 +8-15%</td></tr>
+  <tr><td>库存联动</td><td>A 缺货预警 → B 也快缺</td><td>缺货损失 -20%</td></tr>
+</table>
+
+<h3>2.2 三大主流算法对比</h3>
+
+<table>
+  <tr><th>算法</th><th>时间复杂度</th><th>速度</th><th>GitHub 标杆</th></tr>
+  <tr><td><strong>Apriori</strong></td><td>O(2ⁿ) 候选</td><td>慢</td><td>asaini/Apriori (★785)</td></tr>
+  <tr><td><strong>FP-Growth</strong> ⭐</td><td>O(n·freq)</td><td>比 Apriori 快 8x</td><td>rasbt/mlxtend (★5.1k)</td></tr>
+  <tr><td><strong>ECLAT</strong></td><td>O(n·tids)</td><td>密集小 item 时更快</td><td>jeffrichardchemistry/pyECLAT</td></tr>
+  <tr><td><strong>PyAerial (2025)</strong></td><td>神经符号</td><td>大规模 100-1000x</td><td>DiTEC-project/pyaerial (★36)</td></tr>
+</table>
+
+<p><strong>关键事实</strong>: 对同一支持度/置信度阈值,三算法产出的频繁项集是<strong>数学等价</strong>,差异主要在性能,非结果差异。PyAerial 是学习型,准确率 = 数据重建精度 + 规则覆盖率。</p>
+
+<h3>2.3 实战代码 · Instacart Market Basket</h3>
+
+<p>数据集: Instacart 200万订单 × 134 个商品类别。基于 FP-Growth 找高频捆绑。</p>
+
+<pre><code>import pandas as pd
+from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import fpgrowth, association_rules
+
+# 1. 加载 + 转 one-hot (稀疏矩阵加速 10x)
+orders = pd.read_csv("instacart_order_products__prior.csv")
+products = pd.read_csv("instacart_products.csv")
+df = orders.merge(products[["product_id", "product_name"]], on="product_id")
+
+transactions = df.groupby("order_id")["product_name"].apply(list).tolist()
+te = TransactionEncoder()
+oht = te.fit_transform(transactions, sparse=True)  # 关键:sparse=True
+df_encoded = pd.DataFrame.sparse.from_spmatrix(oht, columns=te.columns_)
+
+# 2. FP-Growth (比 Apriori 快 8 倍)
+print("FP-Growth running...")
+fi = fpgrowth(df_encoded, min_support=0.02, use_colnames=True)
+print(f"频繁项集数: {len(fi)}")
+
+# 3. 关联规则 (三层筛选)
+rules = association_rules(fi, metric="lift", min_threshold=1.5)
+rules = rules[(rules["confidence"] &gt; 0.5) &amp; (rules["support"] &gt; 0.05)]
+
+# 4. 上线标准: Lift &gt; 3 AND Confidence &gt; 0.5 AND Support &gt; 0.05
+high_value = rules[(rules["lift"] &gt; 3) &amp; (rules["confidence"] &gt; 0.5)]
+print(f"高价值规则数: {len(high_value)}")
+
+# 5. Top 10 规则
+top10 = high_value.sort_values("lift", ascending=False).head(10)
+print(top10[["antecedents", "consequents", "support", "confidence", "lift"]])
+</code></pre>
+
+<h3>2.4 真实业务结果</h3>
+
+<p>摘自 AmirhosseinHonardoust/Market-Basket-Analysis 真实运行数据:</p>
+
+<table>
+  <tr><th>Antecedents</th><th>Consequents</th><th>Support</th><th>Confidence</th><th>Lift</th></tr>
+  <tr><td>Keyboard, Laptop Bag, USB-C Hub</td><td>Laptop, Mouse</td><td>0.024</td><td>0.684</td><td><strong class="metric-good">5.095</strong></td></tr>
+  <tr><td>Laptop, Mouse</td><td>Keyboard</td><td>0.036</td><td>0.58</td><td><strong class="metric-good">2.41</strong></td></tr>
+  <tr><td>Organic Milk, Greek Yogurt</td><td>Banana, Avocado</td><td>0.029</td><td>0.61</td><td><strong class="metric-good">2.18</strong></td></tr>
+</table>
+
+<p><strong>商业解读</strong>: Lift=5.095 意味着买 "Keyboard+Laptop Bag+USB-C Hub" 的客户比随机客户买 "Laptop+Mouse" 的概率高 5 倍。可以直接做成 "办公全套套餐"。</p>
+
+<div class="warn-box">
+<strong>避坑 · 3 个常见错误</strong>
+<ol>
+  <li><strong>min_support 设太低</strong>: 会产生几十万条规则。建议从 0.05 开始逐步降</li>
+  <li><strong>只看 support</strong>: 会错过强规则。Lift > 1.5 + Confidence > 0.5 必须同时满足</li>
+  <li><strong>Apriori vs FP-Growth 选错</strong>: 数据 50万+ 一律用 FP-Growth,快 8x</li>
+</ol>
+</div>
+
+<hr>
+
+<h2 id="chap3"><span class="chap-num">3</span>逻辑回归 · 信用评分 + 流失预测</h2>
+
+<p class="day-time">核心问题 · "这个客户会不会违约/流失/购买?" · 有监督,可解释</p>
+
+<h3>3.1 业务场景速览</h3>
+
+<table>
+  <tr><th>场景</th><th>真实项目</th><th>典型 AUC</th></tr>
+  <tr><td><strong>信用评分 (A卡)</strong></td><td>ShichenXie/scorecardpy (★801)</td><td>0.78-0.82</td></tr>
+  <tr><td>客户流失 (Telco)</td><td>Pradnya1208/Telecom-Customer-Churn</td><td>0.83-0.85</td></tr>
+  <tr><td>营销响应 (Uplift)</td><td>maks-sh/scikit-uplift (★813)</td><td>Qini 0.30</td></tr>
+  <tr><td>欺诈检测 baseline</td><td>georgymh/ml-fraud-detection</td><td>AUPRC 0.72</td></tr>
+  <tr><td>工业级 Pipeline</td><td>itlubber/scorecardpipeline (PMML 导出)</td><td>同上</td></tr>
+</table>
+
+<p><strong>为什么金融场景仍是 LR 黄金标准</strong>: 可解释 (p-value/系数) + 合规 (Basel 银监) + 可转 PMML 上线。2024-2025 在 A 卡/B 卡/C 卡仍占 70%+ 生产模型。</p>
+
+<h3>3.2 LR vs 树模型 · 怎么选</h3>
+
+<table>
+  <tr><th>维度</th><th>逻辑回归</th><th>XGBoost</th></tr>
+  <tr><td>可解释性</td><td>⭐⭐⭐⭐⭐ 极强</td><td>⭐⭐⭐⭐ + SHAP</td></tr>
+  <tr><td>AUC 上限</td><td>0.78-0.85</td><td>0.85-0.92</td></tr>
+  <tr><td>合规友好</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐</td></tr>
+  <tr><td>特征工程要求</td><td>高 (WOE 分箱)</td><td>低 (自动)</td></tr>
+  <tr><td>训练速度</td><td>极快</td><td>中</td></tr>
+  <tr><td>非线性能</td><td>弱 (需交叉特征)</td><td>强</td></tr>
+</table>
+
+<p><strong>经验法则</strong>: 监管严格场景 (信贷/医保) → LR;追求精度上限 (反欺诈/流失) → XGBoost;折中 → XGBoost + SHAP 解释。</p>
+
+<h3>3.3 实战代码 · UCI German Credit + Telco Churn</h3>
+
+<p><strong>数据集 1</strong>: UCI German Credit (1000 笔贷款申请,好坏客户 7:3)<br>
+<strong>数据集 2</strong>: IBM Telco Customer Churn (7043 客户,26.5% 流失率)</p>
+
+<pre><code>import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score, roc_curve
+import scorecardpy as sc
+
+# ========================================
+# 场景 A: 信用评分 (WOE 分箱 + 评分卡)
+# ========================================
+# 1. 加载 + 切分
+dat = sc.germancredit()
+train, test = sc.split_df(dat, "creditability", ratio=0.7, seed=42).values()
+
+# 2. IV 筛选 + WOE 分箱 (金融场景标配)
+dt_s = sc.var_filter(dat, y="creditability")
+bins = sc.woebin(dt_s, y="creditability")
+train_woe = sc.woebin_ply(train, bins)
+test_woe = sc.woebin_ply(test, bins)
+
+# 3. L1 正则化 LR (防止过拟合 + 自动特征选择)
+lr = LogisticRegression(penalty="l1", C=0.5, solver="saga", n_jobs=-1, max_iter=1000)
+lr.fit(train_woe.drop("creditability", axis=1), train_woe["creditability"])
+
+# 4. 评估: AUC + KS (银行标准 KS &gt; 0.3 才上线)
+y_prob = lr.predict_proba(test_woe.iloc[:, 1:])[:, 1]
+auc = roc_auc_score(test_woe["creditability"], y_prob)
+fpr, tpr, _ = roc_curve(test_woe["creditability"], y_prob)
+ks = max(tpr - fpr)
+print(f"AUC: {auc:.3f} | KS: {ks:.3f}")
+# 典型输出: AUC 0.78-0.82 | KS 0.40-0.45
+
+# 5. 评分卡导出 (给业务方看)
+card = sc.scorecard(bins, lr, train_woe.columns[1:])
+score = sc.scorecard_ply(test, card)
+print(score.head())
+
+# ========================================
+# 场景 B: 流失预测 (LR 不分箱,直接跑)
+# ========================================
+from sklearn.preprocessing import StandardScaler
+telco = pd.read_csv("telco_churn.csv")
+telco["Churn"] = (telco["Churn"] == "Yes").astype(int)
+
+# 类别变量 one-hot
+telco_encoded = pd.get_dummies(telco.drop("customerID", axis=1), drop_first=True)
+X_train, X_test, y_train, y_test = train_test_split(
+    telco_encoded.drop("Churn", axis=1), telco_encoded["Churn"],
+    test_size=0.3, random_state=42, stratify=telco_encoded["Churn"]
+)
+
+# 标准化
+scaler = StandardScaler()
+X_train_s = scaler.fit_transform(X_train)
+X_test_s = scaler.transform(X_test)
+
+# 不平衡处理 (Telco 流失率 26.5%, 不算极端)
+lr2 = LogisticRegression(class_weight="balanced", max_iter=1000, C=0.5)
+lr2.fit(X_train_s, y_train)
+y_prob2 = lr2.predict_proba(X_test_s)[:, 1]
+print(f"Telco AUC: {roc_auc_score(y_test, y_prob2):.3f}")
+# 典型: 0.83-0.85
+</code></pre>
+
+<h3>3.4 Uplift 建模 · 营销响应专用</h3>
+
+<p>普通响应模型: "谁会转化?" — 但营销只对"被营销打动"的人有效。Uplift 模型回答: <strong>"谁会被营销打动?"</strong></p>
+
+<pre><code>from sklift.models import TwoModels
+from sklearn.linear_model import LogisticRegression
+
+# 双模型: 一个预测 treatment,一个预测 control
+estimator = TwoModels(
+    estimator_trmnt=LogisticRegression(C=0.5, class_weight="balanced"),
+    estimator_ctrl=LogisticRegression(C=0.5, class_weight="balanced"),
+    method="vanilla"
+)
+estimator.fit(X_train, y_train, treat_train)
+
+# 预测增量: P(转化|营销) - P(转化|不营销)
+uplift = estimator.predict(X_test)
+
+# 排序后 Top 20% 通常能捕获 60-80% 增量转化
+top20_idx = np.argsort(uplift)[-int(0.2 * len(uplift)):]
+print(f"Top 20% 客户数: {len(top20_idx)} | 平均 uplift: {uplift[top20_idx].mean():.3f}")
+</code></pre>
+
+<div class="tip-box">
+<strong>为什么 Uplift 比普通响应模型好</strong>: 普通模型会把"铁定会买"的人也营销,但这些人不需要营销;Uplift 找出"被打动"的人 (persuadables),营销 ROI 通常提升 1.5-3x。LightGBM S-Learner 在 Criteo Uplift Benchmark (1398 万条) 上 Top 20% 捕获 77.7% 增量转化。
+</div>
+
+<h3>3.5 真实准确率对比 (同数据集)</h3>
+
+<table>
+  <tr><th>模型</th><th>German Credit AUC</th><th>Telco Churn AUC</th><th>信贷合规</th></tr>
+  <tr><td>LR (L1 + WOE)</td><td>0.78-0.82</td><td>0.83-0.85</td><td>⭐⭐⭐⭐⭐</td></tr>
+  <tr><td>Random Forest</td><td>0.80-0.85</td><td>0.84-0.87</td><td>⭐⭐⭐</td></tr>
+  <tr><td>XGBoost</td><td>0.85-0.90</td><td>0.86-0.92</td><td>⭐⭐</td></tr>
+  <tr><td>LightGBM</td><td>0.85-0.92</td><td>0.87-0.92</td><td>⭐⭐</td></tr>
+</table>
+
+<hr>
+
+<h2 id="chap4"><span class="chap-num">4</span>决策树 / Boosting · 风控 + 精准营销</h2>
+
+<p class="day-time">核心问题 · "什么规则决定结果?" · 有监督,冲精度上限</p>
+
+<h3>4.1 三大 Boosting 算法对比</h3>
+
+<table>
+  <tr><th>算法</th><th>速度</th><th>类别特征</th><th>推荐场景</th></tr>
+  <tr><td><strong>XGBoost</strong></td><td>⚡⚡⚡</td><td>需编码</td><td><strong>通用首选 · 欺诈/流失/营销</strong></td></tr>
+  <tr><td><strong>LightGBM</strong></td><td>⚡⚡⚡⚡</td><td>需编码</td><td><strong>大数据量 / 工业首选</strong></td></tr>
+  <tr><td><strong>CatBoost</strong></td><td>⚡⚡</td><td><span class="metric-good">原生支持</span></td><td><strong>类别特征多 (用户画像)</strong></td></tr>
+</table>
+
+<p><strong>GitHub 标杆</strong>: catboost/catboost (★8k+ 业内标杆库),2026 仍在 commit。</p>
+
+<h3>4.2 实战代码 · Kaggle Credit Card Fraud</h3>
+
+<p>数据集: 284,807 笔交易,492 笔欺诈 (1:578 极端不平衡)。<strong>核心洞察</strong>: 欺诈场景<strong>不要看 accuracy</strong> (99.9% 是假象,全部预测 "正常" 就有 99.83%),要看 AUPRC + Recall。</p>
+
+<pre><code>import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import average_precision_score, roc_auc_score
+from xgboost import XGBClassifier
+import shap
+
+# 1. 加载 + 切分
+df = pd.read_csv("creditcard.csv")
+X = df.drop(["Class", "Time"], axis=1)
+y = df["Class"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42, stratify=y
+)
+
+# 2. scale_pos_weight 处理极端不平衡
+ratio = (y_train == 0).sum() / (y_train == 1).sum()
+print(f"不平衡比: 1:{ratio:.0f}")
+
+# 3. XGBoost (欺诈检测 AUC-ROC 第一)
+xgb = XGBClassifier(
+    n_estimators=300, max_depth=6, learning_rate=0.05,
+    scale_pos_weight=ratio,  # 类别权重 = 反欺诈关键
+    eval_metric="aucpr",     # 用 PR-AUC,不是 ROC-AUC
+    early_stopping_rounds=20,
+    use_label_encoder=False, random_state=42
+)
+xgb.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=100)
+
+# 4. 评估 (不要看 accuracy!)
+y_prob = xgb.predict_proba(X_test)[:, 1]
+ap = average_precision_score(y_test, y_prob)  # PR-AUC
+print(f"XGBoost AUPRC: {ap:.3f}")  # 典型: 0.83
+
+# 5. SHAP 可解释 (商业落地必备!)
+explainer = shap.TreeExplainer(xgb)
+shap_values = explainer.shap_values(X_test.iloc[:1000])
+shap.summary_plot(shap_values, X_test.iloc[:1000])  # 全局特征重要性
+# 典型 Top 3: V14, V17, V12 (PCA 变换特征)
+</code></pre>
+
+<h3>4.3 真实准确率对比 (信用卡欺诈)</h3>
+
+<p>摘自 itsaryanchauhan/credit-card-fraud-detection 真实实验:</p>
+
+<table>
+  <tr><th>模型</th><th>ROC-AUC</th><th>排名</th></tr>
+  <tr><td><strong>XGBoost</strong></td><td><strong class="metric-good">0.9771</strong></td><td>🥇 第一</td></tr>
+  <tr><td>LightGBM (CV)</td><td>0.9584</td><td>🥈 生产级</td></tr>
+  <tr><td>LightGBM</td><td>0.9499</td><td>🥉</td></tr>
+  <tr><td>Random Forest</td><td>0.8529</td><td>第四</td></tr>
+  <tr><td>CatBoost</td><td>0.8578</td><td>第五</td></tr>
+  <tr><td>AdaBoost</td><td>0.8135</td><td>第六</td></tr>
+</table>
+
+<p>PMC 论文 (2025) 中 CatBoost 在另一组实验 AUPRC=0.9820,XGBoost=0.9783,两者非常接近。结论: <strong>树模型在欺诈检测上远胜 LR (AUPRC 0.72)</strong>,因为 LR 抓不住非线性特征组合。</p>
+
+<h3>4.4 SHAP 解释 · 商业落地核心</h3>
+
+<p>树模型 + SHAP 是 2024-2026 商业分析的事实标准。摘自 SamamaKarim092/End-to-End-Explainable-AI 项目:</p>
+
+<pre><code>import shap
+
+# 全局特征重要性
+explainer = shap.TreeExplainer(xgb)
+shap_values = explainer.shap_values(X_test)
+
+# 1. 蜂群图 - 看整体特征影响
+shap.summary_plot(shap_values, X_test, plot_type="dot")
+
+# 2. 条形图 - 看平均重要性
+shap.summary_plot(shap_values, X_test, plot_type="bar")
+
+# 3. 单客户解释 - 业务方必看
+shap.waterfall_plot(shap.TreeExplainer(xgb).expected_value,
+                    shap_values[0], X_test.iloc[0])
+
+# 4. 依赖图 - 看特征交互
+shap.dependence_plot("V14", shap_values, X_test)
+</code></pre>
+
+<div class="tip-box">
+<strong>商业落地关键</strong>: SHAP 不只是技术工具,是业务方接受模型的桥梁。SamamaKarim092 案例中,基于 SHAP 命中 "月付合同" 的客户推荐年付 + 15% 折扣,预估净节省 $132,000 (CLV=$450/人,营销成本=$50/人)。
+</div>
+
+<h3>4.5 Optuna 调优 · 实战必备</h3>
+
+<pre><code>import optuna
+from sklearn.model_selection import cross_val_score
+
+def objective(trial):
+    params = {
+        "n_estimators": trial.suggest_int("n_estimators", 100, 1000),
+        "max_depth": trial.suggest_int("max_depth", 4, 10),
+        "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.3, log=True),
+        "subsample": trial.suggest_float("subsample", 0.6, 1.0),
+        "colsample_bytree": trial.suggest_float("colsample_bytree", 0.6, 1.0),
+        "scale_pos_weight": ratio,
+    }
+    model = XGBClassifier(**params, eval_metric="aucpr", random_state=42)
+    return cross_val_score(model, X_train, y_train, cv=5, scoring="average_precision").mean()
+
+study = optuna.create_study(direction="maximize")
+study.optimize(objective, n_trials=50, show_progress_bar=True)
+print(f"Best AUPRC: {study.best_value:.3f}")
+# 典型提升: 0.83 → 0.86 (调参后 +3-5%)
+</code></pre>
+
+<hr>
+
+<h2 id="chap5"><span class="chap-num">5</span>商业问题 → 算法决策树</h2>
+
+<p class="day-time">一图速查 · 业务问题对应算法推荐</p>
+
+<h3>5.1 速查表 (按业务问题)</h3>
+
+<table>
+  <tr><th>业务问题</th><th>第一选择</th><th>第二选择</th><th>不推荐</th></tr>
+  <tr><td><strong>客户自然分几群</strong></td><td>HDBSCAN</td><td>K-Means + UMAP</td><td>LR</td></tr>
+  <tr><td><strong>异常客户 / 风控</strong></td><td>HDBSCAN (-1 噪声)</td><td>IsolationForest</td><td>K-Means</td></tr>
+  <tr><td><strong>捆绑销售 / 购物篮</strong></td><td>FP-Growth</td><td>Apriori</td><td>任何监督模型</td></tr>
+  <tr><td><strong>交叉推荐</strong></td><td>FP-Growth</td><td>协同过滤</td><td>LR</td></tr>
+  <tr><td><strong>信用评分</strong></td><td>LR + WOE</td><td>XGBoost + SHAP</td><td>K-Means</td></tr>
+  <tr><td><strong>客户流失</strong></td><td>XGBoost + SHAP</td><td>LR</td><td>聚类</td></tr>
+  <tr><td><strong>欺诈检测</strong></td><td>XGBoost + scale_pos_weight</td><td>CatBoost</td><td>LR (AUPRC 低)</td></tr>
+  <tr><td><strong>营销响应增量</strong></td><td>LightGBM S-Learner</td><td>causallift 双 LR</td><td>普通分类</td></tr>
+  <tr><td><strong>RFM + CLV</strong></td><td>RFM + K-Means + BG/NBD</td><td>XGBoost CLV</td><td>LR</td></tr>
+  <tr><td><strong>销量预测</strong></td><td>LightGBM</td><td>XGBoost</td><td>LR / 聚类</td></tr>
+</table>
+
+<h3>5.2 决策流程图</h3>
+
+<div class="algo-card">
+<h4>Step 1 · 有没有标签数据?</h4>
+<ul>
+  <li><strong>没有</strong> → 聚类 / 关联分析</li>
+  <li><strong>有</strong> → Step 2</li>
+</ul>
+</div>
+
+<div class="algo-card">
+<h4>Step 2 · 合规要求严不严?</h4>
+<ul>
+  <li><strong>严</strong> (信贷/医保/银监) → LR + WOE</li>
+  <li><strong>不严</strong> → Step 3</li>
+</ul>
+</div>
+
+<div class="algo-card">
+<h4>Step 3 · 追求 AUC 还是可解释?</h4>
+<ul>
+  <li><strong>可解释优先</strong> → LR + SHAP</li>
+  <li><strong>AUC 优先</strong> → XGBoost / LightGBM + SHAP</li>
+</ul>
+</div>
+
+<div class="algo-card">
+<h4>Step 4 · 数据量级?</h4>
+<ul>
+  <li><strong>&lt; 1万</strong> → 简单模型 (LR / Decision Tree)</li>
+  <li><strong>1万 - 100万</strong> → XGBoost / LightGBM</li>
+  <li><strong>&gt; 100万</strong> → LightGBM (速度快 4x)</li>
+</ul>
+</div>
+
+<div class="algo-card">
+<h4>Step 5 · 类别特征多吗?</h4>
+<ul>
+  <li><strong>多</strong> (&gt; 10 个类别列) → CatBoost (原生支持)</li>
+  <li><strong>少</strong> → XGBoost (编码后)</li>
+</ul>
+</div>
+
+<h3>5.3 一句话总结</h3>
+
+<blockquote>
+<strong>聚类找群体、关联找组合、LR 给可解释、树模型冲精度</strong>。商业分析 80% 项目是 "树模型 + SHAP" 组合拳;如果合规要求严,退回 "LR + WOE"。无监督的聚类和关联解决 20% 的探索性场景。
+</blockquote>
+
+<hr>
+
+<h2 id="appendix"><span class="chap-num">A</span>附录 · 数据集 + Checklist</h2>
+
+<h3>A.1 真实数据集下载</h3>
+
+<table>
+  <tr><th>数据集</th><th>规模</th><th>适用算法</th><th>来源</th></tr>
+  <tr><td>UCI Online Retail II</td><td>1M 笔 / 541K 客户</td><td>聚类 (RFM + HDBSCAN)</td><td>archive.ics.uci.edu/ml</td></tr>
+  <tr><td>Instacart Market Basket</td><td>200万订单 / 134 商品</td><td>关联 (FP-Growth)</td><td>kaggle.com/c/instacart-market-basket-analysis</td></tr>
+  <tr><td>UCI German Credit</td><td>1000 笔贷款</td><td>LR (WOE 评分卡)</td><td>archive.ics.uci.edu/ml</td></tr>
+  <tr><td>IBM Telco Customer Churn</td><td>7043 客户</td><td>LR + XGBoost (流失)</td><td>kaggle.com/blastchar/telco-customer-churn</td></tr>
+  <tr><td>Kaggle Credit Card Fraud</td><td>284,807 交易 (1:578 不平衡)</td><td>XGBoost + SHAP</td><td>kaggle.com/mlg-ulb/creditcardfraud</td></tr>
+  <tr><td>Criteo Uplift v2.1</td><td>1398 万条 / 3GB</td><td>Uplift (LightGBM S-Learner)</td><td>ailab.criteo.com/criteo-uplift-prediction-dataset</td></tr>
+</table>
+
+<h3>A.2 上线 Checklist (4 个算法通用)</h3>
+
+<div class="checklist">
+<h4>✅ 数据准备阶段</h4>
+<ul>
+  <li>缺失值 < 5%,数值用中位数/均值,类别用众数或 "未知"</li>
+  <li>异常值先 winsorize 别直接丢</li>
+  <li>不平衡: bad rate 5-15% 甜蜜点;LR 用 class_weight='balanced',树用 scale_pos_weight</li>
+  <li>样本量: LR ≥ 1万,树模型 ≥ 5000</li>
+</ul>
+</div>
+
+<div class="checklist">
+<h4>✅ 模型训练阶段</h4>
+<ul>
+  <li>K-Means/HDBSCAN: 必须 StandardScaler + UMAP 降维</li>
+  <li>关联: FP-Growth > Apriori,优先 sparse=True</li>
+  <li>LR: 金融场景 WOE 分箱必备,提升 5-10% AUC</li>
+  <li>树模型: Optuna 调参 50-100 trials,提升 3-5%</li>
+</ul>
+</div>
+
+<div class="checklist">
+<h4>✅ 模型上线阶段</h4>
+<ul>
+  <li>SHAP 全局特征重要性 + 单客户 waterfall 解释</li>
+  <li>LR → PMML 导出,业务方评分卡 Excel</li>
+  <li>树模型 → pickle/joblib + SHAP value 表</li>
+  <li>A/B 测试 4 周小流量</li>
+</ul>
+</div>
+
+<div class="checklist">
+<h4>✅ 模型监控阶段</h4>
+<ul>
+  <li>PSI < 0.1 稳定,> 0.25 报警</li>
+  <li>KS / AUC 每月跑测试集</li>
+  <li>特征分布监控 (drift detection)</li>
+  <li>业务指标: 营销响应率 / 流失率 / 坏账率</li>
+</ul>
+</div>
+
+<h3>A.3 4 个算法的真实 GitHub 项目清单</h3>
+
+<table>
+  <tr><th>算法</th><th>项目</th><th>Star</th><th>用途</th></tr>
+  <tr><td>聚类</td><td>MaartenGr/BERTopic</td><td>⭐7.8k</td><td>NLP 主题聚类一站式</td></tr>
+  <tr><td>聚类</td><td>scikit-learn-contrib/hdbscan</td><td>⭐3.1k</td><td>变密度聚类 (风控首选)</td></tr>
+  <tr><td>聚类</td><td>facebookresearch/faiss</td><td>⭐40k</td><td>工业级向量聚类</td></tr>
+  <tr><td>聚类</td><td>rapidsai/cuml</td><td>⭐5.3k</td><td>GPU 加速 / 亿级数据</td></tr>
+  <tr><td>关联</td><td>rasbt/mlxtend</td><td>⭐5.1k</td><td><strong>FP-Growth 工业事实标准</strong></td></tr>
+  <tr><td>关联</td><td>asaini/Apriori</td><td>⭐785</td><td>论文级 + Streamlit</td></tr>
+  <tr><td>关联</td><td>DiTEC-project/pyaerial</td><td>⭐36 (2025)</td><td>大规模场景新方案</td></tr>
+  <tr><td>LR</td><td>maks-sh/scikit-uplift</td><td>⭐813</td><td>Uplift 营销响应</td></tr>
+  <tr><td>LR</td><td>ShichenXie/scorecardpy</td><td>⭐801</td><td><strong>银行 A 卡评分</strong></td></tr>
+  <tr><td>LR</td><td>amphibian-dev/toad</td><td>⭐528</td><td>工业级中文风控</td></tr>
+  <tr><td>LR</td><td>guillermo-navas-palencia/optbinning</td><td>⭐531</td><td>最优约束分箱</td></tr>
+  <tr><td>树模型</td><td>catboost/catboost</td><td>⭐8k+</td><td><strong>类别特征首选</strong></td></tr>
+  <tr><td>树模型</td><td>Fraud-Detection-Handbook</td><td>⭐723</td><td>反欺诈教科书</td></tr>
+  <tr><td>树模型</td><td>ahmedshahriar/Customer-Churn-Prediction</td><td>⭐100+</td><td>Stacking 集成 + Optuna</td></tr>
+</table>
+
+<h3>A.4 推荐阅读路线</h3>
+
+<ul>
+  <li><strong>3 天速成</strong>: 跑通本文 4 个数据集的代码 + 看 Top 5 GitHub 项目 README</li>
+  <li><strong>1 周实战</strong>: 选一个业务问题 (如客户流失),用 LR + XGBoost 对比,跑 SHAP 解释</li>
+  <li><strong>1 个月深入</strong>: 读 1 篇 PMC/arxiv 论文 + 在自己的数据集上复现</li>
+  <li><strong>3 个月精通</strong>: 完整 KAGGLE 比赛流程 + Optuna 调参 + Stacking 集成 + 模型部署</li>
+</ul>
+
+<hr>
+
+<blockquote>
+<strong>最后一句</strong>: 算法只是工具,业务理解才是壁垒。这 4 个算法覆盖了商业分析 80% 的场景,剩下的 20% 用深度学习 / 图算法 / 强化学习处理。先跑起来,再迭代,不要追求 "完美方案"。
+</blockquote>
+
+<p style="text-align: center; color: var(--text-dim); font-size: 13px; margin-top: 48px;">
+完 · 2026-08-24 · Chase's Personal Page
+</p>
+
+</body>
+</html>
