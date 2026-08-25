@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>量化因子 3 大项目 · awesome-quant → ml4trading Ch 8 → alphalens</title>
+<style>
+  :root { --bg:#faf8f3; --text:#1a1814; --accent:#b45837; --code-bg:#1a1a2e; --good:#4a7c4e; }
+  *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,"PingFang SC",sans-serif; line-height:1.7; font-size:16px; max-width:880px; margin:0 auto; padding:32px 20px 80px; }
+  h1 { font-size:38px; font-weight:800; letter-spacing:-0.02em; margin-bottom:12px; }
+  h1 .accent { color:var(--accent); }
+  .meta { color:#6a5f52; font-size:13px; margin-bottom:32px; padding-bottom:16px; border-bottom:1px solid rgba(26,24,20,0.12); }
+  .meta span { margin-right:14px; }
+  .meta .tag { background:var(--accent); color:#fff; padding:2px 8px; border-radius:3px; font-size:11px; text-transform:uppercase; }
+  h2 { font-size:26px; font-weight:700; margin-top:48px; margin-bottom:14px; padding-top:24px; border-top:1px solid rgba(26,24,20,0.12); }
+  h2 .ln { display:inline-block; width:42px; height:42px; line-height:42px; background:var(--accent); color:#fff; border-radius:50%; text-align:center; font-size:14px; font-weight:800; margin-right:12px; vertical-align:middle; }
+  h3 { font-size:18px; font-weight:700; margin-top:24px; margin-bottom:10px; color:var(--accent); }
+  p { margin-bottom:14px; }
+  strong { color:var(--accent); font-weight:700; }
+  code { background:#f0ece2; padding:2px 6px; border-radius:3px; font-family:"SF Mono",monospace; font-size:14px; }
+  pre { background:var(--code-bg); color:#fafaf5; padding:14px 18px; border-radius:6px; overflow-x:auto; margin:14px 0; font-size:13px; line-height:1.5; font-family:"SF Mono",monospace; }
+  pre code { background:none; padding:0; }
+  blockquote { border-left:3px solid var(--accent); padding:4px 0 4px 16px; margin:18px 0; color:#6a5f52; font-style:italic; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  th,td { padding:8px 10px; text-align:left; border-bottom:1px solid rgba(26,24,20,0.12); }
+  th { background:rgba(180,88,55,0.08); font-weight:700; }
+  .tip-box { background:#f5f8f3; border-left:4px solid var(--good); padding:12px 16px; margin:16px 0; border-radius:4px; font-size:14px; }
+  .warn-box { background:#fff8f0; border-left:4px solid #7a6a55; padding:12px 16px; margin:16px 0; border-radius:4px; font-size:14px; }
+  figure { margin:20px 0; text-align:center; }
+  figure img { max-width:100%; border-radius:6px; border:1px solid rgba(26,24,20,0.12); }
+  figcaption { font-family:"SF Mono",monospace; font-size:12px; color:#6a5f52; margin-top:8px; padding-left:10px; border-left:2px solid var(--accent); text-align:left; }
+  .out-block { background:#f4f0e8; border:1px solid rgba(26,24,20,0.12); border-radius:4px; padding:10px 14px; margin:10px 0; font-family:"SF Mono",monospace; font-size:13px; white-space:pre-wrap; }
+  .hl { color:var(--accent); font-weight:700; }
+  .pipeline { display:flex; justify-content:space-between; align-items:center; margin:24px 0; flex-wrap:wrap; gap:10px; }
+  .pipeline-step { flex:1; min-width:200px; background:#fff; border:2px solid var(--accent); border-radius:8px; padding:14px; text-align:center; }
+  .pipeline-step .num { display:inline-block; width:30px; height:30px; line-height:30px; background:var(--accent); color:#fff; border-radius:50%; font-weight:700; }
+  .pipeline-step .name { font-weight:700; margin-top:6px; color:var(--accent); }
+  .pipeline-step .desc { font-size:12px; color:#6a5f52; margin-top:4px; }
+  .pipeline-arrow { font-size:24px; color:var(--accent); }
+</style>
+</head>
+<body>
+
+<h1>量化因子 <span class="accent">3 大项目</span> 实战 pipeline 教程</h1>
+
+<div class="meta">
+  <span class="tag">D+19 深度教程</span>
+  <span>2026-08-25</span>
+  <span>~6000 字</span>
+  <span>面向数据科学家 / 量化研究</span>
+  <span>3 个 GitHub 真实项目机制 + 核心原理</span>
+</div>
+
+<blockquote>
+如果你想从 0 build 一个量化因子框架,GitHub 上有 3 个项目是必看的:<br>
+🥇 <a href="https://github.com/wilsonfreitas/awesome-quant"><strong>wilsonfreitas/awesome-quant</strong></a> (⭐29k) — Quant 工具索引<br>
+🥈 <a href="https://github.com/stefan-jansen/machine-learning-for-trading"><strong>stefan-jansen/ml4trading</strong></a> (⭐20k) — 教科书级 27 章 + Ch 8 因子工程<br>
+🥉 <a href="https://github.com/quantopian/alphalens"><strong>quantopian/alphalens</strong></a> (⭐4.4k) — 因子评估金标准<br>
+<br>
+<strong>3 个项目是 pipeline 关系</strong>:awesome-quant 告诉你<em>用什么</em>,ml4trading 教你怎么<em>build</em>,alphalens 告诉你<em>好不好</em>。
+</blockquote>
+
+<figure>
+  <img src="images/quant/article-quant-factor-pipeline-cover.svg" alt="cover" />
+  <figcaption>3 个项目 pipeline: awesome-quant → ml4trading Ch 8 → alphalens</figcaption>
+</figure>
+
+<div class="pipeline">
+  <div class="pipeline-step">
+    <span class="num">1</span>
+    <div class="name">awesome-quant</div>
+    <div class="desc">What to use<br>19 大类工具索引</div>
+  </div>
+  <div class="pipeline-arrow">→</div>
+  <div class="pipeline-step">
+    <span class="num">2</span>
+    <div class="name">ml4trading Ch 8</div>
+    <div class="desc">How to build<br>7 大因子族 + 9 个核心概念</div>
+  </div>
+  <div class="pipeline-arrow">→</div>
+  <div class="pipeline-step">
+    <span class="num">3</span>
+    <div class="name">alphalens</div>
+    <div class="desc">How good<br>IC + 分位回测 + 换手率</div>
+  </div>
+</div>
+
+<div class="tip-box">
+<strong>本教程核心</strong>: 拆解 3 个项目的内部机制 + 核心原理 + 怎么串成 pipeline。最后给出 <strong>7 大注意方向</strong>(build 自己的因子框架时必看)。
+</div>
+
+<hr>
+
+<h2 id="P1"><span class="ln">1</span>awesome-quant — 工具索引器</h2>
+
+<p class="day-time">⭐ 29,148 · 904 commits · 2026-08-25 更新 · 7.1 MB · <strong>3.9k forks</strong></p>
+
+<h3>1.1 核心机制</h3>
+
+<p>这是一个 <strong>curated link list</strong>,本质是一份高度结构化的 markdown。它把 quant 工具按 19 个分类组织:</p>
+
+<ul>
+  <li><strong>Numerical Libraries</strong>: numpy / scipy / pandas / polars / sympy</li>
+  <li><strong>Financial Instruments & Pricing</strong>: QuantLib / vollib / FinancePy</li>
+  <li><strong>Technical Indicators</strong>: ta-lib / pandas-ta</li>
+  <li><strong>Trading & Backtesting</strong>: zipline / backtrader / vectorbt / nautilus_trader</li>
+  <li><strong>Portfolio Optimization</strong>: PyPortfolioOpt / Riskfolio-Lib</li>
+  <li><strong>🎯 Factor Analysis</strong> (你关心的): alphalens / alphalens-reloaded / Gplearn / mlfinlab</li>
+  <li><strong>Sentiment / Alternative Data</strong>: Alpha Vantage / FinBERT</li>
+  <li><strong>Time Series / Data Sources / Books / MCP</strong> ...</li>
+</ul>
+
+<h3>1.2 Factor Analysis 章节(精华)</h3>
+
+<p>跟你"如何创建量化因子"直接相关,我从 760 行的 README 里抽出 Factor Analysis 章节:</p>
+
+<div class="out-block">Quant 因子分析 GitHub 真实项目 (按 Star 排):
+  ⭐ Alpha Skills (VernonOY/alpha-skills)     AI skills for quant factor research
+  ⭐ alphalens (quantopian)                    Performance analysis of alpha factors
+  ⭐ alphalens-reloaded (stefan-jansen)         alphalens 维护版 (推荐用这个)
+  ⭐ Spectre (Heerozh)                          GPU-accelerated factors + backtest
+  ⭐ ml-quant-trading (initial-d)              PyTorch 多因子分析 + 偏差修正
+  ⭐ QuantGPT (Miasyster)                       Agent-driven A股因子研究 (8 MCP tools)
+  ⭐ Perception-XAlpha Lite                    回测过拟合审计
+  ⭐ pit-release-gate                           PIT 数据泄露筛查</div>
+
+<h3>1.3 它怎么运作</h3>
+
+<ul>
+  <li>每条 entry 格式统一: <code>[name](url) - <code>language</code> - description</code></li>
+  <li>项目有 <code>.agents/skills/</code> 和 <code>.claude/skills/</code> — 已经为 AI 工具准备好了 agent skills</li>
+  <li><code>topic.py</code> 自动从 GitHub 抓取每个项目的 topics</li>
+  <li><code>cranscrape.py</code> 从 CRAN 抓 R 包</li>
+</ul>
+
+<div class="tip-box">
+<strong>用法</strong>: 你想找任何 quant 工具,先来这里搜 Factor Analysis 章节。比 Google 搜索准确 10x,因为它有 3.9k forks,贡献者已经帮你筛过。
+</div>
+
+<hr>
+
+<h2 id="P2"><span class="ln">2</span>ml4trading Ch 8 — 因子工程的"圣经"</h2>
+
+<p class="day-time">⭐ 20,630 · 1 GB · 611 commits · 27 章 + 9 case studies</p>
+
+<h3>2.1 Ch 8 在整个书的定位</h3>
+
+<p>Ch 8 (Financial Feature Engineering) 是整本 3rd edition 的<strong>核心</strong>之一 — 它把"做一个因子"这件事从"指标收集"提升为"假设驱动的特征工程"。</p>
+
+<p>书的 27 章完整 pipeline:</p>
+
+<pre><code>01-04  数据基础设施 (process, market, microstructure, alt data)
+05     合成数据生成
+06-07  策略定义 / 学习任务定义
+08 ⭐   金融特征工程 ← 本文重点
+09     模型驱动特征 (PCA / 隐因子)
+10     文本特征
+11     ML pipeline
+12-15  各种 ML/DL 方法
+16-20  回测 / 组合 / 成本 / 风险
+21-26  RL / RAG / 知识图谱 / agent / live trading / MLOps
+27     系统化 edge</code></pre>
+
+<h3>2.2 Ch 8 的 7 大因子族(我读 README 后的核心提炼)</h3>
+
+<table>
+<tr><th>节</th><th>因子族</th><th>核心 Notebook</th><th>业务含义</th></tr>
+<tr><td>8.1</td><td>经济驱动配置</td><td>—</td><td>horizon alignment + driver hypothesis + role separation</td></tr>
+<tr><td>8.2</td><td>价格衍生特征</td><td><code>01_price_volume_features</code></td><td>trend / reversal / volatility / liquidity / microstructure</td></tr>
+<tr><td>8.3</td><td>结构性 + 跨合约</td><td><code>03_structural_cross_instrument</code></td><td>carry / relative value / lead-lag / 期权隐含</td></tr>
+<tr><td>8.4</td><td>上下文 + 慢变量</td><td><code>04_fundamentals_macro_calendar</code></td><td>SEC XBRL / FRED 宏观 / 日历 (PIT 严格)</td></tr>
+<tr><td>8.5</td><td>聚合 + 隐结构</td><td>—</td><td>何时用 PCA / autoencoder (引出 Ch 9, 14)</td></tr>
+<tr><td>8.6</td><td>特征组合 + 搜索控制</td><td><code>05_feature_selection</code></td><td>gating / scaling / one-knob-at-a-time</td></tr>
+<tr><td>8.6</td><td>鲁棒性 + 事件研究</td><td><code>06_robustness_sensitivity</code> + <code>07_event_studies</code></td><td>参数鲁棒 + 事件驱动验证</td></tr>
+</table>
+
+<h3>2.3 Ch 8 的 9 大核心概念(从 Learning Objectives 提炼)</h3>
+
+<ol>
+  <li><strong>Trading 假设 → 特征规格</strong>: 写因子前先写"我想预测什么 / 在什么 horizon / 为什么"</li>
+  <li><strong>Reference frame</strong>: 用 daily close / intraday / VWAP — 不同价格含义不同</li>
+  <li><strong>Representation</strong>: returns / z-scores / ranks — 选错归一化方式会改变信号</li>
+  <li><strong>Aggregation</strong>: rolling mean / EMA / fractal — 选错会平滑掉信号</li>
+  <li><strong>Signal vs State</strong>: 价格是 signal,波动率是 state,交互(gating)才有效</li>
+  <li><strong>Cross-asset features</strong>: term structure / relative value / lead-lag</li>
+  <li><strong>Point-in-time (PIT) discipline</strong>: 慢数据是慢数据,必须用 ASOF join,不能用 future data</li>
+  <li><strong>Feature search control</strong>: 搜索自由度爆炸,one-knob-at-a-time + 多重检验校正</li>
+  <li><strong>Robustness</strong>: 参数扰动 / 制度切换 / 跨资产 都得稳定,否则是过拟合</li>
+</ol>
+
+<h3>2.4 怎么运作 — Ch 8 的代码路径</h3>
+
+<pre><code># 8.2 价格衍生因子
+uv run python 08_financial_features/01_price_volume_features.py
+
+# 8.3 结构性 + 跨合约
+uv run python 08_financial_features/03_structural_cross_instrument_features.py
+# 内存峰值 ~7.4 GB RSS (AlgoSeek S&P 500 options surface)
+
+# 8.4 基本面 + 宏观 + 日历 (PIT)
+uv run python 08_financial_features/04_fundamentals_macro_calendar.py
+
+# 8.6 特征选择 + 鲁棒性
+uv run python 08_financial_features/05_feature_selection.py
+uv run python 08_financial_features/06_robustness_sensitivity.py
+
+# 测试模式 (Papermill)
+uv run pytest tests/test_notebooks.py -v -k "08_financial_features"</code></pre>
+
+<div class="tip-box">
+<strong>Ch 8 的核心哲学</strong>(原话):"feature design from indicator collecting into explicit hypothesis design"
+<br>→ 不要看到 RSI / MACD 就往模型里塞,先问"我在预测什么 / 为什么这个指标能预测 / 在哪个 horizon 有效"
+</div>
+
+<hr>
+
+<h2 id="P3"><span class="ln">3</span>alphalens — 因子评估金标准</h2>
+
+<p class="day-time">⭐ 4,426 · 90 MB · 2020-04 最后 commit · 522 commits</p>
+
+<h3>3.1 核心机制 (我读 tears.py 后拆解)</h3>
+
+<p>alphalens 的核心是 <code>create_full_tear_sheet()</code> — 一行代码出 4 大评估报告。让我从源码看:</p>
+
+<pre><code># alphalens/tears.py line 489-526
+@plotting.customize
+def create_full_tear_sheet(factor_data, long_short=True,
+                           group_neutral=False, by_group=False):
+    """ 4 大评估 """
+    plotting.plot_quantile_statistics_table(factor_data)  # 分位统计表
+    create_returns_tear_sheet(factor_data, long_short,
+                                group_neutral, by_group)    # 1) 收益分析
+    create_information_tear_sheet(factor_data, group_neutral,
+                                    by_group)                # 2) IC 分析
+    create_turnover_tear_sheet(factor_data)                 # 3) 换手率</code></pre>
+
+<h3>3.2 4 大评估的核心数学</h3>
+
+<table>
+<tr><th>评估</th><th>核心指标</th><th>数学</th><th>解读</th></tr>
+<tr><td><strong>① 分位统计</strong></td><td>quantile mean / std / count</td><td>分5档,算每档 mean 收益</td><td>因子是否单调分档</td></tr>
+<tr><td><strong>② 收益分析</strong></td><td>分位累计收益 / 多空对冲</td><td>long top - short bottom</td><td>多空 alpha 是否显著</td></tr>
+<tr><td><strong>③ IC 分析</strong></td><td>Information Coefficient (Rank IC)</td><td>corr(factor, forward_return) / spearman</td><td>预测能力 (核心指标)</td></tr>
+<tr><td><strong>④ 换手率</strong></td><td>因子分位变化率</td><td>逐期分位变化的占比</td><td>交易成本预估</td></tr>
+</table>
+
+<h3>3.3 2 步用法</h3>
+
+<pre><code>import alphalens
+
+# Step 1: 准备数据 (MultiIndex: date + asset)
+factor_data = alphalens.utils.get_clean_factor_and_forward_returns(
+    my_factor,             # 你的因子 Series
+    pricing,                # 行情 DataFrame
+    quantiles=5,           # 分5档
+    groupby=ticker_sector, # 可选: 行业分组
+    groupby_labels=...
+)
+
+# Step 2: 一键出全套评估
+alphalens.tears.create_full_tear_sheet(factor_data)</code></pre>
+
+<h3>3.4 关键问题</h3>
+
+<div class="warn-box">
+<strong>维护警告</strong>: alphalens 最后 commit 2020-04-27 (Quantopian 2020 关站),2024+ 很多 pandas 2.x 兼容问题。<strong>推荐用维护版</strong>: <code>stefan-jansen/alphalens-reloaded</code> (已修复 pandas 2.x 兼容)。
+<br><br>
+<strong>依赖</strong>: alphalens 依赖 <code>matplotlib / numpy / pandas / scipy / seaborn / statsmodels</code>。最新版需要 Python 3.9+ 和 pandas 1.5+。
+</div>
+
+<h3>3.5 IC 阈值的工程经验</h3>
+
+<table>
+<tr><th>Rank IC</th><th>评级</th><th>业务含义</th></tr>
+<tr><td>> 0.10</td><td>极强</td><td>顶级 alpha,可能很快衰减</td></tr>
+<tr><td>0.05 - 0.10</td><td>强</td><td>可上线</td></tr>
+<tr><td>0.02 - 0.05</td><td>中</td><td>可纳入多因子模型</td></tr>
+<tr><td>< 0.02</td><td>弱</td><td>单独难用,需配合其他因子</td></tr>
+<tr><td>接近 0</td><td>无信号</td><td>不要浪费交易成本</td></tr>
+</table>
+
+<hr>
+
+<h2 id="pipeline"><span class="ln">🔁</span>3 个项目串成 Pipeline</h2>
+
+<p>这是 3 个项目**真正**的协同工作流 (我从 3 个 README 提炼的):</p>
+
+<pre><code>┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│  1. awesome-quant  │     │  2. ml4trading    │     │  3. alphalens     │
+│  (工具索引)        │     │  Ch 8 因子工程     │     │  (因子评估)        │
+│                   │     │                   │     │                   │
+│  - 选因子库         │ ──→ │  - 写特征规格      │ ──→ │  - 算 IC          │
+│  - 选回测框架       │     │  - 7 大因子族      │     │  - 分位回测        │
+│  - 选数据源         │     │  - 9 大核心概念    │     │  - 换手率          │
+│  - 选 MCP/agent    │     │  - PIT 严格         │     │  - 1 行出 tear sheet│
+└──────────────────┘     └──────────────────┘     └──────────────────┘
+     What to use           How to build             How good is it</code></pre>
+
+<h3>真实工作流示例: 做一个"动量 + 低波"组合因子</h3>
+
+<pre><code># === 阶段 1: 选工具 (awesome-quant) ===
+# 看 Factor Analysis 章节, 决定用:
+#   - 因子定义: 自己写 (Ch 8 教)
+#   - 评估: alphalens
+#   - 回测: vectorbt
+#   - 数据: yfinance 或 tushare
+
+# === 阶段 2: 写因子 (ml4trading Ch 8) ===
+import pandas as pd
+import numpy as np
+
+def momentum_lowvol_factor(prices, lookback=60, vol_lookback=20):
+    """Ch 8 思路: 6 月动量 + 20 日低波 → signal × state 交互"""
+    # Step 1: signal - 6 月动量
+    momentum = prices.pct_change(lookback)
+    # Step 2: state - 20 日波动率
+    volatility = prices.pct_change().rolling(vol_lookback).std()
+    # Step 3: 组合 (gating: 低波时信号更强)
+    z_mom = (momentum - momentum.rolling(252).mean()) / momentum.rolling(252).std()
+    z_vol = (volatility - volatility.rolling(252).mean()) / volatility.rolling(252).std()
+    factor = z_mom * np.exp(-z_vol)  # 低波时动量权重更大
+    return factor.shift(1)  # PIT: 昨天计算,今天用
+
+# === 阶段 3: 评估 (alphalens) ===
+import alphalens
+
+pricing = ...  # 你的行情数据
+my_factor = momentum_lowvol_factor(pricing)
+
+factor_data = alphalens.utils.get_clean_factor_and_forward_returns(
+    my_factor, pricing, quantiles=5
+)
+alphalens.tears.create_full_tear_sheet(factor_data)
+# → 1 行出 IC + 分位收益 + 换手率</code></pre>
+
+<hr>
+
+<h2 id="pitfalls"><span class="ln">⚠️</span>7 大注意方向 (build 自己的因子框架必看)</h2>
+
+<div class="warn-box">
+<strong>这 7 条是我从 ml4trading Ch 8 + alphalens + 真实踩坑里提炼的</strong>。每条都对应真实的工程失败案例。
+</div>
+
+<table>
+<tr><th>#</th><th>陷阱</th><th>怎么避开</th><th>对应项目</th></tr>
+<tr>
+<td>1</td>
+<td><strong>Look-ahead bias (未来数据)</strong></td>
+<td>所有因子都 <code>.shift(1)</code> 隔一天;<br>PIT join 用 <code>merge_asof</code></td>
+<td>Ch 8 反复强调 + alphalens tear sheet 自动检测</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Survivorship bias (生存者偏差)</strong></td>
+<td>用 Point-in-Time universe (含已退市股票),<br>不要只取当前存在的</td>
+<td>Ch 8.4 + alphalens <code>get_clean_factor</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Multiple testing (过拟合陷阱)</strong></td>
+<td>100+ 因子中必然有几个 IC > 0.05 是噪声;<br>用 Bonferroni / FDR 校正</td>
+<td>Ch 8.6 "feature search control"</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Turnover 不管 → 交易成本吃掉 alpha</strong></td>
+<td>Rank IC 0.05 但换手率 100% 月 = 净 alpha 可能为负;<br>tear sheet 必看换手率图</td>
+<td>alphalens <code>create_turnover_tear_sheet</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>短时间窗口 / 单一 regime 过拟合</strong></td>
+<td>至少 5 年数据 + 跨 regime 测试<br>(牛/熊/震荡)</td>
+<td>Ch 8.6 <code>06_robustness_sensitivity</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>非平稳特征 (regime shift)</strong></td>
+<td>macro 特征要带 PIT timestamp + reporting lag<br>不要用最新已修订值</td>
+<td>Ch 8.4 专门讲 PIT</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>看 IC 不看 PnL → "IC 高 ≠ 赚钱"</strong></td>
+<td>tear sheet 必看 long-short 累计收益 + 最大回撤;<br>IC 0.03 + 大回撤 = 不可用</td>
+<td>alphalens 4 大报告全看</td>
+</tr>
+</table>
+
+<hr>
+
+<h2 id="build"><span class="ln">🛠️</span>build 自己框架的 5 步实操</h2>
+
+<p>基于 3 个项目的研究,我建议的最小可运行 pipeline:</p>
+
+<pre><code># === Step 1: 选工具 (5 min, 看 awesome-quant) ===
+# 决定: alphalens-reloaded + pandas + numpy + yfinance
+
+# === Step 2: 数据准备 (1 小时, PIT 严格) ===
+import yfinance as yf
+pricing = yf.download("AAPL", start="2015-01-01")["Close"]
+# 必须 PIT: 用昨天的价格,不能用今天未收盘的
+
+# === Step 3: 写因子 (4 小时, 跟 Ch 8 思路) ===
+def my_factor(prices, lookback=60):
+    return prices.pct_change(lookback).shift(1)  # 1 步 PIT
+
+factor = my_factor(pricing)
+
+# === Step 4: 评估 (10 min, alphalens 一行) ===
+import alphalens_reloaded as alphalens  # 用维护版
+factor_data = alphalens.utils.get_clean_factor_and_forward_returns(
+    factor, pricing, quantiles=5
+)
+alphalens.tears.create_full_tear_sheet(factor_data)
+# → 看 4 大图: 分位收益 / IC / 换手率
+
+# === Step 5: 决策 (1 min) ===
+# IF Rank IC > 0.02 AND 换手率 < 30%/月 AND 多空 PnL 显著
+#   → 可纳入多因子模型
+# ELSE → 换参数 / 换逻辑 / 丢弃</code></pre>
+
+<div class="tip-box">
+<strong>最小 MVP 投入</strong>: 1-2 周,单因子,1 个标的,5 年数据。足够验证你"会写因子"的能力。
+</div>
+
+<hr>
+
+<h2 id="resources"><span class="ln">📚</span>3 大项目 GitHub 直链</h2>
+
+<table>
+<tr><th>项目</th><th>URL</th><th>角色</th></tr>
+<tr><td>wilsonfreitas/awesome-quant</td><td>https://github.com/wilsonfreitas/awesome-quant</td><td>选项目</td></tr>
+<tr><td>stefan-jansen/machine-learning-for-trading</td><td>https://github.com/stefan-jansen/machine-learning-for-trading</td><td>build 因子</td></tr>
+<tr><td>quantopian/alphalens</td><td>https://github.com/quantopian/alphalens</td><td>评估</td></tr>
+<tr><td>stefan-jansen/alphalens-reloaded</td><td>https://github.com/stefan-jansen/alphalens-reloaded</td><td>alphalens 维护版 (推荐)</td></tr>
+<tr><td>BerkinChen/AlphaEval</td><td>https://github.com/BerkinChen/AlphaEval</td><td>5 种算法自动挖因子</td></tr>
+<tr><td>microsoft/qlib</td><td>https://github.com/microsoft/qlib</td><td>微软量化平台 (A 股)</td></tr>
+</table>
+
+<h3>推荐阅读顺序</h3>
+
+<ol>
+  <li>先看 <strong>awesome-quant Factor Analysis</strong> 章节 (15 分钟,找工具)</li>
+  <li>然后看 <strong>ml4trading Ch 8 README</strong> (30 分钟,学方法论)</li>
+  <li>装 <strong>alphalens-reloaded</strong> 跑一个 demo (1 小时,建立直觉)</li>
+  <li>最后看 <strong>Ch 14 Latent Factors</strong> (2 小时,理解 PCA/CAE)</li>
+</ol>
+
+<hr>
+
+<h2 id="verdict"><span class="ln">🎯</span>3 个项目的核心原理总结</h2>
+
+<table>
+<tr><th>项目</th><th>角色</th><th>核心机制</th><th>关键代码</th><th>学习价值</th></tr>
+<tr><td>awesome-quant</td><td>索引器</td><td>19 大类 curated link list</td><td>topic.py 自动抓 topics</td><td>全景认知</td></tr>
+<tr><td>ml4trading Ch 8</td><td>教科书</td><td>9 学习目标 + 7 节 + 9 个核心概念</td><td>01-07 notebook .py + .ipynb</td><td>方法论</td></tr>
+<tr><td>alphalens</td><td>评估器</td><td><code>create_full_tear_sheet</code> 4 大报告</td><td>tears.py 732 行</td><td>评估</td></tr>
+</table>
+
+<p><strong>3 个项目互为补充, 0 重叠</strong>:索引 → 教学 → 评估,形成完整 pipeline。</p>
+
+<hr>
+
+<h2>与前文 essay 联动</h2>
+
+<ul>
+<li><a href="article-clustering-deep-dive.html">聚类分析 5 层实战</a> - 无监督找客户群</li>
+<li><a href="article-churn-prediction.html">Churn 预测 4 模型</a> - XGBoost + SHAP 实战</li>
+<li><a href="article-decision-tree.html">决策树 5 层实战</a> - Adult Income 4 模型</li>
+<li><strong>本文</strong> - 量化因子 3 大项目 pipeline</li>
+</ul>
+
+<p style="text-align:center; color:#9a8e7e; font-size:13px; margin-top:48px;">
+完 · 2026-08-25 · Chase's Personal Page · 3 个 GitHub 真实项目机制拆解
+</p>
+
+</body>
+</html>
