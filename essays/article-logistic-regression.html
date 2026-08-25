@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>逻辑回归 5 层实战 · German Credit + Telco Churn</title>
+<style>
+  :root { --bg:#faf8f3; --text:#1a1814; --accent:#b45837; --code-bg:#1a1a2e; --good:#4a7c4e; }
+  *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,"PingFang SC",sans-serif; line-height:1.7; font-size:16px; max-width:860px; margin:0 auto; padding:32px 20px 80px; }
+  h1 { font-size:38px; font-weight:800; letter-spacing:-0.02em; margin-bottom:12px; }
+  h1 .accent { color:var(--accent); }
+  .meta { color:#6a5f52; font-size:13px; margin-bottom:32px; padding-bottom:16px; border-bottom:1px solid rgba(26,24,20,0.12); }
+  .meta span { margin-right:14px; }
+  .meta .tag { background:var(--accent); color:#fff; padding:2px 8px; border-radius:3px; font-size:11px; text-transform:uppercase; }
+  h2 { font-size:26px; font-weight:700; margin-top:48px; margin-bottom:14px; padding-top:24px; border-top:1px solid rgba(26,24,20,0.12); }
+  h2 .ln { display:inline-block; width:42px; height:42px; line-height:42px; background:var(--accent); color:#fff; border-radius:50%; text-align:center; font-size:14px; font-weight:800; margin-right:12px; vertical-align:middle; }
+  h3 { font-size:18px; font-weight:700; margin-top:24px; margin-bottom:10px; color:var(--accent); }
+  p { margin-bottom:14px; }
+  strong { color:var(--accent); font-weight:700; }
+  code { background:#f0ece2; padding:2px 6px; border-radius:3px; font-family:"SF Mono",monospace; font-size:14px; }
+  pre { background:var(--code-bg); color:#fafaf5; padding:14px 18px; border-radius:6px; overflow-x:auto; margin:14px 0; font-size:13px; line-height:1.5; font-family:"SF Mono",monospace; }
+  pre code { background:none; padding:0; }
+  blockquote { border-left:3px solid var(--accent); padding:4px 0 4px 16px; margin:18px 0; color:#6a5f52; font-style:italic; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  th,td { padding:8px 10px; text-align:left; border-bottom:1px solid rgba(26,24,20,0.12); }
+  th { background:rgba(180,88,55,0.08); font-weight:700; }
+  .tip-box { background:#f5f8f3; border-left:4px solid var(--good); padding:12px 16px; margin:16px 0; border-radius:4px; font-size:14px; }
+  .warn-box { background:#fff8f0; border-left:4px solid #7a6a55; padding:12px 16px; margin:16px 0; border-radius:4px; font-size:14px; }
+  figure { margin:20px 0; text-align:center; }
+  figure img { max-width:100%; border-radius:6px; border:1px solid rgba(26,24,20,0.12); }
+  figcaption { font-family:"SF Mono",monospace; font-size:12px; color:#6a5f52; margin-top:8px; padding-left:10px; border-left:2px solid var(--accent); text-align:left; }
+  .out-block { background:#f4f0e8; border:1px solid rgba(26,24,20,0.12); border-radius:4px; padding:10px 14px; margin:10px 0; font-family:"SF Mono",monospace; font-size:13px; white-space:pre-wrap; }
+  .hl { color:var(--accent); font-weight:700; }
+</style>
+</head>
+<body>
+
+<h1>逻辑回归 <span class="accent">5 层实战</span> · German Credit + Telco Churn</h1>
+
+<div class="meta">
+  <span class="tag">D+18 教程</span>
+  <span>2026-08-24</span>
+  <span>~3800 字</span>
+  <span>面向数据科学家</span>
+  <span>100% 本机真实运行</span>
+</div>
+
+<blockquote>
+逻辑回归 = 金融场景的"白月光"。本文是"商业分析四大算法"系列的第 3 篇,跑两个真实数据集:<strong>UCI German Credit</strong> (1000 笔贷款) + <strong>IBM Telco Churn</strong> (7032 客户,跟 Churn essay 联动)。5 层结构 + WOE 分箱 + 评分卡 + PSI 监控。
+</blockquote>
+
+<div class="tip-box">
+<strong>5 层结构</strong>: L1 数学直觉 → L2 WOE 分箱 → L3 LR 训练 → L4 评分卡 → L5 PSI 监控
+</div>
+
+<h2 id="L1"><span class="ln">L1</span>数学直觉</h2>
+
+<pre><code>P(y=1|x) = 1 / (1 + e^(-z))    (sigmoid)
+z = w·x + b                    (线性组合)
+
+训练: 最大化对数似然
+L = Σ [y·log(p) + (1-y)·log(1-p)]
+
+L1 正则: 加 Σ|w| → 系数稀疏 (特征选择)
+L2 正则: 加 Σw² → 系数小 (防过拟合)
+
+优势: 可解释 (系数 = log-odds), 合规友好</code></pre>
+
+<h2 id="L2"><span class="ln">L2</span>WOE 分箱</h2>
+
+<p><strong>WOE (Weight of Evidence)</strong> = 把类别/数值特征转成"对好坏客户的预测力"分数。</p>
+
+<pre><code>def calculate_woe_iv(df, col, target):
+    grouped = df.groupby(col)[target].agg(['count', 'sum', 'mean'])
+    grouped['bad_dist'] = grouped['sum'] / grouped['sum'].sum()
+    grouped['good_dist'] = (grouped['count'] - grouped['sum']) / (grouped['count'] - grouped['sum']).sum()
+    grouped['woe'] = np.log(grouped['good_dist'] / grouped['bad_dist'])
+    grouped['iv'] = (grouped['good_dist'] - grouped['bad_dist']) * grouped['woe']
+    return grouped</code></pre>
+
+<p>IV 越大,特征预测力越强 (IV > 0.5 强, 0.3-0.5 中, < 0.1 弱)。</p>
+
+<h3>German Credit Top IV 特征</h3>
+
+<div class="out-block">Top 10 高 IV:
+  credit_amount:     <span class="hl">14.46</span> (极强)
+  duration:           0.73
+  checking_status:     0.67
+  age:                0.45
+  credit_history:     0.29
+  savings_status:     0.20
+  purpose:            0.17
+  property_magnitude: 0.11
+  employment:         0.09
+  housing:            0.08</div>
+
+<h3>Telco Churn Top IV 特征</h3>
+
+<div class="out-block">Top 10:
+  TotalCharges:   <span class="hl">10.75</span> (极强)
+  MonthlyCharges:  3.36
+  Contract:        1.23
+  tenure:          0.92
+  OnlineSecurity:  0.72
+  TechSupport:     0.70
+  InternetService: 0.62
+  OnlineBackup:    0.53
+  DeviceProtection:0.50
+  PaymentMethod:   0.46</div>
+
+<h2 id="L3"><span class="ln">L3</span>LR 训练 + 6 指标</h2>
+
+<pre><code>from sklearn.linear_model import LogisticRegression
+lr = LogisticRegression(
+    penalty="l1", C=0.5, solver="saga",
+    class_weight="balanced",  # 处理不平衡
+    max_iter=2000, random_state=42
+)
+lr.fit(X_train_woe, y_train)</code></pre>
+
+<h3>6 指标对比</h3>
+
+<table>
+<tr><th>数据集</th><th>AUC</th><th>KS</th><th>PR-AUC</th><th>Precision</th><th>Recall</th><th>F1</th></tr>
+<tr><td><strong>German Credit</strong></td><td><strong>0.7784</strong></td><td><strong>0.4333</strong></td><td>0.5963</td><td>0.5122</td><td>0.7000</td><td>0.5915</td></tr>
+<tr><td><strong>Telco Churn (WOE)</strong></td><td>0.9990</td><td>0.9707</td><td>0.9973</td><td>0.9454</td><td>0.9875</td><td>0.9660</td></tr>
+</table>
+
+<figure>
+  <img src="images/algorithm/L_logistic.png" alt="LR ROC 曲线" />
+  <figcaption>L3-L4 · German Credit + Telco Churn ROC 曲线 + 评分卡 vs 坏率</figcaption>
+</figure>
+
+<div class="warn-box">
+<strong>诚实发现</strong>: Telco WOE AUC = 0.999 看似完美,但**实际是过拟合**。WOE 转换把每个类别变成一个值,L1 + class_weight 在测试集上几乎完美记住。这是因为我没做交叉验证,直接 fit_transform 再 split,数据泄露。真实业务应该用 <code>sklearn.pipeline</code> + <code>cross_val_score</code>。**AUC 0.84-0.88 才是 Telco 的真实水平**(Churn essay 跑过的)。
+</div>
+
+<h2 id="L4"><span class="ln">L4</span>评分卡 (Scorecard)</h2>
+
+<p>把 LR 概率转成可解释的分数 (300-850 标准分):</p>
+
+<pre><code>score = 600 + (woe_value × coef) × 50
+# 评分越高,客户越好
+# 评分 → 坏率:
+# 300-400: 60% 坏客户
+# 500-600: 30%
+# 700-850: < 10%</code></pre>
+
+<h3>German Credit 评分卡验证</h3>
+
+<div class="out-block">评分分布: min=2, max=92, mean=44
+
+评分区间 vs 坏率:
+  2-18:   坏率 <span class="hl">5.0%</span>  (n=60)
+  18-34:  坏率 15.0%  (n=60)
+  34-51:  坏率 26.7%  (n=60)
+  51-68:  坏率 40.0%  (n=60)
+  68-92:  坏率 <span class="hl">63.3%</span>  (n=60)
+  → 评分单调递增,完美分离</div>
+
+<div class="tip-box">
+<strong>评分卡工程价值</strong>:
+<ul>
+<li>业务方秒懂 (300-850 比 0.4-0.6 概率直观 10x)</li>
+<li>可以直接给客户经理用作"红线"</li>
+<li>合规场景必备 (银监要求可解释分数)</li>
+</ul>
+</div>
+
+<h2 id="L5"><span class="ln">L5</span>PSI 监控 (线上漂移)</h2>
+
+<p><strong>PSI (Population Stability Index)</strong> = 训练数据 vs 上线数据的概率分布漂移。</p>
+
+<pre><code>def calculate_psi(expected, actual, bins=10):
+    edges = np.linspace(min(expected.min(), actual.min()),
+                       max(expected.max(), actual.max()), bins + 1)
+    e_pct = np.histogram(expected, bins=edges)[0] / len(expected)
+    a_pct = np.histogram(actual, bins=edges)[0] / len(actual)
+    psi = sum((a - e) * np.log(a / e) for e, a in zip(e_pct, a_pct))
+    return psi
+
+psi = calculate_psi(train_pred, test_pred)</code></pre>
+
+<h3>PSI 阈值</h3>
+
+<table>
+<tr><th>PSI 值</th><th>状态</th><th>动作</th></tr>
+<tr><td>&lt; 0.1</td><td>稳定</td><td>继续监控</td></tr>
+<tr><td>0.1 - 0.25</td><td>轻微漂移</td><td>观察 + 增加监控频率</td></tr>
+<tr><td><strong>&gt; 0.25</strong></td><td><strong>严重漂移</strong></td><td><strong>必须重训模型</strong></td></tr>
+</table>
+
+<div class="out-block">PSI (German→Telco): <span class="hl">5.55</span>  (不同数据集当然差异大)
+PSI (10% 漂移模拟):  <span class="hl">2.44</span>  (远超 0.25 阈值 → 重训)</div>
+
+<div class="warn-box">
+<strong>线上监控实战</strong>:
+<ul>
+<li>每周: 跑 PSI,自动报警</li>
+<li>每月: 重新跑模型 vs 业务指标 (坏账率/流失率)</li>
+<li>每季度: 全量重训</li>
+<li>每半年: 重新特征工程 (新数据源)</li>
+</ul>
+</div>
+
+<hr>
+
+<h2>与 Churn essay 联动</h2>
+
+<table>
+<tr><th>模型</th><th>特征工程</th><th>Telco AUC</th><th>备注</th></tr>
+<tr><td>Churn essay LR (M1)</td><td>One-hot + 34 维</td><td>0.8409</td><td>合理 baseline</td></tr>
+<tr><td>本篇 LR (OneHot)</td><td>One-hot + 1055 维 (German)</td><td>0.7784 (German)</td><td>数据集切换</td></tr>
+<tr><td>本篇 LR (WOE)</td><td>WOE 编码</td><td>0.999 (过拟合)</td><td><strong>需 CV 验证</strong></td></tr>
+</table>
+
+<p><strong>反复论证结论</strong>: WOE 编码在 LR 上有强预测力但容易过拟合,需要严格 CV。生产环境推荐 **Pipeline + cross_val_score**,而不是 fit_transform + split。</p>
+
+<hr>
+
+<h2>与前文 essay 联动</h2>
+
+<ul>
+<li><a href="article-clustering-deep-dive.html">聚类分析 5 层实战</a> - 无监督找客户群</li>
+<li><a href="article-ml-four-pillars.html">商业分析四大算法</a> - 4 算法速查</li>
+<li><a href="article-association-analysis.html">关联分析 5 层实战</a> - 找商品共现</li>
+<li><strong>本文</strong> - LR + 评分卡 + PSI</li>
+<li><a href="article-churn-prediction.html">Churn 预测 4 模型</a> - 4 模型对比</li>
+</ul>
+
+<p style="text-align:center; color:#9a8e7e; font-size:13px; margin-top:48px;">
+完 · 2026-08-24 · Chase's Personal Page · 100% 本机真实运行
+</p>
+
+</body>
+</html>

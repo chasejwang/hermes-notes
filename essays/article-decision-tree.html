@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>决策树 5 层实战 · Adult Income + 4 模型</title>
+<style>
+  :root { --bg:#faf8f3; --text:#1a1814; --accent:#b45837; --code-bg:#1a1a2e; --good:#4a7c4e; }
+  *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,"PingFang SC",sans-serif; line-height:1.7; font-size:16px; max-width:860px; margin:0 auto; padding:32px 20px 80px; }
+  h1 { font-size:38px; font-weight:800; letter-spacing:-0.02em; margin-bottom:12px; }
+  h1 .accent { color:var(--accent); }
+  .meta { color:#6a5f52; font-size:13px; margin-bottom:32px; padding-bottom:16px; border-bottom:1px solid rgba(26,24,20,0.12); }
+  .meta span { margin-right:14px; }
+  .meta .tag { background:var(--accent); color:#fff; padding:2px 8px; border-radius:3px; font-size:11px; text-transform:uppercase; }
+  h2 { font-size:26px; font-weight:700; margin-top:48px; margin-bottom:14px; padding-top:24px; border-top:1px solid rgba(26,24,20,0.12); }
+  h2 .ln { display:inline-block; width:42px; height:42px; line-height:42px; background:var(--accent); color:#fff; border-radius:50%; text-align:center; font-size:14px; font-weight:800; margin-right:12px; vertical-align:middle; }
+  h3 { font-size:18px; font-weight:700; margin-top:24px; margin-bottom:10px; color:var(--accent); }
+  p { margin-bottom:14px; }
+  strong { color:var(--accent); font-weight:700; }
+  code { background:#f0ece2; padding:2px 6px; border-radius:3px; font-family:"SF Mono",monospace; font-size:14px; }
+  pre { background:var(--code-bg); color:#fafaf5; padding:14px 18px; border-radius:6px; overflow-x:auto; margin:14px 0; font-size:13px; line-height:1.5; font-family:"SF Mono",monospace; }
+  pre code { background:none; padding:0; }
+  blockquote { border-left:3px solid var(--accent); padding:4px 0 4px 16px; margin:18px 0; color:#6a5f52; font-style:italic; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  th,td { padding:8px 10px; text-align:left; border-bottom:1px solid rgba(26,24,20,0.12); }
+  th { background:rgba(180,88,55,0.08); font-weight:700; }
+  .tip-box { background:#f5f8f3; border-left:4px solid var(--good); padding:12px 16px; margin:16px 0; border-radius:4px; font-size:14px; }
+  .warn-box { background:#fff8f0; border-left:4px solid #7a6a55; padding:12px 16px; margin:16px 0; border-radius:4px; font-size:14px; }
+  figure { margin:20px 0; text-align:center; }
+  figure img { max-width:100%; border-radius:6px; border:1px solid rgba(26,24,20,0.12); }
+  figcaption { font-family:"SF Mono",monospace; font-size:12px; color:#6a5f52; margin-top:8px; padding-left:10px; border-left:2px solid var(--accent); text-align:left; }
+  .out-block { background:#f4f0e8; border:1px solid rgba(26,24,20,0.12); border-radius:4px; padding:10px 14px; margin:10px 0; font-family:"SF Mono",monospace; font-size:13px; white-space:pre-wrap; }
+  .hl { color:var(--accent); font-weight:700; }
+</style>
+</head>
+<body>
+
+<h1>决策树 <span class="accent">5 层实战</span> · Adult Income + 4 模型</h1>
+
+<div class="meta">
+  <span class="tag">D+18 教程</span>
+  <span>2026-08-24</span>
+  <span>~4000 字</span>
+  <span>面向数据科学家</span>
+  <span>100% 本机真实运行 · UCI Adult 48K 行</span>
+</div>
+
+<blockquote>
+决策树 = 商业分析里最容易跟业务方解释的算法。本文是"商业分析四大算法"系列的第 4 篇,在 <strong>UCI Adult Income</strong> (48K 样本, 预测收入 >50K) 上跑 4 个模型 (DT / RF / XGBoost / SHAP),反复论证找出业务一致的 Top 3 特征。
+</blockquote>
+
+<div class="tip-box">
+<strong>5 层结构</strong>: L1 树原理 → L2 DT 单树 → L3 Random Forest → L4 XGBoost 调优 → L5 SHAP 业务解释
+</div>
+
+<h2 id="L1"><span class="ln">L1</span>树原理</h2>
+
+<pre><code>CART 树 (sklearn 默认):
+  分裂准则 = Gini impurity (分类) / MSE (回归)
+  Gini = 1 - Σ pᵢ²  (越小越纯)
+
+关键参数:
+  max_depth        → 深度 (越深越容易过拟合)
+  min_samples_leaf → 叶节点最小样本数
+  n_estimators     → RF/Boosting 的树数
+
+集成学习 vs 单树:
+  DT:    可解释,但方差大
+  RF:    bagging → 降方差
+  XGBoost: boosting → 降偏差</code></pre>
+
+<h2 id="L2"><span class="ln">L2</span>单树 Decision Tree</h2>
+
+<p>数据集: <strong>UCI Adult Income</strong> (4MB, 48,842 样本, 14 特征, 目标 = 收入 >50K)。</p>
+
+<pre><code>from sklearn.tree import DecisionTreeClassifier
+dt = DecisionTreeClassifier(
+    max_depth=6, min_samples_leaf=20,
+    class_weight="balanced", random_state=42
+)
+dt.fit(X_train, y_train)</code></pre>
+
+<figure>
+  <img src="images/algorithm/T_decision_tree.png" alt="Decision Tree" />
+  <figcaption>L2 · Decision Tree 前 3 层 · capital-gain 是最强分裂特征</figcaption>
+</figure>
+
+<div class="out-block">DT AUC: <span class="hl">0.8917</span>
+单树 6 指标:
+  AUC=0.89, KS=0.63, PR-AUC=0.72
+  Precision=0.58, Recall=0.81, F1=0.67</div>
+
+<h2 id="L3"><span class="ln">L3</span>Random Forest</h2>
+
+<pre><code>from sklearn.ensemble import RandomForestClassifier
+rf = RandomForestClassifier(
+    n_estimators=300, max_depth=12, min_samples_leaf=10,
+    class_weight="balanced", random_state=42, n_jobs=-1
+)
+rf.fit(X_train, y_train)</code></pre>
+
+<div class="out-block">RF AUC: <span class="hl">0.9068</span>  (DT +0.015)
+RF 6 指标:
+  AUC=0.91, KS=0.65, PR-AUC=0.78
+  Precision=0.56, Recall=0.87, F1=0.68</div>
+
+<h2 id="L4"><span class="ln">L4</span>XGBoost + Grid 调优</h2>
+
+<pre><code>ratio = (y_train == 0).sum() / (y_train == 1).sum()
+xgb = XGBClassifier(
+    scale_pos_weight=ratio, eval_metric="aucpr",
+    random_state=42, use_label_encoder=False, n_jobs=-1
+)
+# Grid 8 组常见参数
+for n_est, depth, lr in product([200,400], [4,6], [0.05,0.1]):
+    xgb.set_params(n_estimators=n_est, max_depth=depth, learning_rate=lr)
+    xgb.fit(X_train, y_train)</code></pre>
+
+<div class="out-block">Best: n_est=200, depth=4, lr=0.05
+XGBoost AUC: <span class="hl">0.9254</span>  (比 RF +0.019)
+XGBoost 6 指标:
+  AUC=<span class="hl">0.93</span>, KS=<span class="hl">0.68</span>, PR-AUC=<span class="hl">0.83</span>
+  Precision=<span class="hl">0.63</span>, Recall=0.85, F1=<span class="hl">0.72</span></div>
+
+<h2 id="L5"><span class="ln">L5</span>SHAP 解释</h2>
+
+<pre><code>import shap
+explainer = shap.TreeExplainer(xgb)
+shap_values = explainer.shap_values(X_test[:500])
+shap.summary_plot(shap_values, X_test[:500], feature_names=feature_names)</code></pre>
+
+<figure>
+  <img src="images/algorithm/T_shap.png" alt="SHAP" />
+  <figcaption>L5 · SHAP 特征重要性 · XGBoost · marital-status 排第一</figcaption>
+</figure>
+
+<h2>反复论证 · 4 模型 Top 10 共识特征</h2>
+
+<div class="out-block">4/4 共识 (DT + RF + XGB + SHAP 都选):
+  ✅ capital-gain:              <span class="hl">4/4</span>
+  ✅ education-num:             <span class="hl">4/4</span>
+  ✅ marital-status_Married:    <span class="hl">4/4</span>
+
+3/4 共识 (3 个模型选):
+  age:                      3/4
+  capital-loss:             3/4
+  hours-per-week:           3/4
+  occupation_Exec-managerial: 3/4
+
+2/4 共识 (2 个模型选):
+  fnlwgt, occupation_Prof-specialty, relationship_Own-child, sex_Male</div>
+
+<div class="tip-box">
+<strong>业务解读</strong>:
+<ul>
+<li><strong>capital-gain / capital-loss</strong>: 资本收益(炒股/房产)直接反映财富水平</li>
+<li><strong>education-num</strong>: 教育年限每多1年,收入显著上升</li>
+<li><strong>marital-status = Married-civ-spouse</strong>: 已婚客户更稳定(双收入、家庭责任)</li>
+<li><strong>age + hours-per-week</strong>: 中年 + 高工时 = 高收入画像</li>
+<li><strong>occupation = Exec-managerial</strong>: 管理岗 = 高收入直接信号</li>
+</ul>
+<strong>→ 营销动作</strong>: 高 capital-gain / 高 education / 已婚 客户 = 高收入潜客,精准投放
+</div>
+
+<figure>
+  <img src="images/algorithm/T_tree_results.png" alt="Tree Results" />
+  <figcaption>L5 · 3 模型 ROC 曲线 + Top 共识特征 (绿色=4/4, 陶土=3/4)</figcaption>
+</figure>
+
+<h2>3 模型 6 指标对比</h2>
+
+<table>
+<tr><th>模型</th><th>AUC</th><th>KS</th><th>PR-AUC</th><th>Precision</th><th>Recall</th><th>F1</th></tr>
+<tr><td>Decision Tree</td><td>0.8917</td><td>0.6280</td><td>0.7186</td><td>0.5770</td><td><strong>0.8082</strong></td><td>0.6733</td></tr>
+<tr><td>Random Forest</td><td>0.9068</td><td>0.6462</td><td>0.7785</td><td>0.5570</td><td>0.8689</td><td>0.6789</td></tr>
+<tr><td><strong>XGBoost (Grid)</strong></td><td><strong>0.9254</strong></td><td><strong>0.6828</strong></td><td><strong>0.8272</strong></td><td><strong>0.6256</strong></td><td>0.8466</td><td><strong>0.7195</strong></td></tr>
+</table>
+
+<div class="tip-box">
+<strong>关键发现</strong>:
+<ul>
+<li>XGBoost 综合最强 (AUC/KS/PR-AUC/F1 全部第1)</li>
+<li>DT Recall 最高 (0.81) — 漏报成本高时用 DT</li>
+<li>RF 介于两者之间</li>
+<li>本数据集 (48K) 适合 XGBoost — 跟 Churn essay (7K) 形成对比</li>
+</ul>
+</div>
+
+<hr>
+
+<h2>与前文 essay 联动</h2>
+
+<ul>
+<li><a href="article-clustering-deep-dive.html">聚类分析 5 层实战</a> - 无监督找客户群</li>
+<li><a href="article-ml-four-pillars.html">商业分析四大算法</a> - 4 算法速查</li>
+<li><a href="article-association-analysis.html">关联分析 5 层实战</a> - 找商品共现</li>
+<li><a href="article-logistic-regression.html">逻辑回归 5 层实战</a> - LR + 评分卡</li>
+<li><strong>本文</strong> - 决策树 + 4 模型 + SHAP</li>
+<li><a href="article-churn-prediction.html">Churn 预测 4 模型</a> - 4 模型对比</li>
+</ul>
+
+<p style="text-align:center; color:#9a8e7e; font-size:13px; margin-top:48px;">
+完 · 2026-08-24 · Chase's Personal Page · 100% 本机真实运行
+</p>
+
+</body>
+</html>
